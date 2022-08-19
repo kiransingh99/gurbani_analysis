@@ -15,11 +15,11 @@ We welcome contributions from everyone! Please just follow the rules below (this
 
 - All contributions must be submitted via a PR
   - PR branches must be named with the following convention: `HA<task_number>.<brief-hyphenated-daescription>`
-- PRs must be reviewed by a code owner before merging into `main`
+  - PRs must be reviewed by a code owner before merging into `main`
 - Code must be tested and new code must have UT written, to cover all flows
 - Code must be well commented/ documented
-- All files modified by a PR must have an up-to-date copyright notice
 - UIs must have spelling and grammar checked, and the format must be consistent with other parts of the UI
+- Please take care to use correct and respectful terminology and keep satkaar of Gurbani
 
 ## Credits
 
