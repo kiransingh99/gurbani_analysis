@@ -5,7 +5,7 @@ Parsing Hukamnamas from Harmandir Sahib and storing data about them for analysis
 This system scrapes the Harmandir Sahib hukamnama archives on [Sikhnet](https://www.sikhnet.com/hukam), and writes relevant data to a JSON file. This JSON file can be parsed to obtain statistics and data about the humanamas from Harmandir Sahib.
 
 ## Get involved
-We'd love to year your thoughts on this project, and if you have any suggestions or feature requests, or even want to get involved, please do!
+We'd love to hear your thoughts on this project, and if you have any suggestions or feature requests, or even want to get involved, please do!
 
 ### Suggesting improvements
 You can suggest improvements by getting in contact directly, via [Twitter](https://twitter.com/GurkiranSinghJ), or by commenting on the Github Repository.
@@ -14,7 +14,7 @@ You can suggest improvements by getting in contact directly, via [Twitter](https
 We welcome contributions from everyone! Please just follow the rules below (this list is non-exhaustive):
 
 - All contributions must be submitted via a PR
-  - PR branches must be named with the following convention: `HA<task_number>.<brief-hyphenated-daescription>`
+  - PR branches must be named with the following convention: `HA<task_number>.<brief-hyphenated-daescription>`. The task numbers are given by the [project board](https://github.com/users/kiransingh99/projects/1/views/1)
   - PRs must be reviewed by a code owner before merging into `main`
 - Code must be tested and new code must have UT written, to cover all flows
 - Code must be well commented/ documented
@@ -22,6 +22,7 @@ We welcome contributions from everyone! Please just follow the rules below (this
 - Please take care to use correct and respectful terminology and keep satkaar of Gurbani
 
 ## Credits
+Project leader: Gurkiran Singh
 
 ### Author
 This project was developed by Gurkiran Singh (Twitter: [@GurkiranSinghJ](https://twitter.com/GurkiranSinghJ)).
@@ -29,7 +30,7 @@ This project was developed by Gurkiran Singh (Twitter: [@GurkiranSinghJ](https:/
 ### Acknowledgements
 Thank you to Guru Granth Sahib Ji for the gift of Sikhi and for the ability to create this body of work.
 
-Credit to Sikhnet for providing an archive of hukamnamas that could be scraped to gather statistics about them.
+Thank you to Sikhnet for providing an archive of hukamnamas that could be scraped to gather statistics about them.
 
 ### License and copyright
 All material is copyright of Gurkiran Singh.
