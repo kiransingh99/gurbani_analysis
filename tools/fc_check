@@ -1,0 +1,7 @@
+```
+├───artifacts              : folder to store all output artifacts of main code/scripts
+│       hukamnama.json     : file to store data about hukamnamas
+├───src                    : main code goes in this directory
+│       main.py            : main code goes in this file
+├───test                   : test code, and other related files/code go in this directory
+│   └───src                : main test code goes in this dir
