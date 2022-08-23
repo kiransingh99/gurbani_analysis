@@ -1,8 +1,9 @@
-# Hukamnama Analysis
-Parsing Hukamnamas from Harmandir Sahib and storing data about them for analysis.
+# Gurbani Analysis
+Parsing Gurbani to provide analysis about the shabads and the bani. The data get stored in JSON files so statistics about the specific shabad can be obtained.
 
 ## About
-This system scrapes the Harmandir Sahib hukamnama archives on [Sikhnet](https://www.sikhnet.com/hukam), and writes relevant data to a JSON file. This JSON file can be parsed to obtain statistics and data about the humanamas from Harmandir Sahib.
+This system has several features. It collects data about different shabads and provides data about them. The shabads currently include:
+* Hukamnama analysis: scrapes the Harmandir Sahib hukamnama archives on [Sikhnet](https://www.sikhnet.com/hukam)
 
 ## Get involved
 We'd love to hear your thoughts on this project, and if you have any suggestions or feature requests, or even want to get involved, please do!
