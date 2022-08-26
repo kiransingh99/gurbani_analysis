@@ -22,21 +22,21 @@ def _run_cmd(args):
     :returns:
         CompletedProcess namespace object with command ran and returncode.
     """
-    cmd = [
-        "black",
-        "--check" if args.check else None,
-        "--quiet" if args.quiet else None,
-        "--verbose" if args.verbose else None,
-    ] \
-        + args.files \
+    cmd = (
+        [
+            "black",
+            "--check" if args.check else None,
+            "--quiet" if args.quiet else None,
+            "--verbose" if args.verbose else None,
+        ]
+        + args.files
         + (["--exclude"] + args.exclude if args.exclude else [None])
+    )
     cmd = list(filter(lambda x: x is not None, cmd))
 
     p = subprocess.run(
         cmd,
     )
-
-    print(p)
 
     return p
 
@@ -54,7 +54,6 @@ def _handle_return_code(process):
     try:
         _BlackReturnCodes(process.returncode)
     except ValueError:
-        print(process)
         print(
             "\nAn unexpected error occurred when running the command: '{}'".format(
                 " ".join(process.args)
@@ -71,12 +70,7 @@ def main():
     parser.add_argument(
         "files", metavar="SRC", nargs="*", default=["."], help="list of files to check"
     )
-    parser.add_argument(
-        "-e",
-        "--exclude",
-        nargs="*",
-        help="list of files to skip"
-    )
+    parser.add_argument("-e", "--exclude", nargs="*", help="list of files to skip")
     parser.add_argument(
         "-r",
         "--reformat",
