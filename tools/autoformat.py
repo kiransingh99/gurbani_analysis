@@ -34,9 +34,7 @@ def _run_cmd(args):
     )
     cmd = list(filter(lambda x: x is not None, cmd))
 
-    p = subprocess.run(
-        cmd,
-    )
+    p = subprocess.run(cmd)
 
     return p
 
@@ -68,7 +66,11 @@ def main():
         description="Run autoformat checks on given files. Optionally reformat the given files."
     )
     parser.add_argument(
-        "files", metavar="SRC", nargs="*", default=["."], help="list of files to check"
+        "files",
+        metavar="SRC",
+        nargs="*",
+        default=["."],
+        help="list of files to check",
     )
     parser.add_argument("-e", "--exclude", nargs="*", help="list of files to skip")
     parser.add_argument(
