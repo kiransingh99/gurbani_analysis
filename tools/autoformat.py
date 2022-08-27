@@ -28,6 +28,9 @@ def _run_cmd(args):
             "--check" if args.check else None,
             "--quiet" if args.quiet else None,
             "--verbose" if args.verbose else None,
+            # default line length should be 80 chars
+            "--line-length",
+            "80",
         ]
         + args.files
         + (["--exclude"] + args.exclude if args.exclude else [None])
@@ -75,7 +78,9 @@ def main():
         default=["."],
         help="list of files to check",
     )
-    parser.add_argument("-e", "--exclude", nargs="*", help="list of files to skip")
+    parser.add_argument(
+        "-e", "--exclude", nargs="*", help="list of files to skip"
+    )
     parser.add_argument(
         "-r",
         "--reformat",
