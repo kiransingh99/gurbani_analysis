@@ -34,6 +34,9 @@ def _run_cmd(args):
     )
     cmd = list(filter(lambda x: x is not None, cmd))
 
+    if args.verbose:
+        print(f"Running: {' '.join(cmd)}\n")
+
     p = subprocess.run(cmd)
 
     return p
