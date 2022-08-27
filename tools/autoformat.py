@@ -28,7 +28,9 @@ def _run_cmd(args):
             "--check" if args.check else None,
             "--quiet" if args.quiet else None,
             "--verbose" if args.verbose else None,
-            # default line length should be 80 chars
+            # Line length is hardcoded to be 80 chars as changing this value
+            # could reformat the whole workspace. There is no need for a user to
+            # change this value.
             "--line-length",
             "80",
         ]
