@@ -1,3 +1,12 @@
+# ------------------------------------------------------------------------------
+# autoformat.py - Script to check for correctly formatted code
+#
+# August 2022, Gurkiran Singh
+#
+# Copyright (c) 2022
+# All rights reserved.
+# ------------------------------------------------------------------------------
+
 import argparse
 import enum
 import subprocess
@@ -9,7 +18,28 @@ class _BlackReturnCodes(enum.IntEnum):
 
     NOTHING_TO_CHANGE = 0  # all files changed, or no files need to change
     NEED_TO_REFORMAT = 1
-    FILE_DOES_NOT_EXIST = 2
+    FILE_DOES_NOT_EXIST = 3
+
+
+def _handle_return_code(process):
+    """
+    Handles the return code received when running the black CLI. If there's an
+    unexpected error code, an error message is printed to log this. Then exits
+    the script with the same return code as received from black.
+
+    :param process:
+        CompletedProcess namespace object with command ran and returncode.
+    """
+    # Check if return code is known.
+    try:
+        _BlackReturnCodes(process.returncode)
+    except ValueError:
+        print(
+            f"\nAn unexpected error occurred when running the command:"
+            + {" ".join(process.args)}
+        )
+    finally:
+        sys.exit(process.returncode)
 
 
 def _run_cmd(args):
@@ -28,6 +58,11 @@ def _run_cmd(args):
             "--check" if args.check else None,
             "--quiet" if args.quiet else None,
             "--verbose" if args.verbose else None,
+            # Line length is hardcoded to be 80 chars as changing this value
+            # could reformat the whole workspace. There is no need for a user to
+            # change this value.
+            "--line-length",
+            "80",
         ]
         + args.files
         + (["--exclude"] + args.exclude if args.exclude else [None])
@@ -37,34 +72,12 @@ def _run_cmd(args):
     if args.verbose:
         print(f"Running: {' '.join(cmd)}\n")
 
-    p = subprocess.run(cmd)
-
-    return p
-
-
-def _handle_return_code(process):
-    """
-    Handles the return code received when running the black CLI. If there's an
-    unexpected error code, an error message is printed to log this. Then exits
-    the script with the same return code as received from black.
-
-    :param process:
-        CompletedProcess namespace object with command ran and returncode.
-    """
-    # Check if return code is known.
-    try:
-        _BlackReturnCodes(process.returncode)
-    except ValueError:
-        print(
-            "\nAn unexpected error occurred when running the command: '{}'".format(
-                " ".join(process.args)
-            )
-        )
-    finally:
-        sys.exit(process.returncode)
+    process = subprocess.run(cmd)  # pylint: disable=subprocess-run-check
+    _handle_return_code(process)
 
 
 def main():
+    """Main function for autoformat CLI. Parses and handles CLI input"""
     parser = argparse.ArgumentParser(
         description="Run autoformat checks on given files. Optionally reformat the given files."
     )
@@ -75,7 +88,9 @@ def main():
         default=["."],
         help="list of files to check",
     )
-    parser.add_argument("-e", "--exclude", nargs="*", help="list of files to skip")
+    parser.add_argument(
+        "-e", "--exclude", nargs="*", help="list of files to skip"
+    )
     parser.add_argument(
         "-r",
         "--reformat",
@@ -96,13 +111,14 @@ def main():
         "--verbose",
         action="store_true",
         default=False,
-        help="Also emit messages to stderr about files that were not changed or were ignored due to exclusion patterns.",
+        help="Also emit messages to stderr about files that were not changed"
+        + "or were ignored due to exclusion patterns.",
     )
 
     args = parser.parse_args()
 
-    p = _run_cmd(args)
-    _handle_return_code(p)
+    proc = _run_cmd(args)
+    _handle_return_code(proc)
 
 
 if __name__ == "__main__":
