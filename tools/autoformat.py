@@ -7,6 +7,8 @@
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
+"""Checks for badly formatted code and optionally reformats it."""
+
 import argparse
 import enum
 import subprocess
