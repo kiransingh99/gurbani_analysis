@@ -18,7 +18,7 @@ class _BlackReturnCodes(enum.IntEnum):
 
     NOTHING_TO_CHANGE = 0  # all files changed, or no files need to change
     NEED_TO_REFORMAT = 1
-    FILE_DOES_NOT_EXIST = 3
+    FILE_DOES_NOT_EXIST = 2
 
 
 def _handle_return_code(process):
@@ -35,7 +35,7 @@ def _handle_return_code(process):
         _BlackReturnCodes(process.returncode)
     except ValueError:
         print(
-            f"\nAn unexpected error occurred when running the command:"
+            "\nAn unexpected error occurred when running the command:"
             + {" ".join(process.args)}
         )
     finally:
@@ -117,8 +117,7 @@ def main():
 
     args = parser.parse_args()
 
-    proc = _run_cmd(args)
-    _handle_return_code(proc)
+    _run_cmd(args)
 
 
 if __name__ == "__main__":
