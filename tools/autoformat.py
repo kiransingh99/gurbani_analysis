@@ -101,12 +101,7 @@ def main():
         "-e", "--exclude", nargs="*", help="list of files to skip"
     )
     parser.add_argument(
-        "-r",
-        "--reformat",
-        action="store_false",
-        dest="check",
-        default=True,
-        help="reformat the file if it fails the check",
+        "-r","--reformat",action="store_false",dest="check",default=True,help="reformat the file if it fails the check",
     )
     parser.add_argument(
         "-q",
