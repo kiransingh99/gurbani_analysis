@@ -1,0 +1,13 @@
+name: Autoformat
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+      - name: Analysing code with autoformat
+        run: python tools/autoformat.py -v
