@@ -5,6 +5,13 @@ Parsing Gurbani to provide analysis about the shabads and the bani. The data get
 This system has several features. It collects data about different shabads and provides data about them. The shabads currently include:
 * Hukamnama analysis: scrapes the Harmandir Sahib hukamnama archives on [Sikhnet](https://www.sikhnet.com/hukam)
 
+### Dependencies
+The following packages are required for the mainline code to run:
+* 
+
+The following packages are required for the associated infra to run:
+* black
+
 ## Get involved
 We'd love to hear your thoughts on this project, and if you have any suggestions or feature requests, or even want to get involved, please do!
 
