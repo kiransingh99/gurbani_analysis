@@ -11,6 +11,7 @@ The following packages are required for the mainline code to run:
 
 The following packages are required for the associated infra to run:
 * black
+* pylint
 
 ## Get involved
 We'd love to hear your thoughts on this project, and if you have any suggestions or feature requests, or even want to get involved, please do!
