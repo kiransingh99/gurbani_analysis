@@ -14,6 +14,7 @@ import subprocess
 
 import cmn
 
+
 class _PylintReturnCodes(cmn.ReturnCodes):
     """Return codes that can be received from pylint."""
 
@@ -69,7 +70,7 @@ def _run_lint(args):
     try:
         subprocess.run(cmd, check=True)
     except subprocess.CalledProcessError as exc:
-        cmn.handle_cli_error(_PylintReturnCodes, exc.returncode, exc.cmd)
+        cmn.handle_cli_error(_PylintReturnCodes, exc.returncode, exc.cmd, exc)
 
 
 def main():
