@@ -9,11 +9,11 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install git dependencies
       uses: srt32/git-actions@v0.0.3
-    - name: Install python dependencies
-      run: |
-        python -m pip install --upgrade pip
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
         pip install pylint
-    - name: Check git
-      run: git --version
     - name: Analysing the code with pylint
-      run: python tools/lint.py
+      run: pylint $(git ls-files '*.py')
