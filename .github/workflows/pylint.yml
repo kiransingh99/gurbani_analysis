@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      uses: actions/checkout@v3
+    - uses: actions/checkout@v3
     - name: Install git dependencies
       uses: srt32/git-actions@v0.0.3
     - name: Install python dependencies
