@@ -14,6 +14,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint
     - name: Check git
-      run: --version
+      run: git --version
     - name: Analysing the code with pylint
       run: python tools/lint.py
