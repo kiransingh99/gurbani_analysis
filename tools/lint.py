@@ -19,7 +19,23 @@ class _PylintReturnCodes(cmn.ReturnCodes):
     """Return codes that can be received from pylint."""
 
     SUCCESS = 0
-    ERROR = 1
+    # Error code 1 means a fatal error was hit
+    ERROR = 2
+    WARNING = 4
+    ERROR_WARNING = 6
+    REFACTOR = 8
+    ERROR_REFACTOR = 10
+    WARNING_REFACTOR = 12
+    ERROR_WARNING_REFACTOR = 14
+    CONVENTION = 16
+    ERROR_CONVENTION = 18
+    WARNING_CONVENTION = 20
+    ERROR_WARNING_CONVENTION = 22
+    REFACTOR_CONVENTION = 24
+    ERROR_REFACTOR_CONVENTION = 26
+    WARNING_REFACTOR_CONVENTION = 28
+    ERROR_WARNING_REFACTOR_CONVENTION = 30
+    # Error code 32 means a usage error was hit
 
 
 def _run_lint(args):
@@ -30,40 +46,7 @@ def _run_lint(args):
         Namespace object with args to run lint with.
     """
 
-    def _filter_python_files(files):
-        """
-        Filters a set of file names and returns a subset of *.py filenamess from
-        it.
-
-        :param files:
-            File names to be filtered.
-
-        :return:
-            Subset of file names ending with `.py`.
-        """
-        filtered = set()
-        for file in files:
-            if file.endswith(".py"):
-                filtered.add(file)
-
-        return filtered
-
-    tracked_files_output = subprocess.run(
-        "git ls-files", capture_output=True, check=True
-    )
-    include_file_unfiltered = set(
-        tracked_files_output.stdout.decode("utf-8").split("\n")
-    )
-
-    if args.untracked_files:
-        untracked_files_output = subprocess.run(
-            "git ls-files --others", capture_output=True, check=True
-        )
-        include_file_unfiltered.update(
-            set(untracked_files_output.stdout.decode("utf-8").split("\n"))
-        )
-
-    include_files = _filter_python_files(include_file_unfiltered)
+    include_files = cmn.get_python_files(args.untracked_files)
 
     cmd = ["pylint"] + list(include_files)
 
