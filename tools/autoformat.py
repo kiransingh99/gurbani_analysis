@@ -10,12 +10,12 @@
 """Checks for badly formatted code and optionally reformats it."""
 
 import argparse
-import enum
 import subprocess
-import sys
+
+import cmn
 
 
-class _BlackReturnCodes(enum.IntEnum):
+class _BlackReturnCodes(cmn.ReturnCodes):
     """Return codes that can be received from black."""
 
     NOTHING_TO_CHANGE = 0  # all files changed, or no files need to change
@@ -23,39 +23,12 @@ class _BlackReturnCodes(enum.IntEnum):
     FILE_DOES_NOT_EXIST = 2
 
 
-def _handle_cmd_error(return_code, cmd):
-    """
-    Handles the exception raised due to a failure occurring when running the
-    black CLI. If there's an unknown error code, an error message is printed to
-    log this. The script then exits with the same return code as received from
-    black.
-
-    :param exc:
-        subprocess.CalledProcessError tuple containing returncode and command
-        ran.
-    """
-
-    # Check if return code is known.
-    try:
-        _BlackReturnCodes(return_code)
-    except ValueError:
-        print(
-            "\nAn unexpected error occurred when running the command:"
-            + {" ".join(cmd)}
-        )
-    finally:
-        sys.exit(return_code)
-
-
 def _run_black(args):
     """
     Runs `black` command based on input parameters.
 
     :param args:
-        Namespace object with args tp run black with.
-
-    :returns:
-        CompletedProcess namespace object with command ran and returncode.
+        Namespace object with args to run black with.
     """
 
     cmd = ["black"]
@@ -82,7 +55,7 @@ def _run_black(args):
     try:
         subprocess.run(cmd, check=True)
     except subprocess.CalledProcessError as exc:
-        _handle_cmd_error(exc.returncode, exc.cmd)
+        cmn.handle_cli_error(_BlackReturnCodes, exc.returncode, exc.cmd, exc)
 
 
 def main():
