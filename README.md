@@ -23,7 +23,7 @@ You can suggest improvements by getting in contact directly, via [Twitter](https
 We welcome contributions from everyone! Please just follow the rules below (this list is non-exhaustive):
 
 - All contributions must be submitted via a PR
-  - PR branches must be named with the following convention: `HA<task_number>.<brief-hyphenated-description>`. The task numbers are given by the [project board](https://github.com/users/kiransingh99/projects/1/views/1)
+  - PR branches must be named with the following convention: `GA<task_number>.<brief-hyphenated-description>`. The task numbers are given by the [project board](https://github.com/users/kiransingh99/projects/1/views/1)
   - PRs must be reviewed by a code owner before merging into `main`
 - Code must be tested and new code must have UT written, to cover all flows
 - Code must be well commented/ documented
