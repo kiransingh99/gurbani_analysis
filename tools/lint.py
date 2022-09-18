@@ -45,7 +45,6 @@ def _run_lint(args):
     :param args:
         Namespace object with args to run lint with.
     """
-
     include_files = cmn.get_python_files(args.untracked_files)
 
     cmd = ["pylint"] + list(include_files)

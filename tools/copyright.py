@@ -7,7 +7,8 @@
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
-
+"""Checks that a correctly formatted copyright notice is at the top of every
+file in the repo. It should be formatted as follows:"""
 # ------------------------------------------------------------------------------
 # <file_name.py> - <Short description of file>
 #
@@ -16,22 +17,6 @@
 # Copyright (c) <year file was created> - <current year>
 # All rights reserved.
 # ------------------------------------------------------------------------------
-
-
-# for each file, read the lines
-# if line is shebang (starts with `#!`) then skip to next line
-# line should be `#` followed by 79 `-`s
-# $filename followed by " - " then anything
-# if line is `# ` followed by more text (regex) then skip to next line
-# blank line
-# get date file was created, that should be next. Followed by comma and file creator name
-# blank line
-# Copyright (c) year created. If different to current year then add hyphen and current year
-# All rights reserved
-# line should be `#` followed by 79 `-`s
-
-"""Checks that a correctly formatted copyright notice is at the top of every
-file in the repo"""
 
 from datetime import date
 
@@ -52,13 +37,13 @@ class _CopyrightCheckReturnCodes(cmn.ReturnCodes):
 
 def _generate_expected(file_path):
     """
-    @@@ docstring FAIL_COMMIT
+    Generator tha outputs each line of a correctly formatted copyright notice.
 
     :param file_path:
-
+        Path to the file to generate an copyright notice for.
 
     :yield:
-
+        Regex for a copyright notice, output line-by-line.
     """
     file_name = file_path.split("/")[-1]
     exp = [
