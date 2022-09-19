@@ -50,9 +50,10 @@ def _generate_expected(file_path):
         "# -----------------------------------------------------------------------------",
         f"# {file_name} - [^.*]",
         "#",
-        "# (January|February|March|April|May|June|July|August|September|October|November|December) 20[0-9]{2}, [A-Za-z -]",
+        "# (January|February|March|April|May|June|July|August|September|October|November|December)"
+            r" 20[0-9]{2}, [A-Za-z -]",
         "#",
-        f"# Copyright \(c\) (20[0-9]{{2}} - ){{0,1}}{date.today().year}",
+        rf"# Copyright \(c\) (20[0-9]{{2}} - ){{0,1}}{date.today().year}",
         "# All rights reserved.",
         "# -----------------------------------------------------------------------------",
     ]
@@ -61,27 +62,28 @@ def _generate_expected(file_path):
         yield line
 
 
-def _run_check(args):
+def _run_check(_):
     """
     Runs copyright checks on input parameters.
 
     :param args:
         Namespace object with args to run check on.
     """
-    include_files = cmn.get_python_files()
+    include_files = cmn.get_all_code_files()
 
     failed = {}
     for file in include_files:
+        print(include_files, file)
         if os.stat(file).st_size == 0:
             continue
-        with open(file, "r") as f:
+        with open(file, "r") as f_read:
             for exp_line in _generate_expected(file):
-                line = f.readline().strip("\n")
+                line = f_read.readline().strip("\n")
                 if not re.match(exp_line, line):
                     failed[file] = line
                     break
 
-    if failed:
+    if failed: # pylint: disable=no-else-return
         print(
             "Copyright notice checks failed! "
             "The following files need to be fixed:"
