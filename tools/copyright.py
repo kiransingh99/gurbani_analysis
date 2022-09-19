@@ -51,7 +51,7 @@ def _generate_expected(file_path):
         f"# {file_name} - [^.*]",
         "#",
         "# (January|February|March|April|May|June|July|August|September|October|November|December)"
-            r" 20[0-9]{2}, [A-Za-z -]",
+        r" 20[0-9]{2}, [A-Za-z -]",
         "#",
         rf"# Copyright \(c\) (20[0-9]{{2}} - ){{0,1}}{date.today().year}",
         "# All rights reserved.",
@@ -83,7 +83,7 @@ def _run_check(_):
                     failed[file] = line
                     break
 
-    if failed: # pylint: disable=no-else-return
+    if failed:  # pylint: disable=no-else-return
         print(
             "Copyright notice checks failed! "
             "The following files need to be fixed:"
