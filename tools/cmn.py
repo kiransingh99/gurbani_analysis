@@ -80,7 +80,6 @@ def get_all_code_files(untracked_files=False, root_dir="."):
         if not exclude:
             filtered.add(file)
 
-    breakpoint()
     return filtered
 
 
