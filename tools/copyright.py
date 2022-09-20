@@ -74,12 +74,13 @@ def _run_check(_):
 
     failed = {}
     for file in include_files:
-        print(include_files, file)
         if os.stat(file).st_size == 0:
             continue
         with open(file, encoding="utf-8") as f_read:
             for exp_line in _generate_expected(file):
                 line = f_read.readline().strip("\n")
+                if line.startswith("#!"):
+                    f_read.readline().strip("\n")
                 if not re.match(exp_line, line):
                     failed[file] = line
                     break
