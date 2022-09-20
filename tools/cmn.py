@@ -10,6 +10,7 @@
 """Common objects for all tools scripts."""
 
 import enum
+import re
 import subprocess
 import sys
 
@@ -23,9 +24,9 @@ class ReturnCodes(enum.IntEnum):
         return [error.value for error in cls]
 
 
-def get_all_files(untracked_files=False, root_dir="."):
+def get_all_code_files(untracked_files=False, root_dir="."):
     """
-    Produces a set of files in the given directory.
+    Produces a set of source code files in the given directory.
 
     :param untracked_files:
         If True, files not tracked by git will be included in the search.
@@ -37,6 +38,14 @@ def get_all_files(untracked_files=False, root_dir="."):
     :return:
         A set of files filtered with the given settings.
     """
+
+    exclude_patterns = {
+        ".github/*",
+        "artifacts/*",
+        "README.md",
+        ".pylintrc",
+    }
+
     tracked_files_output = subprocess.run(
         "git ls-files", capture_output=True, check=True
     )
@@ -50,6 +59,8 @@ def get_all_files(untracked_files=False, root_dir="."):
             set(untracked_files_output.stdout.decode("utf-8").split("\n"))
         )
 
+    unfiltered.discard("")
+
     if root_dir == ".":
         filtered = set(unfiltered)
     else:
@@ -57,6 +68,17 @@ def get_all_files(untracked_files=False, root_dir="."):
         for file in unfiltered:
             if file.startswith(root_dir):
                 filtered.add(file)
+
+    unfiltered = filtered
+    filtered = set()
+    for file in unfiltered:
+        exclude = False
+        for pattern in exclude_patterns:
+            if re.match(pattern, file):
+                exclude = True
+                break
+        if not exclude:
+            filtered.add(file)
 
     return filtered
 
@@ -75,7 +97,7 @@ def get_python_files(untracked_files=False, root_dir="."):
     :return:
         A set of python files filtered with the given settings.
     """
-    unfiltered = get_all_files(untracked_files, root_dir)
+    unfiltered = get_all_code_files(untracked_files, root_dir)
 
     filtered = set()
     for file in unfiltered:
