@@ -9,6 +9,8 @@
 
 """Checks for badly formatted code and optionally reformats it."""
 
+__all__ = []
+
 import argparse
 import subprocess
 

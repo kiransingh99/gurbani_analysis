@@ -9,6 +9,13 @@
 
 """Common objects for all tools scripts."""
 
+__all__ = [
+    "ReturnCodes",
+    "get_all_code_files",
+    "get_python_files",
+    "handle_cli_error",
+]
+
 import enum
 import re
 import subprocess

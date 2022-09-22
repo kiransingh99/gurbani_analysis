@@ -18,6 +18,8 @@ file in the repo. It should be formatted as follows:"""
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
+__all__ = []
+
 from datetime import date
 
 import argparse
