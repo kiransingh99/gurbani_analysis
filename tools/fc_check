@@ -19,10 +19,9 @@ RC_ERROR=2
 EXCLUDE_DIR=".git/"
 
 CMD="grep -rni $FC_STRING --exclude-dir=$EXCLUDE_DIR"
-OUTPUT=eval{$CMD}
-RC=$?
 
-echo $OUTPUT
+OUTPUT="$($CMD)"
+RC="$?"
 
 if [ $RC -eq 0 ] # matching files found
 then
