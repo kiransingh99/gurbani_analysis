@@ -9,6 +9,8 @@
 
 """Linter for python scripts in repo."""
 
+__all__ = []
+
 import argparse
 import subprocess
 
