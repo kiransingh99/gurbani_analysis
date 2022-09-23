@@ -1,7 +1,41 @@
-```
-├───artifacts              : folder to store all output artifacts of main code/scripts
-│       hukamnama.json     : file to store data about hukamnamas
-├───src                    : main code goes in this directory
-│       main.py            : main code goes in this file
-├───test                   : test code, and other related files/code go in this directory
-│   └───src                : main test code goes in this dir
+#!/bin/bash
+# ------------------------------------------------------------------------------
+# fc_check - Check for string literal to block github merge into main.
+#
+# September 2022, Gurkiran Singh
+#
+# Copyright (c) 2022
+# All rights reserved.
+# ------------------------------------------------------------------------------
+
+FC_STRING1="FAIL_"
+FC_STRING2="COMMIT"
+FC_STRING="$FC_STRING1$FC_STRING2"
+
+RC_PASS=0
+RC_FAIL=1
+RC_ERROR=2
+
+EXCLUDE_DIR=".git/"
+
+CMD="grep -rni $FC_STRING --exclude-dir=$EXCLUDE_DIR"
+
+OUTPUT="$($CMD)"
+RC="$?"
+
+if [ $RC -eq 0 ] # matching files found
+then
+    echo "$FC_STRING strings found. Please remove:"
+    echo $OUTPUT
+    exit $RC_FAIL
+elif [ $RC -eq 1 ] # matching files not found
+then
+    echo "No files found with '$FC_STRING'."
+    exit $RC_PASS
+else
+    echo "Error running bash command."
+    echo "  Command ran: $CMD"
+    echo "  Output: $OUTPUT"
+    echo "  Return code $RC"
+    exit $RC_ERROR
+fi
