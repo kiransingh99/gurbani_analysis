@@ -118,7 +118,7 @@ def _run_check(args):
         )
 
         for file, line_info in failed.items():
-            if args.verbose:
+            if args.show_regex:
                 print(f"   - {file}:{line_info.line_number}:")
                 print(f"        {line_info.act_line} does not match")
                 print(f"        {line_info.exp_line}")
@@ -142,8 +142,8 @@ def main():
     )
 
     parser.add_argument(
-        "-v",
-        "--verbose",
+        "-r",
+        "--show-regex",
         action="store_true",
         default=False,
         help="Provide regex rule that malformed line should match.",
