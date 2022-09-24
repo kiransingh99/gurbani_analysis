@@ -1,4 +1,4 @@
-name: "FAIL_COMMIT" check
+name: FAIL_COMMIT check
 
 on: [push]
 
