@@ -10,7 +10,6 @@ jobs:
         uses: actions/checkout@v3
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install git
+          get --version
       - name: Checking copyright notices
         run: python tools/copyright.py
