@@ -6,7 +6,7 @@
 # Copyright (c) 2022
 # All rights reserved.
 # ------------------------------------------------------------------------------
-# FAIL_COMMIT
+
 """Checks that a correctly formatted copyright notice is at the top of every
 file in the repo. It should be formatted as follows:"""
 # ------------------------------------------------------------------------------
