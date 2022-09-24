@@ -18,7 +18,7 @@ file in the repo. It should be formatted as follows:"""
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
-__all__s = []
+__all__ = []
 
 from dataclasses import dataclass
 from datetime import date
