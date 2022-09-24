@@ -3,12 +3,14 @@ name: FAIL COMMIT check
 on: [push]
 
 jobs:
-  build:
+  setup:
     runs-on: ubuntu-latest
     steps:
       - name: Pull git workspace
         uses: actions/checkout@v3
       - name: Set permissions on script
         run: chmod u+x tools/fc_check
+  test:
+    runs-on: ubuntu-latest
       - name: Checking for FAIL COMMIT strings
         run: tools/fc_check
