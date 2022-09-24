@@ -3,7 +3,7 @@ name: FAIL COMMIT check
 on: [push]
 
 jobs:
-  setup:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Pull git workspace
