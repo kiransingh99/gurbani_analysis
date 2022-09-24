@@ -18,6 +18,8 @@ file in the repo. It should be formatted as follows:"""
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
+__all__s = []
+
 from dataclasses import dataclass
 from datetime import date
 
@@ -46,7 +48,7 @@ class _LineMatchInfo:
 
 def _generate_expected(file_path):
     """
-    Generator tha outputs each line of a correctly formatted copyright notice.
+    Generator that outputs each line of a correctly formatted copyright notice.
 
     :param file_path:
         Path to the file to generate an copyright notice for.
@@ -148,7 +150,8 @@ def main():
         "--show-regex",
         action="store_true",
         default=False,
-        help="Provide regex rule that malformed line should match.",
+        help="If the check fails on a given file, provide the regex rule that "
+        "the malformed line should match.",
     )
 
     args = parser.parse_args()
