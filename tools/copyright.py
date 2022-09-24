@@ -44,9 +44,6 @@ class _LineMatchInfo:
     exp_line: str
 
 
-
-
-
 def _generate_expected(file_path):
     """
     Generator tha outputs each line of a correctly formatted copyright notice.
@@ -58,15 +55,15 @@ def _generate_expected(file_path):
         Regex for a copyright notice, output line-by-line.
     """
     file_name = file_path.split("/")[-1]
-    notice_start_end = r"^# ^[-]{78}$"
+    notice_start_end = r"^# [-]{78}$"
     blank_line = r"^#$"
 
     exp = [
         notice_start_end,
-        rf"^# {file_name} - [^.*]$",
+        rf"^# {file_name} - .+$",
         blank_line,
-        r"^# (January|February|March|April|May|June|July|August|September|October|November|December)$"
-        r"^# 20[0-9]{2}, [A-Za-z -]$",
+        r"^# (January|February|March|April|May|June|July|August|September|October|November|December)"\
+        r" 20[0-9]{2}, [A-Za-z -]+$",
         blank_line,
         rf"^# Copyright \(c\) (20[0-9]{{2}} - ){{0,1}}{date.today().year}$",
         r"^# All rights reserved.$",
@@ -120,10 +117,10 @@ def _run_check(args):
         for file, line_info in failed.items():
             if args.show_regex:
                 print(f"   - {file}:{line_info.line_number}:")
-                print(f"        {line_info.act_line} does not match")
-                print(f"        {line_info.exp_line}")
+                print(f"        `{line_info.act_line}` does not match")
+                print(f"        `{line_info.exp_line}`")
             else:
-                print(f"   - {file}:{line_info.line_number}:    {line_info.act_line}")
+                print(f"   - {file}:{line_info.line_number}:    `{line_info.act_line}`")
 
         return _CopyrightCheckReturnCodes.CHANGES_REQUIRED
     else:
