@@ -1,0 +1,12 @@
+name: "FAIL_COMMIT" check
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull git workspace
+        uses: actions/checkout@v3
+      - name: Analysing code with autoformat
+        run: tools/fc_check
