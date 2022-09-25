@@ -1,4 +1,5 @@
 # ------------------------------------------------------------------------------
+# FAIL_COMMIT
 # cmn.py - Common tools file
 #
 # September 2022, Gurkiran Singh
