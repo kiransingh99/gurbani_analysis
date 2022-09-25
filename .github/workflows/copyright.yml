@@ -8,5 +8,5 @@ jobs:
     steps:
       - name: Pull git workspace
         uses: actions/checkout@v3
-      - name: Checking copyright notices
+      - name: Check copyright notices
         run: python tools/copyright.py
