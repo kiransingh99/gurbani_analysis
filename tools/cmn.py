@@ -59,38 +59,39 @@ def get_all_code_files(untracked_files=False, root_dir="."):
         )
     except Exception as exc:
         print(exc)
-    unfiltered = set(tracked_files_output.stdout.decode("utf-8").split("\n"))
-
-    if untracked_files:
-        untracked_files_output = subprocess.run(
-            "git ls-files --others", capture_output=True, check=True
-        )
-        unfiltered.update(
-            set(untracked_files_output.stdout.decode("utf-8").split("\n"))
-        )
-
-    unfiltered.discard("")
-
-    if root_dir == ".":
-        filtered = set(unfiltered)
     else:
+        unfiltered = set(tracked_files_output.stdout.decode("utf-8").split("\n"))
+
+        if untracked_files:
+            untracked_files_output = subprocess.run(
+                "git ls-files --others", capture_output=True, check=True
+            )
+            unfiltered.update(
+                set(untracked_files_output.stdout.decode("utf-8").split("\n"))
+            )
+
+        unfiltered.discard("")
+
+        if root_dir == ".":
+            filtered = set(unfiltered)
+        else:
+            filtered = set()
+            for file in unfiltered:
+                if file.startswith(root_dir):
+                    filtered.add(file)
+
+        unfiltered = filtered
         filtered = set()
         for file in unfiltered:
-            if file.startswith(root_dir):
+            exclude = False
+            for pattern in exclude_patterns:
+                if re.match(pattern, file):
+                    exclude = True
+                    break
+            if not exclude:
                 filtered.add(file)
 
-    unfiltered = filtered
-    filtered = set()
-    for file in unfiltered:
-        exclude = False
-        for pattern in exclude_patterns:
-            if re.match(pattern, file):
-                exclude = True
-                break
-        if not exclude:
-            filtered.add(file)
-
-    return filtered
+        return filtered
 
 
 def get_python_files(untracked_files=False, root_dir="."):
