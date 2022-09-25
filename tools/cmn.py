@@ -53,9 +53,12 @@ def get_all_code_files(untracked_files=False, root_dir="."):
         ".pylintrc",
     }
 
-    tracked_files_output = subprocess.run(
+    try:
+        tracked_files_output = subprocess.run(
         "git ls-files", capture_output=True, check=True
     )
+    except Exception as exc:
+        print(exc)
     unfiltered = set(tracked_files_output.stdout.decode("utf-8").split("\n"))
 
     if untracked_files:
