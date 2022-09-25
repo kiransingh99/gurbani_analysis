@@ -58,10 +58,8 @@ def get_all_code_files(untracked_files=False, root_dir="."):
             "git ls-files", capture_output=True, check=True
         )
     except Exception as exc:
-        tracked_files_output = subprocess.run(
-            "ls", capture_output=True, check=True
-        )
         print(exc)
+        return set()
 
 
     unfiltered = set(tracked_files_output.stdout.decode("utf-8").split("\n"))
