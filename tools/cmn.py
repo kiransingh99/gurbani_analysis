@@ -54,8 +54,9 @@ def get_all_code_files(untracked_files=False, root_dir="."):
     }
 
     tracked_files_output = subprocess.run(
-        "git ls-files", capture_output=True, check=True
+        ["git", "ls-files"], capture_output=True, check=True
     )
+
     unfiltered = set(tracked_files_output.stdout.decode("utf-8").split("\n"))
 
     if untracked_files:

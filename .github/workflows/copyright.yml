@@ -1,0 +1,12 @@
+name: Copyright notice check
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull git workspace
+        uses: actions/checkout@v3
+      - name: Check copyright notices
+        run: python tools/copyright.py
