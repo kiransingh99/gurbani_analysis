@@ -23,19 +23,19 @@ CMD="grep -rni $FC_STRING --exclude-dir=$EXCLUDE_DIR"
 OUTPUT="$($CMD)"
 RC="$?"
 
-if [ $RC -eq 0 ] # matching files found
-then
+if [ $RC -eq 0 ]; then # matching files found
     echo "$FC_STRING strings found. Please remove:"
     echo $OUTPUT
-    exit $RC_FAIL
-elif [ $RC -eq 1 ] # matching files not found
-then
+    RC=$RC_FAIL
+elif [ $RC -eq 1 ]; then # matching files not found
     echo "No files found with '$FC_STRING'."
-    exit $RC_PASS
+    RC=$RC_PASS
 else
     echo "Error running bash command."
     echo "  Command ran: $CMD"
     echo "  Output: $OUTPUT"
     echo "  Return code $RC"
-    exit $RC_ERROR
+    RC=$RC_ERROR
 fi
+
+exit $RC
