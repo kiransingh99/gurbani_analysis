@@ -1,0 +1,54 @@
+#!/bin/bash
+# ------------------------------------------------------------------------------
+# run_checks - Run all checks in the tools directory.
+#
+# September 2022, Gurkiran Singh
+#
+# Copyright (c) 2022
+# All rights reserved.
+# ------------------------------------------------------------------------------
+
+TESTS=("Autoformat" "Copyright check" "Fail commit string check" "Lint")
+CMDS=("python tools/autoformat.py" "python tools/copyright.py" "tools/fc_check" "python tools/lint.py")
+
+
+echo "Running checks:"
+RC=0
+FAILED_TESTS=()
+
+for i in "${!TESTS[@]}"; do
+    TEST="${TESTS[i]}"
+    CMD="${CMDS[i]}"
+
+    echo -n " - $TEST: "
+
+    $CMD > /dev/null 2>&1
+    TEST_RC="$?"
+
+    if [ $TEST_RC -eq 0 ]; then # test passed
+        echo "PASSED"
+    else
+        echo "FAILED"
+        ((++RC))
+        FAILED_TESTS+=("$TEST ( $CMD )")
+    fi
+done
+
+echo "Tests complete."
+echo
+
+if [ $RC -eq 0 ]; then
+    echo "All tests passed! Please verify results manually where appropriate."
+else
+    # this if statement is just for singular vs plural grammar
+    if [ $RC -eq 1 ]; then
+        echo "The following test failed:"
+    else
+        echo "The following tests failed:"
+    fi
+    for TEST in "${FAILED_TESTS[@]}"; do
+        echo "- $TEST"
+    done
+fi
+
+exit $RC
