@@ -31,14 +31,19 @@ class _BranchNameReturnCodes(cmn.ReturnCodes):
 def _check_branch_name_validity(branch_name):
     """Checks the branch name and se"""
 
-    if branch_name == "main":
+    if re.fullmatch(r"GA\d+\.[A-Za-z0-9-.]+", branch_name):
+        rc = _BranchNameReturnCodes.SUCCESS
+        print(
+            "Branch name is valid. "
+            "Make sure the branch is attached to an issue."
+        )
+    elif branch_name == "main":
         rc = _BranchNameReturnCodes.MAIN
         print(
             "Oops! Still on `main`. Move your changes to a new branch by doing:\n"
             "    `git checkout -b <new-branch>"
         )
-
-    elif re.fullmatch(r"GA\d+\.[A-Za-z0-9-.]+", branch_name):
+    else:
         rc = _BranchNameReturnCodes.INVALID_BRANCH
         print(
             "Branch name is invalid. Branch name must be of the format:\n"
@@ -48,12 +53,6 @@ def _check_branch_name_validity(branch_name):
         print("    1. `git branch -m <new-branch>`")
         print("    2. `git push origin --delete <old-branch>`")
         print("    3. `git push origin -u <new-branch>`")
-    else:
-        rc = _BranchNameReturnCodes.SUCCESS
-        print(
-            "Branch name is valid. "
-            "Make sure the branch is attached to an issue."
-        )
 
     return rc
 
