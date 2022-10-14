@@ -36,6 +36,7 @@ LINE_LENGTH = 80
 
 class _CopyrightCheckReturnCodes(cmn.ReturnCodes):
     """Possible exit codes from this copyright notice checker."""
+
     SUCCESS = 0
     CHANGES_REQUIRED = 1
 
@@ -48,6 +49,7 @@ class _LineMatchInfo:
     Tracks the line number of the notice, the actual line read in from the file
     being tested, and the expected regex rule for the line.
     """
+
     line_number: int
     act_line: str
     exp_line: str

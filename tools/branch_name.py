@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# branch_name - Check that the branch name is valid.
+# branch_name.py - Check that the branch name is valid.
 #
 # October 2022, Gurkiran Singh
 #
@@ -22,6 +22,7 @@ import cmn
 
 class _BranchNameReturnCodes(cmn.ReturnCodes):
     """Possible exit codes from this branch name checker."""
+
     SUCCESS = 0
     MAIN = 1
     INVALID_BRANCH = 2
@@ -66,11 +67,7 @@ def _get_current_branch():
     """
     cmd = ["git", "rev-parse", "--abbrev-ref", "HEAD"]
     try:
-        output = subprocess.run(
-            cmd,
-            capture_output=True,
-            check=True
-        )
+        output = subprocess.run(cmd, capture_output=True, check=True)
     except Exception:
         print("\nERROR")
         print(f"Exception raised running `{' '.join(cmd)}`:")
