@@ -30,7 +30,13 @@ class _BranchNameReturnCodes(cmn.ReturnCodes):
 
 
 def _check_branch_name_validity(branch_name):
-    """Checks the branch name and se"""
+    """
+    Checks the branch name and handles the following cases by outputting and
+    setting an error code:
+    - valid
+    - still on main
+    - invalid (non-main)
+    """
 
     if re.fullmatch(r"GA\d+\.[A-Za-z0-9-.]+", branch_name):
         rc = _BranchNameReturnCodes.SUCCESS
