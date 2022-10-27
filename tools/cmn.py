@@ -49,8 +49,9 @@ def get_all_code_files(untracked_files=False, root_dir="."):
     exclude_patterns = {
         ".github/*",
         "artifacts/*",
-        "README.md",
+        ".gitignore",
         ".pylintrc",
+        "README.md",
     }
 
     tracked_files_output = subprocess.run(
