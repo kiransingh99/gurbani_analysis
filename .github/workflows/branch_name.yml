@@ -1,4 +1,4 @@
-name: Autoformat
+name: Branch name
 
 on: [push]
 
