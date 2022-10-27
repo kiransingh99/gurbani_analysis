@@ -158,7 +158,6 @@ def main():
         "-r",
         "--show-regex",
         action="store_true",
-        default=False,
         help="If the check fails on a given file, provide the regex rule that "
         "the malformed line should match.",
     )
