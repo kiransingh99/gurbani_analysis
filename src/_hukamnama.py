@@ -11,10 +11,13 @@
 
 __all__ = []
 
-def _parse(*args):
+import enum
+
+
+class DataUpdate(enum.IntEnum):
     """
     FAIL_COMMIT TODO
-
-    :param args: _description_
     """
-    print(args)
+    UNKNOWN = 0
+    UPDATE = 1
+    UPDATE_FILL_GAPS = 2

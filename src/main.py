@@ -35,11 +35,36 @@ def main():
         "-H",
         "--hukamnama",
         action="store_true",
-        default=False,
         help="Analyse data from the archive of hukamnamas from Harmandir Sahib.",
     )
 
-    args, remainder = parser.parse_known_args()
+    subparsers = parser.add_subparsers()
+
+    # Hukamnama
+    hukamnama = subparsers.add_parser("hukam")
+
+    hukamnama_subparser = hukamnama.add_subparsers()
+
+    data = hukamnama_subparser.add_parser("data")
+    data.add_argument(
+        "-u",
+        "--update",
+        action="store_const",
+        const=_hukamnama.DataUpdate.UPDATE,
+        dest="update",
+        help="Ensure database contains information from dates up to today."
+    )
+    data.add_argument(
+        "-U",
+        "--update-fill-gaps",
+        action="store_const",
+        const=_hukamnama.DataUpdate.UPDATE_FILL_GAPS,
+        dest="update",
+        help="Update database and attempt to fill in any gaps"
+    )
+
+    args = parser.parse_args()
+    print(args)
 
     if rc.is_ok():
         subparser = None
