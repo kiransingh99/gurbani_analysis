@@ -29,30 +29,35 @@ def main():
         description="Collect and analyse data about Gurbani."
     )
 
-    composition = parser.add_mutually_exclusive_group()
-
-    composition.add_argument(
-        "-H",
-        "--hukamnama",
+    parser.add_argument(
+        "-s",
+        "--suppress-output",
         action="store_true",
-        help="Analyse data from the archive of hukamnamas from Harmandir Sahib.",
+        help="Suppress logging output",
     )
 
-    subparsers = parser.add_subparsers()
+    composition = parser.add_subparsers(dest="composition")
 
     # Hukamnama
-    hukamnama = subparsers.add_parser("hukam")
+    hukamnama = composition.add_parser(
+        "hukamnama",
+        description="Data regarding hukamnama archives.",
+    )
 
-    hukamnama_subparser = hukamnama.add_subparsers()
+    hukamnama_subparser = hukamnama.add_subparsers(dest="function")
 
-    data = hukamnama_subparser.add_parser("data")
+    ## Data
+    data = hukamnama_subparser.add_parser(
+        _hukamnama.Function.DATA.value,
+        description="Update database from archives."
+    )
     data.add_argument(
         "-u",
         "--update",
         action="store_const",
         const=_hukamnama.DataUpdate.UPDATE,
         dest="update",
-        help="Ensure database contains information from dates up to today."
+        help="Ensure database contains information from dates from the most recent recorded, up to today.",
     )
     data.add_argument(
         "-U",
@@ -60,7 +65,15 @@ def main():
         action="store_const",
         const=_hukamnama.DataUpdate.UPDATE_FILL_GAPS,
         dest="update",
-        help="Update database and attempt to fill in any gaps"
+        help="Update database and attempt to fill in any gaps.",
+    )
+    data.add_argument(
+        "-o",
+        "--overwrite",
+        action="store_const",
+        const=_hukamnama.DataUpdate.OVERWRITE,
+        dest="update",
+        help="Starting from the beginning of the database, repopulate all data.",
     )
 
     args = parser.parse_args()
@@ -68,11 +81,11 @@ def main():
 
     if rc.is_ok():
         subparser = None
-        if args.hukamnama:
+        if args.composition == "hukamnama":
             subparser = _hukamnama
 
         if subparser is not None:
-            rc = subparser._parse(*remainder)
+            rc = subparser.parse(args)
 
     sys.exit(rc)
 
