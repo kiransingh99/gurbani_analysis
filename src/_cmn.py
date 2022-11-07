@@ -16,8 +16,40 @@ from dataclasses import dataclass
 import enum
 from typing import Optional
 
-from black import out
 
+class Verbosity(enum.Enum):
+    """
+    FAIL_COMMIT TODO
+    """
+
+    STANDARD = 0
+    VERBOSE = 1
+    VERY_VERBOSE = 2
+    SUPPRESSED = 3
+
+    def is_verbose(self):
+        """
+        FAIL_COMMIT TODO
+
+        :return: _description_
+        """
+        return self in [Verbosity.VERBOSE, Verbosity.VERY_VERBOSE]
+
+    def is_very_verbose(self):
+        """
+        FAIL_COMMIT TODO
+
+        :return: _description_
+        """
+        return self in [Verbosity.VERY_VERBOSE]
+
+    def is_suppressed(self):
+        """
+        FAIL_COMMIT TODO
+
+        :return: _description_
+        """
+        return self in [Verbosity.SUPPRESSED]
 
 class RC(enum.Enum):
     """
@@ -27,6 +59,8 @@ class RC(enum.Enum):
     SUCCESS = "000"
 
     # Misc errors
+    CLI_BACKEND_ERROR = "101"
+
     # FAIL_COMMIT
 
     def is_ok(self):
