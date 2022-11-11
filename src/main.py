@@ -61,8 +61,7 @@ def main():
 
     # Hukamnama
     hukamnama = composition.add_parser(
-        "hukamnama",
-        description="Data regarding hukamnama archives."
+        "hukamnama", description="Data regarding hukamnama archives."
     )
     hukamnama_subparser = hukamnama.add_subparsers(dest="function")
 
@@ -70,7 +69,7 @@ def main():
     data = hukamnama_subparser.add_parser(
         _hukamnama.Function.DATA.value,
         description="Update database from archives.",
-        parents=[verbosity_parser]
+        parents=[verbosity_parser],
     )
     update_method = data.add_mutually_exclusive_group(required=True)
     update_method.add_argument(
@@ -80,7 +79,7 @@ def main():
         const=_hukamnama.DataUpdate.WRITE,
         dest="update",
         help="Starting from the beginning of the archives, (re)populate all"
-            "entries until today (overwrites existing data)",
+        "entries until today (overwrites existing data)",
     )
     update_method.add_argument(
         "-u",
@@ -89,7 +88,7 @@ def main():
         const=_hukamnama.DataUpdate.UPDATE,
         dest="update",
         help="Add information to database, continuing from the most recently"
-            "populated entry, until today",
+        "populated entry, until today",
     )
     update_method.add_argument(
         "-U",
@@ -98,7 +97,7 @@ def main():
         const=_hukamnama.DataUpdate.UPDATE_FILL_GAPS,
         dest="update",
         help="Starting from the beginning of the archives, populate entries "
-            "without any data (does not overwrites existing data)",
+        "without any data (does not overwrites existing data)",
     )
 
     args = parser.parse_args()

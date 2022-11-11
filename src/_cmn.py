@@ -51,6 +51,7 @@ class Verbosity(enum.Enum):
         """
         return self in [Verbosity.SUPPRESSED]
 
+
 class RC(enum.Enum):
     """
     FAIL_COMMIT TODO
