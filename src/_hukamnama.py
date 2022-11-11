@@ -21,11 +21,12 @@ from urllib.request import Request, urlopen
 import datetime
 import enum
 
-_DATE_FORMAT = '%Y-%m-%d'
+_DATE_FORMAT = "%Y-%m-%d"
 _FIRST_DATE = "2002-01-01"
 _today_date = datetime.datetime.today().strftime(_DATE_FORMAT)
 
 _BASE_URL = "https://www.sikhnet.com/hukam/archive/"
+
 
 class DataUpdate(enum.IntEnum):
     """
@@ -38,10 +39,12 @@ class DataUpdate(enum.IntEnum):
     UPDATE_FILL_GAPS: Starting from the beginning of the archives, populate
         entries without any data (does not overwrites existing data)
     """
+
     UNKNOWN = 0
     WRITE = 1
     UPDATE = 2
     UPDATE_FILL_GAPS = 3
+
 
 class Function(enum.Enum):
     """
@@ -49,11 +52,14 @@ class Function(enum.Enum):
 
     DATA: Update/repopulate the database
     """
+
     DATA = "data"
+
 
 @dataclass(frozen=True)
 class _ShabadMetaData:
     """Object to store information about each shabad recorded."""
+
     url: str
     ang: int
     gurmukhi: list
@@ -61,6 +67,7 @@ class _ShabadMetaData:
     writer: str
     first_letter_gurmukhi: str
     first_letter_english: str
+
 
 def _data(ctx):
     """
@@ -73,7 +80,7 @@ def _data(ctx):
     if ctx.verbosity.is_very_verbose():
         print(
             "Ignoring today's shabad:\n  - ",
-            "\n ".join(_get_today_hukam(ctx).gurmukhi)
+            "\n ".join(_get_today_hukam(ctx).gurmukhi),
         )
     if ctx.update is DataUpdate.WRITE:
         start = _FIRST_DATE
@@ -83,7 +90,7 @@ def _data(ctx):
     elif ctx.update is DataUpdate.UPDATE_FILL_GAPS:
         pass
     else:
-        raise NotImplementedError # FAIL_COMMIT
+        raise NotImplementedError  # FAIL_COMMIT
 
     if ctx.verbosity.is_verbose():
         print(f"Operating between dates: {start} - {end}")
@@ -109,7 +116,8 @@ def _data(ctx):
             shabad = _scrape(ctx, url)
             print(shabad)
         except:
-            raise # FAIL_COMMIT
+            raise  # FAIL_COMMIT
+
 
 def _get_ang(html):
     """
@@ -125,17 +133,24 @@ def _get_ang(html):
     ang = int(ang_start.split('"')[0])
     return ang
 
-def _get_first_letter(first_line):
-    """
-    FAIL_COMMIT TODO
 
-    :param first_line: _description_
-    :return: _description_
+def _get_first_letter(line):
     """
-    if first_line[0] == "i": # sihaari
-        return first_line[1]
+    Gets the first letter of a line written in Gurmukhi. Usually just the first
+    letter, except if the first letter is a sihaari, in which case it's the
+    second letter of the line.
+
+    :param line:
+        The line to get the first letter of.
+
+    :return:
+        The first letter of the line, when read in the Gurmukhi
+    """
+    if line[0] == "i":  # sihaari
+        return line[1]
     else:
-        return first_line[0]
+        return line[0]
+
 
 def _get_next_date(start, end):
     """
@@ -154,6 +169,7 @@ def _get_next_date(start, end):
     for x in range(0, difference):
         yield str(start_date + datetime.timedelta(days=x)).split(" ")[0]
 
+
 def _get_today_hukam(ctx):
     """
     Get today's hukamnama.
@@ -164,14 +180,20 @@ def _get_today_hukam(ctx):
     :return:
         _ShabadMetaData object corresponding to today's hukamnama
     """
-    return _scrape(ctx, _BASE_URL+_today_date)
+    return _scrape(ctx, _BASE_URL + _today_date)
+
 
 def _gurbani_ascii_to_unicode(letter):
     """
-    FAIL_COMMIT TODO
+    Maps the ASCII character representing each letter to the unicode value. Only
+    to be used for display purposes, as words, especially in Gurbani, do not
+    appear well when using unicode.
 
-    :param letter: _description_
-    :return: _description_
+    :param letter:
+        ASCII letter in roman alphabet.
+
+    :return:
+        The corresponding letter in unicode.
     """
     mapping = {
         "a": "ੳ",
@@ -212,23 +234,31 @@ def _gurbani_ascii_to_unicode(letter):
     }
     return mapping[letter]
 
+
 def _load_webpage_data(url):
     """
-    FAIL_COMMIT TODO
+    Loads the website and gets the HTML source code.
 
-    :param url: _description_
-    :return: _description_
+    :param url:
+        The URL of the page to read.
+
+    :return:
+        The source code of the page.
     """
-    req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    req = Request(url, headers={"User-Agent": "Mozilla/5.0"})
     page = urlopen(req)
     html = page.read().decode("utf-8")
     return html
 
+
 def parse(ctx):
     """
-    FAIL_COMMIT TODO
+    Main handler for Hukamnama CLI. This is the API called by the main Gurbani
+    Analysis CLI.
 
-    :param ctx: _description_
+    :param ctx:
+        Context received from the Gurbani Analysis CLI. Namespace object
+        containing the args received by the CLI.
     """
     if ctx.verbosity.is_very_verbose():
         print("Setting today's date as", _today_date)
@@ -236,9 +266,7 @@ def parse(ctx):
     if ctx.function == Function.DATA.value:
         _data(ctx)
     else:
-        raise NotImplementedError # FAIL_COMMIT
-
-
+        raise NotImplementedError  # FAIL_COMMIT
 
     # try:
     #     for date in date_generated:
@@ -263,38 +291,71 @@ def parse(ctx):
     #             print("Server error:", url)
 
 
-
 def _remove_manglacharan(ctx, shabad_lines):
-    """FAIL_COMMIT TODO
+    """
+    Removes the manglacharan from the beginning of the shabad.
 
-    :param ctx: _description_
-    :param shabad_lines: _description_
-    :return: _description_
+    :param ctx:
+        Context about the original instruction.
+
+    :param shabad_lines:
+        Lines of Gurbani to remove a manglacharan from.
+
+    :return:
+        Shabad as input, but without the manglacharan.
     """
     # characters and phrases exclusive to manglacharans:
-    mangals = ["\\u003C\\u003E", " siqgur pRswid ]",
-         " 1", " 2", " 3", " 4", " 5", " 9",
-         "slok m", "slok ]", "sloku m", "sloku ]", "pauVI",
-         "sUhI", "iblwvlu", "jYqsrI", "soriT", "DnwsrI", "dyvgMDwrI", "Awsw ]",
-         "goNf",
-
-         " kbIr jI", "nwmdyv jI", "bwxI Bgqw "]
+    mangals = [
+        "\\u003C\\u003E",
+        " siqgur pRswid ]",
+        " 1",
+        " 2",
+        " 3",
+        " 4",
+        " 5",
+        " 9",
+        "slok m",
+        "slok ]",
+        "sloku m",
+        "sloku ]",
+        "pauVI",
+        "sUhI",
+        "iblwvlu",
+        "jYqsrI",
+        "soriT",
+        "DnwsrI",
+        "dyvgMDwrI",
+        "Awsw ]",
+        "goNf",
+        " kbIr jI",
+        "nwmdyv jI",
+        "bwxI Bgqw ",
+    ]
 
     while True:
-        if shabad_lines[0] in mangals:
-            if ctx.verbosity.is_very_verbose():
-                print("  Removing manglacharan", shabad_lines[0])
-            shabad_lines.pop(0)
-        else:
-            break
+        for mangal in mangals:
+            if mangal in shabad_lines[0]:
+                if ctx.verbosity.is_very_verbose():
+                    print("  Removing manglacharan", shabad_lines[0])
+                shabad_lines.pop(0)
+                continue
+        break
+
     return shabad_lines
+
 
 def _scrape(ctx, url):
     """
-    FAIL_COMMIT TODO
+    Scrapes data from the hukamnama.
 
-    :param url: _description_
+    :param ctx:
+        Context about the original instruction.
+
+    :param url:
+        URL of shabad to read data from.
+
     :return:
+        A _ShabadMetaData object containing information about the shabad.
     """
     if ctx.verbosity.is_verbose():
         print("Scraping data from", url)
@@ -306,10 +367,7 @@ def _scrape(ctx, url):
 
     shabad_lines = _separate_lines(html)
     if ctx.verbosity.is_very_verbose():
-        print(
-            " - Shabad is:\n  - ",
-            "\n    ".join(shabad_lines)
-        )
+        print(" - Shabad is:\n  - ", "\n    ".join(shabad_lines))
 
     first_line = _remove_manglacharan(ctx, shabad_lines)[0]
     if ctx.verbosity.is_verbose():
@@ -320,7 +378,7 @@ def _scrape(ctx, url):
         print(
             " - First letter is",
             first_letter_gurmukhi,
-            f"({_gurbani_ascii_to_unicode(first_letter_gurmukhi)})"
+            f"({_gurbani_ascii_to_unicode(first_letter_gurmukhi)})",
         )
 
     return _ShabadMetaData(
@@ -332,6 +390,7 @@ def _scrape(ctx, url):
         first_letter_gurmukhi=first_letter_gurmukhi,
         first_letter_english="FAIL_COMMIT",
     )
+
 
 def _separate_lines(html):
     """FAIL_COMMIT TODO
