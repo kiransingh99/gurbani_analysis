@@ -74,14 +74,14 @@ class RC(enum.Enum):
         return self in [self.SUCCESS]
 
 
-@dataclass(frozen=True)
 class Error(Exception):
     """
     FAIL_COMMIT TODO
     """
 
-    msg: str
-    suggested_steps: Optional[list] = None
+    def __init__(self, msg, suggested_steps=None):
+        self.msg = msg
+        self.suggested_steps = suggested_steps
 
     def __str__(self):
         output = "\nError: "

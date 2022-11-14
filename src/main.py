@@ -103,7 +103,7 @@ def main():
     args = parser.parse_args()
 
     # Defaults
-    print("verbosity:", args.verbosity)
+    print("verbosity:", args.verbosity) # FAIL_COMMIT
     if args.verbosity is None:
         args.verbosity = _cmn.Verbosity.STANDARD
         print(args)

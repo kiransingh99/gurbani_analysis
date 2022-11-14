@@ -20,7 +20,12 @@ from urllib.request import Request, urlopen
 
 import datetime
 import enum
+import json
+import re
 
+import _cmn
+
+_DATABASE = "./artifacts/hukamnama.json"
 _DATE_FORMAT = "%Y-%m-%d"
 _FIRST_DATE = "2002-01-01"
 _today_date = datetime.datetime.today().strftime(_DATE_FORMAT)
@@ -58,16 +63,95 @@ class Function(enum.Enum):
 
 @dataclass(frozen=True)
 class _ShabadMetaData:
-    """Object to store information about each shabad recorded."""
+    """
+    Object to store information about each shabad recorded.
 
-    url: str
+    date: date the hukamnama was taken
+    ang: ang of the hukamnama
+    gurmukhi: lines of the shabad
+    raag: raag the hukamnama was written in
+    writer: the author of the shabad
+    first_letter: the first consonant of the first line of the hukamnama
+    """
+
+    date: str
     ang: int
     gurmukhi: list
     raag: str
     writer: str
-    first_letter_gurmukhi: str
-    first_letter_english: str
+    first_letter: str
 
+    def to_dict(self):
+        """Produces a dictionary that represents a shabad's metadata."""
+        return {
+            self.date: {
+                "ang": self.ang,
+                "gurmukhi": self.gurmukhi,
+                "raag": self.raag,
+                "writer": self.writer,
+                "first_letter": self.first_letter
+            }
+        }
+
+class _WriterError(_cmn.Error):
+    def __init__(self, writer):
+        msg = f"The writer '{writer}' was not recognised."
+        steps = [
+            "Add a mapping for this writer to a value in the `_Writers` enum."
+        ]
+        super().__init__(msg, steps)
+
+
+class _Writers(enum.IntEnum):
+    """Writers of shabads"""
+    # Gurus: 1-10
+    NANAK = 1
+    ANGAD = 2
+    AMAR_DAS = 3
+    RAM_DAS = 4
+    ARJAN = 5
+    TEGH_BAHADUR = 9
+    # Bhagats: 11-25
+    KABIR = 11
+    NAAMDEV = 16
+    # Bhatts: 26-37
+
+    # Gursikhs: 38-40
+
+
+    def __str__(self):
+        names = {
+            self.NANAK: "Guru Nanak Dev Ji",
+            self.ANGAD: "Guru Angad Dev Ji",
+            self.AMAR_DAS: "Guru Amar Das Ji",
+            self.RAM_DAS: "Guru Ram Das Ji",
+            self.ARJAN: "Guru Arjan Dev Ji",
+            self.TEGH_BAHADUR: "Guru Tegh Bahadur Ji",
+            self.KABIR: "Bhagat Kabir Ji",
+            self.NAAMDEV: "Bhagat Naamdev Ji",
+        }
+        return names[self]
+
+    @classmethod
+    def from_string(cls, name):
+        if "nanak" in name.lower():
+            return cls.NANAK
+        elif "angad" in name.lower():
+            return cls.ANGAD
+        elif "amar" in name.lower():
+            return cls.AMAR_DAS
+        elif "raam" in name.lower():
+            return cls.RAM_DAS
+        elif "arjan" in name.lower():
+            return cls.ARJAN
+        elif "tegh" in name.lower():
+            return cls.TEGH_BAHADUR
+        elif "kabir" in name.lower():
+            return cls.KABIR
+        elif "naam" in name.lower():
+            return cls.NAAMDEV
+        else:
+            raise _WriterError(name)
 
 def _data(ctx):
     """
@@ -76,7 +160,6 @@ def _data(ctx):
     :param ctx:
         Context about the original instruction.
     """
-    print(":\n")
     if ctx.verbosity.is_very_verbose():
         print(
             "Ignoring today's shabad:\n  - ",
@@ -85,6 +168,9 @@ def _data(ctx):
     if ctx.update is DataUpdate.WRITE:
         start = _FIRST_DATE
         end = _today_date
+        # reset existing database
+        with open(_DATABASE, "w") as f:
+            f.write("{}")
     elif ctx.update is DataUpdate.UPDATE:
         pass
     elif ctx.update is DataUpdate.UPDATE_FILL_GAPS:
@@ -114,14 +200,19 @@ def _data(ctx):
         url = _BASE_URL + date
         try:
             shabad = _scrape(ctx, url)
-            print(shabad)
+            with open(_DATABASE, "r") as f:
+                data = json.loads(f.read())
+            data.update(shabad.to_dict())
+            with open(_DATABASE, "w") as f:
+                f.write(json.dumps(data))
+            breakpoint()
         except:
             raise  # FAIL_COMMIT
 
 
 def _get_ang(html):
     """
-    Scrapes the ang of the hukamnama from the HTML.
+    Gets the ang of the hukamnama from the HTML.
 
     :param html:
         Full HTML source code.
@@ -132,7 +223,6 @@ def _get_ang(html):
     ang_start = html.split('"angs":{"')[1]
     ang = int(ang_start.split('"')[0])
     return ang
-
 
 def _get_first_letter(line):
     """
@@ -169,6 +259,34 @@ def _get_next_date(start, end):
     for x in range(0, difference):
         yield str(start_date + datetime.timedelta(days=x)).split(" ")[0]
 
+def _get_raag(html):
+    """
+    Gets the raag of the hukamnama from the HTML.
+
+    :param html:
+        Full HTML source code.
+
+    :return:
+        The raag corresponding to the hukamnama.
+    """
+    raag_start = re.split('"raags":{"\d+":"', html)[1]
+    raag = raag_start.split('}')[0]
+    return raag
+
+def _get_shabad(html):
+    """
+    Gets the shabad from the HTML.
+
+    :param html:
+        Full HTML source code.
+
+    :return:
+        The hukamnama, in separated lines.
+    """
+    shabad_start = html.split('shabad_lines":{"gurmukhi":["')[1]
+    shabad = shabad_start.split('"],"transliteration')[0]
+    shabad_lines = shabad.split('","')
+    return shabad_lines
 
 def _get_today_hukam(ctx):
     """
@@ -182,6 +300,20 @@ def _get_today_hukam(ctx):
     """
     return _scrape(ctx, _BASE_URL + _today_date)
 
+def _get_writer(html):
+    """
+    Gets the writer of the hukamnama from the HTML.
+
+    :param html:
+        Full HTML source code.
+
+    :return:
+        The writer of the shabad.
+    """
+    writer_start = re.split('"writers":{"\d+":"', html)[1]
+    writer_str = writer_start.split('}')[0]
+
+    return _Writers.from_string(writer_str)
 
 def _gurbani_ascii_to_unicode(letter):
     """
@@ -268,29 +400,6 @@ def parse(ctx):
     else:
         raise NotImplementedError  # FAIL_COMMIT
 
-    # try:
-    #     for date in date_generated:
-    #         current_year = str(date)[:4]
-    #         current_month = str(date)[5:7]
-    #         url = base_url + str(date)[:10]
-    #         try:
-    #             ang, letter = scrape(url)
-    #             if letter_frequencies[letter] == 0:
-    #                 print(ang, letter)
-    #             angs.append(ang)
-    #             if letter == "E":
-    #                 letter = "a" # assign oora nu horaa to oora
-    #             letter_frequencies[letter] += 1
-    #         except TypeError as e: # ignore this hukamnama
-    #             pass # print(str(e))
-    #         except KeyError:
-    #             print(str(e))
-    #         except KeyboardInterrupt:
-    #             raise KeyboardInterrupt
-    #         except:
-    #             print("Server error:", url)
-
-
 def _remove_manglacharan(ctx, shabad_lines):
     """
     Removes the manglacharan from the beginning of the shabad.
@@ -332,14 +441,16 @@ def _remove_manglacharan(ctx, shabad_lines):
         "bwxI Bgqw ",
     ]
 
-    while True:
-        for mangal in mangals:
-            if mangal in shabad_lines[0]:
-                if ctx.verbosity.is_very_verbose():
-                    print("  Removing manglacharan", shabad_lines[0])
-                shabad_lines.pop(0)
-                continue
-        break
+    i = 0
+    while i < len(mangals):
+        mangal = mangals[i]
+        if mangal in shabad_lines[0]:
+            if ctx.verbosity.is_very_verbose():
+                print("  Removing manglacharan", shabad_lines[0])
+            shabad_lines.pop(0)
+            i = 0
+        else:
+            i+=1
 
     return shabad_lines
 
@@ -359,13 +470,15 @@ def _scrape(ctx, url):
     """
     if ctx.verbosity.is_verbose():
         print("Scraping data from", url)
+
+    date = url[-10:]
     html = _load_webpage_data(url)
 
     ang = _get_ang(html)
     if ctx.verbosity.is_verbose():
         print(" - Ang is", ang)
 
-    shabad_lines = _separate_lines(html)
+    shabad_lines = _get_shabad(html)
     if ctx.verbosity.is_very_verbose():
         print(" - Shabad is:\n  - ", "\n    ".join(shabad_lines))
 
@@ -373,32 +486,27 @@ def _scrape(ctx, url):
     if ctx.verbosity.is_verbose():
         print(" - First line is", first_line)
 
-    first_letter_gurmukhi = _get_first_letter(first_line)
+    first_letter = _get_first_letter(first_line)
     if ctx.verbosity.is_verbose():
         print(
             " - First letter is",
-            first_letter_gurmukhi,
-            f"({_gurbani_ascii_to_unicode(first_letter_gurmukhi)})",
+            first_letter,
+            f"({_gurbani_ascii_to_unicode(first_letter)})",
         )
 
+    raag = _get_raag(html)
+    if ctx.verbosity.is_verbose():
+        print(" - Raag is", raag)
+
+    writer = _get_writer(html)
+    if ctx.verbosity.is_verbose():
+        print(" - Writer is", writer)
+
     return _ShabadMetaData(
-        url=url,
+        date=date,
         ang=ang,
         gurmukhi=shabad_lines,
-        raag="FAIL_COMMIT",
-        writer="FAIL_COMMIT",
-        first_letter_gurmukhi=first_letter_gurmukhi,
-        first_letter_english="FAIL_COMMIT",
+        raag=raag,
+        writer=writer,
+        first_letter=first_letter,
     )
-
-
-def _separate_lines(html):
-    """FAIL_COMMIT TODO
-
-    :param html: _description_
-    :return: _description_
-    """
-    shabad_start = html.split('shabad_lines":{"gurmukhi":["')[1]
-    shabad = shabad_start.split('"],"transliteration')[0]
-    shabad_lines = shabad.split('","')
-    return shabad_lines
