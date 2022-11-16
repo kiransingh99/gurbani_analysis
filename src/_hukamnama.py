@@ -25,13 +25,14 @@ import re
 
 import _cmn
 
-_DATABASE = "./artifacts/hukamnama.json"
-_DATE_FORMAT = "%Y-%m-%d"
-_FIRST_DATE = "2002-01-01"
-_today_date = datetime.datetime.today().strftime(_DATE_FORMAT)
-
 _BASE_URL = "https://www.sikhnet.com/hukam/archive/"
+_DATABASE = "./artifacts/hukamnama.json"
 
+_DATE_FORMAT = "%Y-%m-%d"
+_FIRST_DATE = datetime.datetime.strptime("2002-01-01", _DATE_FORMAT)
+_today_date = datetime.datetime.today()
+
+_KEYS = ["id", "date", "ang", "gurmukhi", "raag", "writer", "first_letter"]
 
 class DataUpdate(enum.IntEnum):
     """
@@ -66,7 +67,7 @@ class _ShabadMetaData:
     """
     Object to store information about each shabad recorded.
 
-    date: date the hukamnama was taken
+    id:date: date the hukamnama was taken
     ang: ang of the hukamnama
     gurmukhi: lines of the shabad
     raag: raag the hukamnama was written in
@@ -81,17 +82,29 @@ class _ShabadMetaData:
     writer: str
     first_letter: str
 
+    def __eq__(self, other):
+        return self.gurmukhi == other.gurmukhi
+
+    def get_id(self):
+        """
+        Generates a unique, sequential, integer ID for the date of the
+        hukamnama.
+        """
+        difference = (datetime.datetime.strptime(self.date, _DATE_FORMAT) -
+            _FIRST_DATE)
+        return difference.days + 1
+
     def to_dict(self):
         """Produces a dictionary that represents a shabad's metadata."""
         return {
-            self.date: {
+                "id": self.get_id(),
+                "date": self.date,
                 "ang": self.ang,
                 "gurmukhi": self.gurmukhi,
                 "raag": self.raag,
                 "writer": self.writer,
                 "first_letter": self.first_letter
             }
-        }
 
 class _WriterError(_cmn.Error):
     def __init__(self, writer):
@@ -113,6 +126,7 @@ class _Writers(enum.IntEnum):
     TEGH_BAHADUR = 9
     # Bhagats: 11-25
     KABIR = 11
+    RAVIDAS = 12
     NAAMDEV = 16
     # Bhatts: 26-37
 
@@ -128,6 +142,7 @@ class _Writers(enum.IntEnum):
             self.ARJAN: "Guru Arjan Dev Ji",
             self.TEGH_BAHADUR: "Guru Tegh Bahadur Ji",
             self.KABIR: "Bhagat Kabir Ji",
+            self.RAVIDAS: "Bhagat Ravidas Ji",
             self.NAAMDEV: "Bhagat Naamdev Ji",
         }
         return names[self]
@@ -148,6 +163,8 @@ class _Writers(enum.IntEnum):
             return cls.TEGH_BAHADUR
         elif "kabir" in name.lower():
             return cls.KABIR
+        elif "ravi" in name.lower():
+            return cls.KABIR
         elif "naam" in name.lower():
             return cls.NAAMDEV
         else:
@@ -161,34 +178,47 @@ def _data(ctx):
         Context about the original instruction.
     """
     if ctx.verbosity.is_very_verbose():
+        breakpoint() # FAIL_COMMIT check this works properly
         print(
             "Ignoring today's shabad:\n  - ",
             "\n ".join(_get_today_hukam(ctx).gurmukhi),
         )
     if ctx.update is DataUpdate.WRITE:
         start = _FIRST_DATE
-        end = _today_date
         # reset existing database
         with open(_DATABASE, "w") as f:
-            f.write("{}")
+            f.write("[]")
     elif ctx.update is DataUpdate.UPDATE:
-        pass
+        with open(_DATABASE, "r") as f:
+            data = json.loads(f.read())
+            most_recent = None
+            for entry in data:
+                if most_recent is None:
+                    most_recent = datetime.datetime.strptime(
+                        entry["date"],
+                        _DATE_FORMAT
+                    )
+                else:
+                    most_recent = max(
+                        most_recent,
+                        datetime.datetime.strptime(entry["date"], _DATE_FORMAT)
+                    )
+            start = most_recent
     elif ctx.update is DataUpdate.UPDATE_FILL_GAPS:
         pass
     else:
-        raise NotImplementedError  # FAIL_COMMIT
+        raise NotImplementedError  # FAIL_COMMIT see what errors get hit
+    end = _today_date
 
     if ctx.verbosity.is_verbose():
         print(f"Operating between dates: {start} - {end}")
 
-    start_date_split = start.split("-")
-    prev_year = start_date_split[0]
-    prev_month = start_date_split[1]
+    prev_year = start.year
+    prev_month = start.month
 
     for date in _get_next_date(start, end):
-        date_split = date.split("-")
-        current_year = date_split[0]
-        current_month = date_split[1]
+        current_year = date.year
+        current_month = date.month
         if current_month != prev_month:
             if current_year != prev_year:
                 prev_year = current_year
@@ -197,17 +227,19 @@ def _data(ctx):
             prev_month = current_month
             if not ctx.verbosity.is_suppressed():
                 print("  new month: ", current_month)
-        url = _BASE_URL + date
+        url = _BASE_URL + datetime.datetime.strftime(date, _DATE_FORMAT)
         try:
             shabad = _scrape(ctx, url)
+            if shabad == _get_today_hukam(ctx):
+                breakpoint() # FAIL_COMMIT check we hit this
+                shabad = None
             with open(_DATABASE, "r") as f:
                 data = json.loads(f.read())
-            data.update(shabad.to_dict())
+            data.append(shabad.to_dict())
             with open(_DATABASE, "w") as f:
                 f.write(json.dumps(data))
-            breakpoint()
         except:
-            raise  # FAIL_COMMIT
+            raise  # FAIL_COMMIT see what errors get hit
 
 
 def _get_ang(html):
@@ -253,11 +285,9 @@ def _get_next_date(start, end):
     :param end:
         Date to end range with.
     """
-    start_date = datetime.datetime.strptime(start, _DATE_FORMAT)
-    end_date = datetime.datetime.strptime(end, _DATE_FORMAT)
-    difference = (end_date - start_date).days + 1
+    difference = (end - start).days + 1
     for x in range(0, difference):
-        yield str(start_date + datetime.timedelta(days=x)).split(" ")[0]
+        yield start + datetime.timedelta(days=x)
 
 def _get_raag(html):
     """
@@ -269,8 +299,8 @@ def _get_raag(html):
     :return:
         The raag corresponding to the hukamnama.
     """
-    raag_start = re.split('"raags":{"\d+":"', html)[1]
-    raag = raag_start.split('}')[0]
+    raag_start = re.split('"raags":{"\d+":"Raag ', html)[1]
+    raag = raag_start.split('"}')[0]
     return raag
 
 def _get_shabad(html):
@@ -398,7 +428,7 @@ def parse(ctx):
     if ctx.function == Function.DATA.value:
         _data(ctx)
     else:
-        raise NotImplementedError  # FAIL_COMMIT
+        raise NotImplementedError  # FAIL_COMMIT unrecognised argument
 
 def _remove_manglacharan(ctx, shabad_lines):
     """
