@@ -15,9 +15,9 @@ __all__ = [
     "parse",
 ]
 
-from dataclasses import dataclass
 from urllib.request import Request, urlopen
 
+import dataclasses
 import datetime
 import enum
 import json
@@ -29,10 +29,8 @@ _BASE_URL = "https://www.sikhnet.com/hukam/archive/"
 _DATABASE = "./artifacts/hukamnama.json"
 
 _DATE_FORMAT = "%Y-%m-%d"
-_FIRST_DATE = datetime.datetime.strptime("2002-01-01", _DATE_FORMAT)
+_FIRST_DATE = _cmn.str_to_datetime("2002-01-01", _DATE_FORMAT)
 _today_date = datetime.datetime.today()
-
-_KEYS = ["id", "date", "ang", "gurmukhi", "raag", "writer", "first_letter"]
 
 class DataUpdate(enum.IntEnum):
     """
@@ -62,12 +60,13 @@ class Function(enum.Enum):
     DATA = "data"
 
 
-@dataclass(frozen=True)
+@dataclasses.dataclass()
 class _ShabadMetaData:
     """
     Object to store information about each shabad recorded.
 
-    id:date: date the hukamnama was taken
+    id: a unique identifier for the date
+    date: date the hukamnama was taken
     ang: ang of the hukamnama
     gurmukhi: lines of the shabad
     raag: raag the hukamnama was written in
@@ -75,6 +74,7 @@ class _ShabadMetaData:
     first_letter: the first consonant of the first line of the hukamnama
     """
 
+    id: int
     date: str
     ang: int
     gurmukhi: list
@@ -83,27 +83,51 @@ class _ShabadMetaData:
     first_letter: str
 
     def __eq__(self, other):
+        """
+        A necessary and sufficient condition to determine that two
+        _ShabadMetaData objects represent the same shabad is if all the lines of
+        the two shabads are the same.
+        """
         return self.gurmukhi == other.gurmukhi
 
-    def get_id(self):
+    @classmethod
+    def get_id(cls, date):
         """
         Generates a unique, sequential, integer ID for the date of the
         hukamnama.
         """
-        difference = (datetime.datetime.strptime(self.date, _DATE_FORMAT) -
+        difference = (_cmn.str_to_datetime(date, _DATE_FORMAT) -
             _FIRST_DATE)
         return difference.days + 1
 
+    @classmethod
+    def get_keys(cls):
+        """Get a list of the attributes of this object."""
+        return [item.name for item in dataclasses.fields(cls)]
+
+    def remove_data(self):
+        """Remove data about the shabad from the shabad object."""
+        self.ang = None
+        self.gurmukhi = None
+        self.raag = None
+        self.writer = None
+        self.first_letter = None
+
     def to_dict(self):
         """Produces a dictionary that represents a shabad's metadata."""
+        data = {}
+        for key in self.get_keys():
+            if getattr(self, key) is not None:
+                data[key] = getattr(self, key)
+        return data
         return {
-                "id": self.get_id(),
+                "id": self.id,
                 "date": self.date,
                 "ang": self.ang,
                 "gurmukhi": self.gurmukhi,
                 "raag": self.raag,
-                "writer": self.writer,
-                "first_letter": self.first_letter
+                "writer": str(self.writer),
+                "first_letter": self.first_letter,
             }
 
 class _WriterError(_cmn.Error):
@@ -149,23 +173,23 @@ class _Writers(enum.IntEnum):
 
     @classmethod
     def from_string(cls, name):
-        if "nanak" in name.lower():
+        if any(s in name.lower() for s in ["nanak"]):
             return cls.NANAK
-        elif "angad" in name.lower():
+        elif any(s in name.lower() for s in ["angad"]):
             return cls.ANGAD
-        elif "amar" in name.lower():
+        elif any(s in name.lower() for s in ["amar"]):
             return cls.AMAR_DAS
-        elif "raam" in name.lower():
+        elif any(s in name.lower() for s in ["raam"]):
             return cls.RAM_DAS
-        elif "arjan" in name.lower():
+        elif any(s in name.lower() for s in ["arjan"]):
             return cls.ARJAN
-        elif "tegh" in name.lower():
+        elif any(s in name.lower() for s in ["tegh"]):
             return cls.TEGH_BAHADUR
-        elif "kabir" in name.lower():
+        elif any(s in name.lower() for s in ["kabir"]):
             return cls.KABIR
-        elif "ravi" in name.lower():
-            return cls.KABIR
-        elif "naam" in name.lower():
+        elif any(s in name.lower() for s in ["ravi"]):
+            return cls.RAVIDAS
+        elif any(s in name.lower() for s in ["naam"]):
             return cls.NAAMDEV
         else:
             raise _WriterError(name)
@@ -185,38 +209,31 @@ def _data(ctx):
         )
     if ctx.update is DataUpdate.WRITE:
         start = _FIRST_DATE
-        # reset existing database
+        # Reset existing database.
         with open(_DATABASE, "w") as f:
             f.write("[]")
     elif ctx.update is DataUpdate.UPDATE:
-        with open(_DATABASE, "r") as f:
-            data = json.loads(f.read())
-            most_recent = None
-            for entry in data:
-                if most_recent is None:
-                    most_recent = datetime.datetime.strptime(
-                        entry["date"],
-                        _DATE_FORMAT
-                    )
-                else:
-                    most_recent = max(
-                        most_recent,
-                        datetime.datetime.strptime(entry["date"], _DATE_FORMAT)
-                    )
-            start = most_recent
+            start = _get_most_recent_entry_date(ctx) + datetime.timedelta(days=1)
     elif ctx.update is DataUpdate.UPDATE_FILL_GAPS:
-        pass
+        start = _FIRST_DATE
+        fill_gaps = True
+        most_recent_entry_date = _get_most_recent_entry_date(ctx)
     else:
-        raise NotImplementedError  # FAIL_COMMIT see what errors get hit
+        raise NotImplementedError  # FAIL_COMMIT see what errors get raised
     end = _today_date
 
     if ctx.verbosity.is_verbose():
-        print(f"Operating between dates: {start} - {end}")
+        print(
+            "Operating between dates: "
+           f"{_cmn.datetime_to_str(start, _DATE_FORMAT)} - "
+           f"{_cmn.datetime_to_str(end, _DATE_FORMAT)}"
+        )
 
     prev_year = start.year
     prev_month = start.month
 
     for date in _get_next_date(start, end):
+        date_str = _cmn.datetime_to_str(date, _DATE_FORMAT)
         current_year = date.year
         current_month = date.month
         if current_month != prev_month:
@@ -227,20 +244,45 @@ def _data(ctx):
             prev_month = current_month
             if not ctx.verbosity.is_suppressed():
                 print("  new month: ", current_month)
-        url = _BASE_URL + datetime.datetime.strftime(date, _DATE_FORMAT)
+        url = _BASE_URL + date_str
         try:
-            shabad = _scrape(ctx, url)
-            if shabad == _get_today_hukam(ctx):
-                breakpoint() # FAIL_COMMIT check we hit this
-                shabad = None
             with open(_DATABASE, "r") as f:
                 data = json.loads(f.read())
-            data.append(shabad.to_dict())
-            with open(_DATABASE, "w") as f:
-                f.write(json.dumps(data))
+            read = True
+            if fill_gaps:
+                if date < most_recent_entry_date:
+                    for entry in data:
+                        # If entry doesn't have a date, it's fatally badly
+                        # formatted
+                        if "date" not in entry:
+                            data.remove(entry)
+                            if ctx.verbosity.is_verbose():
+                                print(
+                                    "Removing the following entry due to a "
+                                    "missing `date` field:\n",
+                                    entry
+                                )
+                            continue
+                        if entry["date"] == date_str:
+                            if [key for key in entry] == _ShabadMetaData.get_keys():
+                                # Fields are all up to date:
+                                read = False
+                            else:
+                                # If entry needs updating:
+                                data.remove(entry)
+                                break
+
+            if read:
+                shabad = _scrape(ctx, url)
+                if shabad == _get_today_hukam(ctx):
+                    shabad.remove_data()
+                data.append(shabad.to_dict())
+                with open(_DATABASE, "w") as f:
+                    f.write(json.dumps(data))
         except:
             raise  # FAIL_COMMIT see what errors get hit
-
+            # FAIL_COMMIT file not found
+            # FAIL_COMMIT file in use
 
 def _get_ang(html):
     """
@@ -272,6 +314,27 @@ def _get_first_letter(line):
         return line[1]
     else:
         return line[0]
+
+
+def _get_entry_dates(ctx):
+    """FAIL_COMMIT TODO"""
+    with open(_DATABASE, "r") as f:
+        data = json.loads(f.read())
+    dates = []
+    for entry in data:
+        try:
+            dates.append(_cmn.str_to_datetime(entry["date"], _DATE_FORMAT))
+        except KeyError:
+            if ctx.verbosity.is_very_verbose():
+                print("Missing 'date' entry for: ", entry)
+    return dates
+
+
+def _get_most_recent_entry_date(ctx, entry_dates=None):
+    """FAIL_COMMIT TODO"""
+    if entry_dates is None:
+        entry_dates = _get_entry_dates(ctx)
+    return max(entry_dates)
 
 
 def _get_next_date(start, end):
@@ -328,7 +391,8 @@ def _get_today_hukam(ctx):
     :return:
         _ShabadMetaData object corresponding to today's hukamnama
     """
-    return _scrape(ctx, _BASE_URL + _today_date)
+    _today_date_str = _cmn.datetime_to_str(_today_date, _DATE_FORMAT)
+    return _scrape(ctx, _BASE_URL + _today_date_str)
 
 def _get_writer(html):
     """
@@ -341,7 +405,7 @@ def _get_writer(html):
         The writer of the shabad.
     """
     writer_start = re.split('"writers":{"\d+":"', html)[1]
-    writer_str = writer_start.split('}')[0]
+    writer_str = writer_start.split('"}')[0]
 
     return _Writers.from_string(writer_str)
 
@@ -533,6 +597,7 @@ def _scrape(ctx, url):
         print(" - Writer is", writer)
 
     return _ShabadMetaData(
+        id=_ShabadMetaData.get_id(date),
         date=date,
         ang=ang,
         gurmukhi=shabad_lines,

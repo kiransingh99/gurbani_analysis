@@ -12,9 +12,9 @@
 __all__ = []
 
 from dataclasses import dataclass
+from datetime import datetime
 
 import enum
-from typing import Optional
 
 
 class Verbosity(enum.Enum):
@@ -92,3 +92,35 @@ class Error(Exception):
                 output += f"  - {step}\n"
 
         return output
+
+
+def datetime_to_str(date, format):
+    """
+    Converts a datetime object into a string of the given format.
+
+    :param date:
+        `datetime` object to be converted.
+
+    :param format:
+        Format of output date.
+
+    :return:
+        String representation of the given date.
+    """
+    return datetime.strftime(date, format)
+
+
+def str_to_datetime(date, format):
+    """
+    Converts a date string of the given format, to a `datetime` object.
+
+    :param date:
+        Date to be converted.
+
+    :param format:
+        Format of given date.
+
+    :return:
+        `datetime` object representing the given date.
+    """
+    return datetime.strptime(date, format)
