@@ -16,7 +16,7 @@ jobs:
           pip install black
       - name: Analyse code with black
         run: python tools/autoformat.py -v
-  Branch name:
+  Branch-name:
     runs-on: ubuntu-latest
     steps:
       - name: Pull git workspace
