@@ -16,9 +16,13 @@ RC_PASS=0
 RC_FAIL=1
 RC_ERROR=2
 
-EXCLUDE_DIR=".git/"
+declare -a EXCLUDE_DIR=(".git/" ".github/" "__pycache__/")
 
-CMD="grep -rni $FC_STRING --exclude-dir=$EXCLUDE_DIR"
+CMD="grep -rni $FC_STRING"
+
+for DIR in "${EXCLUDE_DIR[@]}"; do
+    CMD="${CMD} --exclude-dir=${DIR}"
+done
 
 OUTPUT="$($CMD)"
 RC="$?"
