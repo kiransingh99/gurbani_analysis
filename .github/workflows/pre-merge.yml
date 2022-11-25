@@ -1,0 +1,71 @@
+name: Pre-merge Checks
+
+on: [push]
+
+jobs:
+  autoformat:
+    name: Autoformat
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull git workspace
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black
+      - name: Analyse code with black
+        run: python tools/autoformat.py -v
+  branch-name:
+    name: Branch name
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull git workspace
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black
+      - name: Analyse code with black
+        run: python tools/autoformat.py -v
+  copyright:
+    name: Copyright notice
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull git workspace
+        uses: actions/checkout@v3
+      - name: Check formatting of copyright notices
+        run: python tools/copyright.py
+  fail-commit:
+    name: FAIL_COMMIT
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull git workspace
+        uses: actions/checkout@v3
+      - name: Set permissions on script
+        run: chmod u+x tools/fc_check
+      - name: Check for fail commit strings
+        run: tools/fc_check
+  pylint:
+    name: Pylint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10"]
+    steps:
+    - name: Pull git workspace
+      uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint
+    - name: Analyse the code with pylint
+      run: |
+        python tools/lint.py
