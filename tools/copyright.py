@@ -18,8 +18,11 @@ file in the repo. It should be formatted as follows:"""
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
-__all__ = []
+from __future__ import annotations
 
+__all__: list[str] = []
+
+from collections.abc import Generator
 from dataclasses import dataclass
 from datetime import date
 
@@ -29,7 +32,6 @@ import re
 import sys
 
 import cmn
-
 
 LINE_LENGTH = 80
 
@@ -55,7 +57,7 @@ class _LineMatchInfo:
     exp_line: str
 
 
-def _generate_expected(file_path):
+def _generate_expected(file_path: str) -> Generator[str, None, None]:
     """
     Generator that outputs each line of a correctly formatted copyright notice.
 
@@ -87,27 +89,30 @@ def _generate_expected(file_path):
         yield line
 
 
-def _run_check(args):
+def _run_check(args: argparse.Namespace) -> int:
     """
     Runs copyright checks on input parameters.
 
     :param args:
         Namespace object with args to run check on.
     """
+    failed = {}
+    line_number = 0
 
-    def read_line():
+    def read_line() -> str:
         nonlocal line_number
         line_number += 1
         return f_read.readline().strip("\n")
-
-    failed = {}
-    line_number = 0
 
     include_files = cmn.get_all_code_files()
 
     for file in include_files:
         line_number = 0
-        if os.stat(file).st_size == 0:
+        try:
+            if os.stat(file).st_size == 0:  # empty file
+                continue
+        except FileNotFoundError:
+            # If file has been deleted but git doesn't know yet
             continue
         with open(file, encoding="utf-8") as f_read:
             for exp_line in _generate_expected(file):
@@ -147,7 +152,7 @@ def _run_check(args):
         return _CopyrightCheckReturnCodes.SUCCESS
 
 
-def main():
+def main() -> None:
     """Main function for copyright checker CLI. Parses and handles CLI input."""
     parser = argparse.ArgumentParser(
         description="Check if all files have correctly formatted copyright checks. "

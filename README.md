@@ -11,6 +11,7 @@ The following packages are required for the mainline code to run:
 
 The following packages are required for the associated infra to run:
 * black
+* mypy
 * pylint
 
 ## Get involved
