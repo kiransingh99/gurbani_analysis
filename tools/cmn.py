@@ -9,12 +9,17 @@
 
 """Common objects for all tools scripts."""
 
+from __future__ import annotations
+
 __all__ = [
     "ReturnCodes",
     "get_all_code_files",
     "get_python_files",
     "handle_cli_error",
 ]
+
+from collections.abc import Iterable
+from typing import Optional
 
 import enum
 import re
@@ -26,14 +31,23 @@ class ReturnCodes(enum.IntEnum):
     """Subclass for all return code enums."""
 
     @classmethod
-    def get_error_codes(cls):
+    def get_error_codes(cls) -> list[int]:
         """Returns a list of all the known error code values."""
         return [error.value for error in cls]
 
 
-def get_all_code_files(untracked_files=False, root_dir="."):
+class WinErrorCodes(ReturnCodes):
+    """WINError codes."""
+
+    OK = 0
+    FILE_NOT_FOUND = 2
+
+
+def get_all_code_files(
+    untracked_files: bool = False, root_dir: str = "."
+) -> set[str]:
     """
-    Produces a set of source code files in the given directory.
+    Produces a set of source code files tracked by git, in the given directory.
 
     :param untracked_files:
         If True, files not tracked by git will be included in the search.
@@ -92,7 +106,9 @@ def get_all_code_files(untracked_files=False, root_dir="."):
     return filtered
 
 
-def get_python_files(untracked_files=False, root_dir="."):
+def get_python_files(
+    untracked_files: bool = False, root_dir: str = "."
+) -> set[str]:
     """
     Produces a set of python files in the given directory.
 
@@ -116,7 +132,12 @@ def get_python_files(untracked_files=False, root_dir="."):
     return filtered
 
 
-def handle_cli_error(known_return_codes, return_code, cmd, exc=None):
+def handle_cli_error(
+    known_return_codes: ReturnCodes,
+    return_code: int,
+    cmd: Iterable[str],
+    exc: Optional[Exception] = None,
+) -> None:
     """
     Handles the exception raised due to a failure occurring when running a CLI.
     If there's an unknown error code, an error message is printed to
@@ -142,9 +163,19 @@ def handle_cli_error(known_return_codes, return_code, cmd, exc=None):
     if return_code not in known_return_codes.get_error_codes():
         print(
             "\nAn unexpected error occurred when running the command:"
-            + {" ".join(cmd)}
+            + " ".join(cmd)
         )
         if exc:
             raise exc
 
     sys.exit(return_code)
+
+
+def handle_missing_package_error(package: str) -> None:
+    """
+    Handler for when a package is missing.
+
+    :param package:
+        Name of missing package.
+    """
+    print(f"Failed running command. Check `{package}` is installed.")
