@@ -1,4 +1,4 @@
-name: Pre-merge Checks
+name: Push Checks
 
 on: [push]
 
@@ -55,6 +55,8 @@ jobs:
     steps:
       - name: Pull git workspace
         uses: actions/checkout@v3
+      - name: Set permissions on script
+        run: chmod u+x tools/mypy
       - name: Check typing
         run: tools/mypy
   pylint:
