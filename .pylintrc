@@ -98,7 +98,7 @@ output-format=text
 reports=no
 
 # Activate the evaluation score.
-score=yes
+score=no
 
 
 [REFACTORING]
@@ -181,10 +181,12 @@ function-naming-style=snake_case
 #function-rgx=
 
 # Good variable names which should always be accepted, separated by a comma.
-good-names=i,
+good-names=f,
+           i,
            j,
            k,
            ex,
+           id,
            rc,
            Run,
            _
@@ -283,8 +285,9 @@ logging-modules=logging
 
 # List of note tags to take in consideration, separated by a comma.
 notes=FIXME,
+      TODO,
       XXX,
-      TODO
+      @@@
 
 # Regular expression of note tags to take in consideration.
 #notes-rgx=
@@ -299,7 +302,7 @@ ignore-comments=yes
 ignore-docstrings=yes
 
 # Ignore imports when computing similarities.
-ignore-imports=no
+ignore-imports=yes
 
 # Minimum lines number of a similarity.
 min-similarity-lines=4

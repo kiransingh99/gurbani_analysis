@@ -11,7 +11,10 @@
 Checks if the current branch has an appropriate name before merging into main.
 """
 
-__all__ = []
+from __future__ import annotations
+
+__all__: list[str] = []
+
 
 import re
 import subprocess
@@ -29,7 +32,7 @@ class _BranchNameReturnCodes(cmn.ReturnCodes):
     ERROR = 3
 
 
-def _check_branch_name_validity(branch_name):
+def _check_branch_name_validity(branch_name: str) -> int:
     """
     Checks the branch name and handles the following cases by outputting and
     setting an error code:
@@ -64,7 +67,7 @@ def _check_branch_name_validity(branch_name):
     return rc
 
 
-def _get_current_branch():
+def _get_current_branch() -> str:
     """
     Queries git to get the current branch name.
 
@@ -83,7 +86,7 @@ def _get_current_branch():
         return branch_name
 
 
-def main():
+def main() -> None:
     """Main function to check that the working branch has a valid name."""
     branch_name = _get_current_branch()
     rc = _check_branch_name_validity(branch_name)

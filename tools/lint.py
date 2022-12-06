@@ -9,7 +9,9 @@
 
 """Linter for python scripts in repo."""
 
-__all__ = []
+from __future__ import annotations
+
+__all__: list[str] = []
 
 import argparse
 import subprocess
@@ -40,7 +42,7 @@ class _PylintReturnCodes(cmn.ReturnCodes):
     # Error code 32 means a usage error was hit
 
 
-def _run_lint(args):
+def _run_lint(args: argparse.Namespace) -> None:
     """
     Runs pylint on python files in workspace.
 
@@ -49,15 +51,20 @@ def _run_lint(args):
     """
     include_files = cmn.get_python_files(args.untracked_files)
 
-    cmd = ["pylint"] + list(include_files)
+    cmd = ["python", "-m", "pylint"] + list(include_files)
 
     try:
         subprocess.run(cmd, check=True)
+    except FileNotFoundError as exc:
+        if exc.errno is cmn.WinErrorCodes.FILE_NOT_FOUND.value:
+            cmn.handle_missing_package_error("pylint")
+        else:
+            raise
     except subprocess.CalledProcessError as exc:
         cmn.handle_cli_error(_PylintReturnCodes, exc.returncode, exc.cmd, exc)
 
 
-def main():
+def main() -> None:
     """Main function for pylint CLI. Parses and handles CLI input."""
     parser = argparse.ArgumentParser(description="Run pylint on given files.")
     parser.add_argument(
