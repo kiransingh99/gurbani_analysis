@@ -55,6 +55,10 @@ jobs:
     steps:
       - name: Pull git workspace
         uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install mypy
       - name: Set permissions on script
         run: chmod u+x tools/mypy
       - name: Check typing
