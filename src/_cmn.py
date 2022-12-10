@@ -9,6 +9,8 @@
 
 """Common objects Gurbani Analysis CLI."""
 
+from __future__ import annotations
+
 __all__ = [
     "Error",
     "RC",
@@ -18,6 +20,7 @@ __all__ = [
 ]
 
 from datetime import datetime
+from typing import Optional
 
 import enum
 
@@ -27,11 +30,11 @@ class Error(Exception):
     Base error class for all errors in the Gurbani Analysis CLI.
     """
 
-    def __init__(self, msg, suggested_steps=None):
+    def __init__(self, msg: str, suggested_steps: Optional[list[str]] = None):
         self.msg = msg
         self.suggested_steps = suggested_steps
 
-    def __str__(self):
+    def __str__(self) -> str:
         output = "\nError: "
         output += self.msg + "\n"
         if self.suggested_steps:
@@ -52,7 +55,7 @@ class RC(enum.Enum):
     # Misc errors
     #
 
-    def is_ok(self):
+    def is_ok(self) -> bool:
         """
         Determines if error shows that an error has occurred.
 
@@ -72,7 +75,7 @@ class Verbosity(enum.Enum):
     VERBOSE = 2
     VERY_VERBOSE = 3
 
-    def is_suppressed(self):
+    def is_suppressed(self) -> bool:
         """
         Check if verbosity is suppressed.
 
@@ -81,7 +84,7 @@ class Verbosity(enum.Enum):
         """
         return self in [Verbosity.SUPPRESSED]
 
-    def is_very_verbose(self):
+    def is_very_verbose(self) -> bool:
         """
         Check if verbosity is very verbose.
 
@@ -90,7 +93,7 @@ class Verbosity(enum.Enum):
         """
         return self in [Verbosity.VERY_VERBOSE]
 
-    def is_verbose(self):
+    def is_verbose(self) -> bool:
         """
         Check if verbosity is either verbose or very verbose.
 
@@ -100,7 +103,7 @@ class Verbosity(enum.Enum):
         return self in [Verbosity.VERBOSE, Verbosity.VERY_VERBOSE]
 
 
-def datetime_to_str(date, date_format):
+def datetime_to_str(date: datetime, date_format: str) -> str:
     """
     Converts a datetime object into a string of the given format.
 
@@ -116,7 +119,7 @@ def datetime_to_str(date, date_format):
     return datetime.strftime(date, date_format)
 
 
-def str_to_datetime(date, date_format):
+def str_to_datetime(date: str, date_format: str) -> datetime:
     """
     Converts a date string of the given format, to a `datetime` object.
 

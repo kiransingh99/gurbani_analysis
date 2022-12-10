@@ -9,14 +9,19 @@
 
 """Parses requests for hukamnama parsing."""
 
+from __future__ import annotations
+
 __all__ = [
     "DataUpdate",
     "Function",
     "parse",
 ]
 
+from collections.abc import Generator, MutableSequence
+from typing import Any, Optional
 from urllib.request import Request, urlopen
 
+import argparse
 import dataclasses
 import datetime
 import enum
@@ -77,13 +82,13 @@ class _ShabadMetaData:
 
     id: int
     date: str
-    ang: int
-    gurmukhi: list
-    raag: str
-    writer: str
-    first_letter: str
+    ang: Optional[int]
+    gurmukhi: Optional[list]
+    raag: Optional[str]
+    writer: Optional[_Writers]
+    first_letter: Optional[str]
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """
         A necessary and sufficient condition to determine that two
         _ShabadMetaData objects represent the same shabad is if all the lines of
@@ -93,10 +98,12 @@ class _ShabadMetaData:
             True if the lines of the two hukamnamas are the same, False
             otherwise.
         """
+        if not isinstance(other, _ShabadMetaData):
+            return NotImplemented
         return self.gurmukhi == other.gurmukhi
 
     @classmethod
-    def get_id(cls, date):
+    def get_id(cls, date: str) -> int:
         """
         Generates a unique, sequential, integer ID for the date of the
         hukamnama.
@@ -108,7 +115,7 @@ class _ShabadMetaData:
         return difference.days + 1
 
     @classmethod
-    def get_keys(cls):
+    def get_keys(cls) -> list[str]:
         """
         Get a list of the attributes of this object.
 
@@ -117,7 +124,7 @@ class _ShabadMetaData:
         """
         return [item.name for item in dataclasses.fields(cls)]
 
-    def remove_data(self):
+    def remove_data(self) -> _ShabadMetaData:
         """
         Return a new _ShabadMetaData object without shabad-specific data. Only
         the ID and date are retained.
@@ -136,7 +143,7 @@ class _ShabadMetaData:
             first_letter=None,
         )
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         """
         Produces a dictionary that represents a shabad's metadata. Attributes
         with the value `None` are not included.
@@ -152,7 +159,7 @@ class _ShabadMetaData:
 
 
 class _WriterError(_cmn.Error):
-    def __init__(self, writer):
+    def __init__(self, writer: str):
         msg = f"The writer '{writer}' was not recognised."
         steps = [
             "Add a mapping for this writer to a value in the `_Writers` enum."
@@ -178,7 +185,7 @@ class _Writers(enum.IntEnum):
 
     # Gursikhs: 38-40
 
-    def __str__(self):
+    def __str__(self) -> str:
         names = {
             self.NANAK: "Guru Nanak Dev Ji",
             self.ANGAD: "Guru Angad Dev Ji",
@@ -193,7 +200,7 @@ class _Writers(enum.IntEnum):
         return names[self]
 
     @classmethod
-    def from_string(cls, name):
+    def from_string(cls, name: str) -> _Writers:
         """
         Converts a string with a single writer's name into a _Writers enum
         value.
@@ -231,7 +238,7 @@ class _Writers(enum.IntEnum):
         return obj
 
 
-def _data(ctx):
+def _data(ctx: argparse.Namespace) -> None:
     """
     Handler for all data requests to the Hukamnama CLI.
 
@@ -243,7 +250,7 @@ def _data(ctx):
         _update_database(ctx)
 
 
-def _get_ang(html):
+def _get_ang(html: str) -> int:
     """
     Gets the ang of the hukamnama from the HTML.
 
@@ -258,7 +265,7 @@ def _get_ang(html):
     return ang
 
 
-def _get_entry_dates(ctx):
+def _get_entry_dates(ctx: argparse.Namespace) -> list[datetime.datetime]:
     """
     Determines the dates already recorded in the database.
 
@@ -280,7 +287,7 @@ def _get_entry_dates(ctx):
     return dates
 
 
-def _get_first_letter(line):
+def _get_first_letter(line: str) -> str:
     """
     Gets the first letter of a line written in Gurmukhi. Usually just the first
     letter, except if the first letter is a sihaari, in which case it's the
@@ -298,7 +305,7 @@ def _get_first_letter(line):
     return line[0]
 
 
-def _get_most_recent_entry_date(ctx):
+def _get_most_recent_entry_date(ctx: argparse.Namespace) -> datetime.datetime:
     """
     Get the most recent entry recorded in the database.
 
@@ -312,7 +319,9 @@ def _get_most_recent_entry_date(ctx):
     return max(entry_dates)
 
 
-def _get_next_date(start, end):
+def _get_next_date(
+    start: datetime.datetime, end: datetime.datetime
+) -> Generator[datetime.datetime, None, None]:
     """
     Generates dates between the given start and end dates (inclusive) in order.
     Dates must be in YYYY-MM-DD format.
@@ -331,7 +340,7 @@ def _get_next_date(start, end):
         yield start + datetime.timedelta(days=days)
 
 
-def _get_raag(html):
+def _get_raag(html: str) -> str:
     """
     Gets the raag of the hukamnama from the HTML.
 
@@ -346,7 +355,7 @@ def _get_raag(html):
     return raag
 
 
-def _get_shabad(html):
+def _get_shabad(html: str) -> list[str]:
     """
     Gets the shabad from the HTML.
 
@@ -362,7 +371,9 @@ def _get_shabad(html):
     return shabad_lines
 
 
-def _get_start_and_end_dates(ctx):
+def _get_start_and_end_dates(
+    ctx: argparse.Namespace,
+) -> tuple[datetime.datetime, datetime.datetime]:
     """
     Determine when the search should start and finish.
 
@@ -389,7 +400,7 @@ def _get_start_and_end_dates(ctx):
     return start, end
 
 
-def _get_today_hukam(ctx):
+def _get_today_hukam(ctx: argparse.Namespace) -> _ShabadMetaData:
     """
     Get today's hukamnama.
 
@@ -403,7 +414,7 @@ def _get_today_hukam(ctx):
     return _scrape(ctx, _BASE_URL + _today_date_str)
 
 
-def _get_writer(html):
+def _get_writer(html: str) -> _Writers:
     """
     Gets the writer of the hukamnama from the HTML.
 
@@ -419,7 +430,7 @@ def _get_writer(html):
     return _Writers.from_string(writer_str)
 
 
-def _gurbani_ascii_to_unicode(letter):
+def _gurbani_ascii_to_unicode(letter: str) -> str:
     """
     Maps the ASCII character representing each letter to the unicode value. Only
     to be used for display purposes, as words, especially in Gurbani, do not
@@ -471,7 +482,7 @@ def _gurbani_ascii_to_unicode(letter):
     return mapping[letter]
 
 
-def _load_webpage_data(url):
+def _load_webpage_data(url: str) -> str:
     """
     Loads the website and gets the HTML source code.
 
@@ -487,7 +498,7 @@ def _load_webpage_data(url):
     return html
 
 
-def parse(ctx):
+def parse(ctx: argparse.Namespace) -> None:
     """
     Main handler for Hukamnama CLI. This is the API called by the main Gurbani
     Analysis CLI.
@@ -503,7 +514,9 @@ def parse(ctx):
         _data(ctx)
 
 
-def _remove_manglacharan(ctx, shabad_lines):
+def _remove_manglacharan(
+    ctx: argparse.Namespace, shabad_lines: MutableSequence[str]
+) -> list[str]:
     """
     Removes the manglacharan from the beginning of the shabad.
 
@@ -555,16 +568,16 @@ def _remove_manglacharan(ctx, shabad_lines):
         else:
             i += 1
 
-    return shabad_lines
+    return list(shabad_lines)
 
 
-def _reset_database():
+def _reset_database() -> None:
     """Resets the database to an empty string."""
     with open(_DATABASE, "w", encoding="utf-8") as f:
         f.write("[]")
 
 
-def _scrape(ctx, url):
+def _scrape(ctx: argparse.Namespace, url: str) -> _ShabadMetaData:
     """
     Scrapes data from the hukamnama.
 
@@ -622,7 +635,9 @@ def _scrape(ctx, url):
     )
 
 
-def _store_hukamnama(ctx, url, data):
+def _store_hukamnama(
+    ctx: argparse.Namespace, url: str, data: MutableSequence[dict[str, Any]]
+) -> None:
     """
     Scrapes and stores the hukamnama for a given date in the database.
 
@@ -645,7 +660,7 @@ def _store_hukamnama(ctx, url, data):
         f.write(json.dumps(data))
 
 
-def _update_database(ctx):
+def _update_database(ctx: argparse.Namespace) -> None:
     """
     Determines the dates to get hukamnamas for, and populates the database.
 
@@ -664,7 +679,7 @@ def _update_database(ctx):
 
         url = _BASE_URL + date_str
         with open(_DATABASE, "r", encoding="utf-8") as f:
-            data = json.loads(f.read())
+            data: list[dict[str, Any]] = json.loads(f.read())
         skip = False
         if (
             ctx.update is DataUpdate.UPDATE_FILL_GAPS

@@ -9,7 +9,11 @@
 
 """Main handler for Gurbani Analysis CLI."""
 
-__all__ = []
+from __future__ import annotations
+
+__all__ = [
+    "main",
+]
 
 import argparse
 import sys
@@ -18,7 +22,7 @@ import _cmn
 import _hukamnama
 
 
-def main():
+def main() -> None:
     """
     Main handler for Gurbani Analysis CLI. Calls callbacks based on the
     subcommand received.
