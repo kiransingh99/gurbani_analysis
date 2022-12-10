@@ -9,7 +9,9 @@
 
 """Checks for badly formatted code and optionally reformats it."""
 
-__all__ = []
+from __future__ import annotations
+
+__all__: list[str] = []
 
 import argparse
 import subprocess
@@ -23,9 +25,10 @@ class _BlackReturnCodes(cmn.ReturnCodes):
     NOTHING_TO_CHANGE = 0  # all files changed, or no files need to change
     NEED_TO_REFORMAT = 1
     FILE_DOES_NOT_EXIST = 2
+    COMMAND_NOT_FOUND = 127
 
 
-def _run_black(args):
+def _run_black(args: argparse.Namespace) -> None:
     """
     Runs `black` command based on input parameters.
 
@@ -33,7 +36,7 @@ def _run_black(args):
         Namespace object with args to run black with.
     """
 
-    cmd = ["black"]
+    cmd = ["python", "-m", "black"]
     if args.check:
         cmd.append("--check")
     if args.quiet:
@@ -56,11 +59,16 @@ def _run_black(args):
 
     try:
         subprocess.run(cmd, check=True)
+    except FileNotFoundError as exc:
+        if exc.errno is cmn.WinErrorCodes.FILE_NOT_FOUND.value:
+            cmn.handle_missing_package_error("black")
+        else:
+            raise
     except subprocess.CalledProcessError as exc:
         cmn.handle_cli_error(_BlackReturnCodes, exc.returncode, exc.cmd, exc)
 
 
-def main():
+def main() -> None:
     """Main function for autoformat CLI. Parses and handles CLI input"""
     parser = argparse.ArgumentParser(
         description="Run autoformat checks on given files. Optionally reformat the given files."
