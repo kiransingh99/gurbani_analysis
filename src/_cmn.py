@@ -101,35 +101,3 @@ class Verbosity(enum.Enum):
             True if verbosity is verbose or very verbose. False otherwise.
         """
         return self in [Verbosity.VERBOSE, Verbosity.VERY_VERBOSE]
-
-
-def datetime_to_str(date: datetime, date_format: str) -> str:
-    """
-    Converts a datetime object into a string of the given format.
-
-    :param date:
-        `datetime` object to be converted.
-
-    :param date_format:
-        Format of output date.
-
-    :return:
-        String representation of the given date.
-    """
-    return datetime.strftime(date, date_format)
-
-
-def str_to_datetime(date: str, date_format: str) -> datetime:
-    """
-    Converts a date string of the given format, to a `datetime` object.
-
-    :param date:
-        Date to be converted.
-
-    :param date_format:
-        Format of given date.
-
-    :return:
-        `datetime` object representing the given date.
-    """
-    return datetime.strptime(date, date_format)

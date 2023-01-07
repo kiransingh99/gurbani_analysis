@@ -26,15 +26,17 @@ import dataclasses
 import datetime
 import enum
 import json
+import os
 import re
 
 import _cmn
 
 _BASE_URL = "https://www.sikhnet.com/hukam/archive/"
-_DATABASE = "./artifacts/hukamnama.json"
+_DATABASE_PATH = "./artifacts/hukamnama/"
+_DATABASE_FILE_EXT = ".json"
 
 _DATE_FORMAT = "%Y-%m-%d"
-_FIRST_DATE = _cmn.str_to_datetime("2002-01-01", _DATE_FORMAT)
+_FIRST_DATE = "2002-01-01"
 _today_date = datetime.datetime.today()
 
 
@@ -66,6 +68,103 @@ class Function(enum.Enum):
     DATA = "data"
 
 
+class _Raags(enum.IntEnum):
+    """Raags of shabads"""
+    ASA = 4
+    GUJRI = 5
+    DEVGANDHARI = 6
+    BIHAGARA = 7
+    WADHANS = 8
+    SORATH = 9
+    DHANASARI = 10
+    JAITSARI = 11
+    TODI = 12
+    BAIRARI = 13
+    TILANG = 14
+    SUHI = 15
+    BILAAVAL = 16
+    GAUND = 17
+    RAMKALI = 18
+
+    def __str__(self) -> str:
+        raags = {
+            self.ASA: "Asa",
+            self.GUJRI: "Gujri",
+            self.DEVGANDHARI: "Devgandhari",
+            self.BIHAGARA: "Bihagra",
+            self.WADHANS: "Wadhans",
+            self.SORATH: "Sorath",
+            self.DHANASARI: "Dhanasari",
+            self.JAITSARI: "Jaitsari",
+            self.TODI: "Todi",
+            self.BAIRARI: "Bairari",
+            self.TILANG: "Tilang",
+            self.SUHI: "Suhi",
+            self.BILAAVAL: "Bilaaval",
+            self.GAUND: "Gaund",
+            self.RAMKALI: "Ramkali",
+        }
+        return raags[self]
+
+    @classmethod
+    def from_string(cls, raag: str) -> _Raags:
+        """
+        Converts a string with a single raag into a _Raags enum value.
+
+        :param raag:
+            String containing name of a raag.
+
+        :raises _Raags:
+            If a `raag` string could not be matched to a raag.
+
+        :return:
+            Enum value corresponding to the `raag` given.
+        """
+        if any(r == raag.lower() for r in ["asa"]):
+            obj = cls.ASA
+        elif any(r == raag.lower() for r in ["gujri"]):
+            obj = cls.GUJRI
+        elif any(r == raag.lower() for r in ["devgandhari"]):
+            obj = cls.DEVGANDHARI
+        elif any(r == raag.lower() for r in ["bihaagraa"]):
+            obj = cls.BIHAGARA
+        elif any(r == raag.lower() for r in ["vadhans"]):
+            obj = cls.WADHANS
+        elif any(r == raag.lower() for r in ["sorath"]):
+            obj = cls.SORATH
+        elif any(r == raag.lower() for r in ["dhanaasree"]):
+            obj = cls.DHANASARI
+        elif any(r == raag.lower() for r in ["jaithsree"]):
+            obj = cls.JAITSARI
+        elif any(r == raag.lower() for r in ["todee"]):
+            obj = cls.TODI
+        elif any(r == raag.lower() for r in ["bairari"]):
+            obj = cls.BAIRARI
+        elif any(r == raag.lower() for r in ["tilang"]):
+            obj = cls.TILANG
+        elif any(r == raag.lower() for r in ["soohee"]):
+            obj = cls.SUHI
+        elif any(r == raag.lower() for r in ["bilaaval"]):
+            obj = cls.BILAAVAL
+        elif any(r == raag.lower() for r in ["gond"]):
+            obj = cls.GAUND
+        elif any(r == raag.lower() for r in ["raamkalee"]):
+            obj = cls.RAMKALI
+        else:
+            raise _RaagError(raag)
+
+        return obj
+
+
+class _RaagError(_cmn.Error):
+    def __init__(self, raag: str):
+        msg = f"The raag '{raag}' was not recognised."
+        steps = [
+            "Add a mapping for this raag to a value in the `_Raag` enum."
+        ]
+        super().__init__(msg, steps)
+
+
 @dataclasses.dataclass(frozen=True)
 class _ShabadMetaData:
     """
@@ -84,7 +183,7 @@ class _ShabadMetaData:
     date: str
     ang: Optional[int]
     gurmukhi: Optional[list]
-    raag: Optional[str]
+    raag: Optional[_Raags]
     writer: Optional[_Writers]
     first_letter: Optional[str]
 
@@ -111,7 +210,7 @@ class _ShabadMetaData:
         :param date:
             Date of hukamnama as a string, formatted as `_DATE_FORMAT`.
         """
-        difference = _cmn.str_to_datetime(date, _DATE_FORMAT) - _FIRST_DATE
+        difference = _str_to_datetime(date) - _str_to_datetime(_FIRST_DATE)
         return difference.days + 1
 
     @classmethod
@@ -250,6 +349,31 @@ def _data(ctx: argparse.Namespace) -> None:
         _update_database(ctx)
 
 
+def _database_file_name(date):
+    """
+    Entries get stored in files based on the date the entry corresponds to.
+
+    :param date:
+        Date of data entry.
+
+    :return:
+        File name for this data entry.
+    """
+    return _DATABASE_PATH + str(date.year) + f'.{date.month:02d}' + _DATABASE_FILE_EXT
+
+
+def _datetime_to_str(date: datetime) -> str:
+    """
+    Converts a datetime object into a string of the given format.
+
+    :param date:
+        `datetime` object to be converted.
+
+    :return:
+        String representation of the given date.
+    """
+    return datetime.datetime.strftime(date, _DATE_FORMAT)
+
 def _get_ang(html: str) -> int:
     """
     Gets the ang of the hukamnama from the HTML.
@@ -275,15 +399,16 @@ def _get_entry_dates(ctx: argparse.Namespace) -> list[datetime.datetime]:
     :return:
         A list of dates included in the database.
     """
-    with open(_DATABASE, "r", encoding="utf-8") as f:
-        data = json.loads(f.read())
     dates = []
-    for entry in data:
-        try:
-            dates.append(_cmn.str_to_datetime(entry["date"], _DATE_FORMAT))
-        except KeyError:
-            if ctx.verbosity.is_very_verbose():
-                print("Missing 'date' entry for: ", entry)
+    for file in os.listdir(_DATABASE_PATH):
+        with open(os.path.join(_DATABASE_PATH, file), "r", encoding="utf-8") as f:
+            data = json.loads(f.read())
+        for entry in data:
+            try:
+                dates.append(_str_to_datetime(entry["date"]))
+            except KeyError:
+                if ctx.verbosity.is_very_verbose():
+                    print("Missing 'date' entry for: ", entry)
     return dates
 
 
@@ -340,7 +465,7 @@ def _get_next_date(
         yield start + datetime.timedelta(days=days)
 
 
-def _get_raag(html: str) -> str:
+def _get_raag(html: str) -> _Raags:
     """
     Gets the raag of the hukamnama from the HTML.
 
@@ -351,8 +476,8 @@ def _get_raag(html: str) -> str:
         The raag corresponding to the hukamnama.
     """
     raag_start = re.split(r'"raags":{"\d+":"Raag ', html)[1]
-    raag = raag_start.split('"}')[0]
-    return raag
+    raag_str = raag_start.split('"}')[0]
+    return _Raags.from_string(raag_str)
 
 
 def _get_shabad(html: str) -> list[str]:
@@ -383,7 +508,7 @@ def _get_start_and_end_dates(
     :return:
         Tuple of the correct start and end dates of the search.
     """
-    start = _FIRST_DATE
+    start = _str_to_datetime(_FIRST_DATE)
     end = _today_date
     if ctx.update is DataUpdate.WRITE:
         _reset_database()
@@ -394,8 +519,8 @@ def _get_start_and_end_dates(
     if ctx.verbosity.is_verbose():
         print(
             "Operating between dates: "
-            f"{_cmn.datetime_to_str(start, _DATE_FORMAT)} and "
-            f"{_cmn.datetime_to_str(end, _DATE_FORMAT)}"
+            f"{_datetime_to_str(start)} and "
+            f"{_datetime_to_str(end)}"
         )
     return start, end
 
@@ -410,7 +535,7 @@ def _get_today_hukam(ctx: argparse.Namespace) -> _ShabadMetaData:
     :return:
         _ShabadMetaData object corresponding to today's hukamnama
     """
-    _today_date_str = _cmn.datetime_to_str(_today_date, _DATE_FORMAT)
+    _today_date_str = _datetime_to_str(_today_date)
     return _scrape(ctx, _BASE_URL + _today_date_str)
 
 
@@ -572,9 +697,9 @@ def _remove_manglacharan(
 
 
 def _reset_database() -> None:
-    """Resets the database to an empty string."""
-    with open(_DATABASE, "w", encoding="utf-8") as f:
-        f.write("[]")
+    """Resets the database by removing the files."""
+    for file in os.listdir(_DATABASE_PATH):
+        os.remove(os.path.join(_DATABASE_PATH, file))
 
 
 def _scrape(ctx: argparse.Namespace, url: str) -> _ShabadMetaData:
@@ -656,9 +781,23 @@ def _store_hukamnama(
             print("Shabad is same as today's hukamnama. Skipping.")
         shabad = shabad.remove_data()
     data.append(shabad.to_dict())
-    with open(_DATABASE, "w", encoding="utf-8") as f:
+    if not os.path.exists(_DATABASE_PATH):
+        os.makedirs(_DATABASE_PATH)
+    with open(_database_file_name(_str_to_datetime(shabad.date)), "w+", encoding="utf-8") as f:
         f.write(json.dumps(data))
 
+
+def _str_to_datetime(date: str) -> datetime.datetime:
+    """
+    Converts a date string of the given format, to a `datetime` object.
+
+    :param date:
+        Date to be converted.
+
+    :return:
+        `datetime` object representing the given date.
+    """
+    return datetime.datetime.strptime(date, _DATE_FORMAT)
 
 def _update_database(ctx: argparse.Namespace) -> None:
     """
@@ -670,7 +809,7 @@ def _update_database(ctx: argparse.Namespace) -> None:
     start, end = _get_start_and_end_dates(ctx)
 
     for date in _get_next_date(start, end):
-        date_str = _cmn.datetime_to_str(date, _DATE_FORMAT)
+        date_str = _datetime_to_str(date)
         if not ctx.verbosity.is_suppressed():
             if date.day == 1:
                 if date.month == 1:
@@ -678,8 +817,10 @@ def _update_database(ctx: argparse.Namespace) -> None:
                 print("   new month: ", date.month)
 
         url = _BASE_URL + date_str
-        with open(_DATABASE, "r", encoding="utf-8") as f:
-            data: list[dict[str, Any]] = json.loads(f.read())
+        data: list[dict[str, Any]] = []
+        if os.path.isfile(_database_file_name(date)):
+            with open(_database_file_name(date), "r", encoding="utf-8") as f:
+                data = json.loads(f.read())
         skip = False
         if (
             ctx.update is DataUpdate.UPDATE_FILL_GAPS
