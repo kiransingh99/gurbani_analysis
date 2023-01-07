@@ -15,11 +15,34 @@ __all__ = [
     "main",
 ]
 
+
+from typing import Optional
+
 import argparse
 import sys
+import traceback
 
 import _cmn
 import _hukamnama
+
+
+def _exit(rc: _cmn.RC, exc: Optional[_cmn.Error] = None) -> None:
+    """
+    Exit script with given return code, optionally raising an exception.
+
+    :param rc:
+        Return code from script.
+
+    :param exc:
+        Raise this exception, if given.
+    """
+    try:
+        if exc:
+            raise exc
+    except Exception:
+        print(exc)
+    finally:
+        sys.exit(int(rc.value))
 
 
 def main() -> None:
@@ -107,20 +130,31 @@ def main() -> None:
     args = parser.parse_args()
 
     # Defaults
-    if args.verbosity is None:
+    if not hasattr(args, "verbosity") or args.verbosity is None:
         args.verbosity = _cmn.Verbosity.STANDARD
 
+    exception = None
+
     if rc.is_ok():
-        subparser = None
         if args.composition == "hukamnama":
             subparser = _hukamnama
 
-        if subparser is not None:
-            rc = subparser.parse(args)
+            try:
+                rc = subparser.parse(args)
+            except KeyboardInterrupt:
+                pass
+            except NotImplementedError:
+                rc = _cmn.RC.NOT_IMPLEMENTED
+                exception = _cmn.NotImplementedException(traceback.format_exc())
+            except Exception as exc:
+                rc = _cmn.RC.UNHANDLED_ERROR
+                exception = exc
+                exception = _cmn.UnhandledExceptionError(traceback.format_exc())
+                # raise _cmn.UnhandledExceptionError(traceback.format_exc()) from None
         else:
-            raise NotImplementedError
+            parser.print_help()
 
-    sys.exit(rc)
+    _exit(rc, exception)
 
 
 if __name__ == "__main__":

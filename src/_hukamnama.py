@@ -186,6 +186,7 @@ class _ShabadMetaData:
     raag: Optional[_Raags]
     writer: Optional[_Writers]
     first_letter: Optional[str]
+    needs_verification: bool = False
 
     def __eq__(self, other: object) -> bool:
         """
@@ -240,6 +241,7 @@ class _ShabadMetaData:
             raag=None,
             writer=None,
             first_letter=None,
+            needs_verification=True,
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -344,6 +346,8 @@ def _data(ctx: argparse.Namespace) -> None:
     :param ctx:
         Context about the original instruction.
     """
+    if ctx.verbosity.is_very_verbose():
+        print("Setting today's date as", _today_date)
 
     if ctx.update is not None:
         _update_database(ctx)
@@ -632,9 +636,6 @@ def parse(ctx: argparse.Namespace) -> None:
         Context received from the Gurbani Analysis CLI. Namespace object
         containing the args received by the CLI.
     """
-    if ctx.verbosity.is_very_verbose():
-        print("Setting today's date as", _today_date)
-
     if ctx.function == Function.DATA.value:
         _data(ctx)
 
@@ -839,7 +840,7 @@ def _update_database(ctx: argparse.Namespace) -> None:
                         )
                     continue
                 if entry["date"] == date_str:
-                    if [*entry] == _ShabadMetaData.get_keys():
+                    if [*entry] == _ShabadMetaData.get_keys() and not entry["needs_verification"]:
                         # Fields are all up to date
                         skip = True
                     else:

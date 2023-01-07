@@ -15,11 +15,8 @@ __all__ = [
     "Error",
     "RC",
     "Verbosity",
-    "datetime_to_str",
-    "str_to_datetime",
 ]
 
-from datetime import datetime
 from typing import Optional
 
 import enum
@@ -45,15 +42,27 @@ class Error(Exception):
         return output
 
 
+class NotImplementedException(Error):
+    def __init__(self, traceback: str):
+        msg = "This code path was not implemented.\n" + traceback
+        suggested_steps = [
+            "Contact the developers and explain the steps to recreate this error."
+        ]
+        super().__init__(msg, suggested_steps)
+
+
 class RC(enum.Enum):
     """
     Return codes that can be output from this script.
     """
 
-    SUCCESS = "000"
+    SUCCESS = "00"
 
     # Misc errors
-    #
+    UNHANDLED_ERROR = "10"
+
+    # Development errors
+    NOT_IMPLEMENTED = "90"
 
     def is_ok(self) -> bool:
         """
@@ -63,6 +72,12 @@ class RC(enum.Enum):
             True if error code does not signify an error, False otherwise.
         """
         return self in [self.SUCCESS]
+
+
+class UnhandledExceptionError(Error):
+    def __init__(self, msg: str = None):
+        msg = "The following exception was not handled:\n" + msg
+        super().__init__(msg)
 
 
 class Verbosity(enum.Enum):
