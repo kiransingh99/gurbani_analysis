@@ -29,6 +29,7 @@ from datetime import date
 import argparse
 import os
 import re
+import subprocess
 import sys
 
 import cmn
@@ -71,6 +72,17 @@ def _generate_expected(file_path: str) -> Generator[str, None, None]:
     notice_start_end = r"^# [-]{78}$"
     blank_line = r"^#$"
 
+    edit_dates = subprocess.run(
+        ["git", "log", "--format=%ci", "./" + file_path],
+        capture_output=True,
+    ).stdout.decode("utf-8").strip().split("\n")
+    created = edit_dates[-1][:4]
+    last_edited = edit_dates[0][:4]
+    if created == last_edited:
+        date_range = created
+    else:
+        date_range = created + " - " + last_edited
+
     # pylint: disable=line-too-long
     exp = [
         notice_start_end,
@@ -79,12 +91,13 @@ def _generate_expected(file_path: str) -> Generator[str, None, None]:
         r"^# (January|February|March|April|May|June|July|August|September|October|November|December)"
         r" 20[0-9]{2}, [A-Za-z -]+$",
         blank_line,
-        rf"^# Copyright \(c\) (20[0-9]{{2}} - ){{0,1}}{date.today().year}$",
+        rf"^# Copyright \(c\) {date_range}$",
         r"^# All rights reserved.$",
         notice_start_end,
     ]
     # pylint: enable=line-too-long
 
+    breakpoint()
     for line in exp:
         yield line
 
