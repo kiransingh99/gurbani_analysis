@@ -180,6 +180,7 @@ def handle_missing_package_error(package: str) -> None:
     """
     print(f"Failed running command. Check `{package}` is installed.")
 
+
 def month_name_from_num(index: int) -> str:
     """
     Converts a number into the corresponding month.
@@ -202,7 +203,7 @@ def month_name_from_num(index: int) -> str:
         "September",
         "October",
         "November",
-        "December"
-        ]
+        "December",
+    ]
 
-    return months[index-1]
+    return months[index - 1]
