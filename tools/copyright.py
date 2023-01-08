@@ -81,6 +81,7 @@ def _generate_expected(file_path: str) -> Generator[str, None, None]:
         .strip()
         .split("\n")
     )
+    print(edit_dates)
     created_month = cmn.month_name_from_num(int(edit_dates[-1][5:7]))
     created_year = edit_dates[-1][:4]
     last_edited_year = edit_dates[0][:4]
