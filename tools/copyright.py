@@ -24,7 +24,6 @@ __all__: list[str] = []
 
 from collections.abc import Generator
 from dataclasses import dataclass
-from datetime import date
 
 import argparse
 import os
@@ -76,6 +75,7 @@ def _generate_expected(file_path: str) -> Generator[str, None, None]:
         subprocess.run(
             ["git", "log", "--format=%ci", "./" + file_path],
             capture_output=True,
+            check=True,
         )
         .stdout.decode("utf-8")
         .strip()
