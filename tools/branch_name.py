@@ -41,7 +41,7 @@ def _check_branch_name_validity(branch_name: str) -> int:
     - invalid (non-main)
     """
 
-    if re.fullmatch(r"GA\d+\.[A-Za-z0-9-.]+", branch_name):
+    if re.fullmatch(r"GA\d+\.[A-Za-z0-9-_.]+", branch_name):
         rc = _BranchNameReturnCodes.SUCCESS
         print(
             "Branch name is valid. "
@@ -58,6 +58,13 @@ def _check_branch_name_validity(branch_name: str) -> int:
         print(
             "Branch name is invalid. Branch name must be of the format:\n"
             "    GA<issue number>.<hyphenated-description-of-issue>\n"
+        )
+        print(
+            "Permitted characters in the description are:\n"
+            "- Alphanumeric characters\n"
+            "- Hyphen (-)\n"
+            "- Underscore (_)\n"
+            "- Full stop (.)\n"
         )
         print("Resolve by doing the following:")
         print("    1. `git branch -m <new-branch>`")
