@@ -16,6 +16,7 @@ __all__ = [
     "get_all_code_files",
     "get_python_files",
     "handle_cli_error",
+    "month_name_from_num",
 ]
 
 from collections.abc import Iterable
