@@ -26,7 +26,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
       - name: Check branch name
-        run: python tools/branch_name
+        run: python tools/branch_name.py
   copyright:
     name: Copyright notice
     runs-on: ubuntu-latest
