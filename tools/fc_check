@@ -2,7 +2,7 @@
 # ------------------------------------------------------------------------------
 # fc_check - Check for string literal to block github merge into main.
 #
-# September 2022, Gurkiran Singh
+# August 2022, Gurkiran Singh
 #
 # Copyright (c) 2022
 # All rights reserved.

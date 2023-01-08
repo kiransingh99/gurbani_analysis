@@ -179,3 +179,30 @@ def handle_missing_package_error(package: str) -> None:
         Name of missing package.
     """
     print(f"Failed running command. Check `{package}` is installed.")
+
+def month_name_from_num(n: int) -> str:
+    """
+    Converts a number into the corresponding month.
+
+    :param n:
+        Number between 1 and 12.
+
+    :return:
+        Month name corresponding to input.
+    """
+    months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+        ]
+
+    return months[n-1]
