@@ -180,11 +180,11 @@ def handle_missing_package_error(package: str) -> None:
     """
     print(f"Failed running command. Check `{package}` is installed.")
 
-def month_name_from_num(n: int) -> str:
+def month_name_from_num(index: int) -> str:
     """
     Converts a number into the corresponding month.
 
-    :param n:
+    :param index:
         Number between 1 and 12.
 
     :return:
@@ -205,4 +205,4 @@ def month_name_from_num(n: int) -> str:
         "December"
         ]
 
-    return months[n-1]
+    return months[index-1]
