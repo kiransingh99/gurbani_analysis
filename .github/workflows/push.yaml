@@ -34,7 +34,7 @@ jobs:
       - name: Pull git workspace
         uses: actions/checkout@v3
       - name: Check formatting of copyright notices
-        run: python tools/copyright.py
+        run: python tools/copyright.py -r
   fail-commit:
     name: FAIL_COMMIT
     runs-on: ubuntu-latest
