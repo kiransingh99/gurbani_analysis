@@ -30,11 +30,11 @@ class _MypyReturnCodes(cmn.ReturnCodes):
     COMMAND_NOT_FOUND = 200
 
 
-def _run_mypy(args: argparse.Namespace) -> int:
+def _run_mypy(_: argparse.Namespace) -> int:
     """
     Runs mypy on python files in workspace.
 
-    :param args:
+    :param _:
         Namespace object with args to run mypy with.
 
     :return:
