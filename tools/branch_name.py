@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # ------------------------------------------------------------------------------
 # branch_name.py - Check that the branch name is valid.
 #
