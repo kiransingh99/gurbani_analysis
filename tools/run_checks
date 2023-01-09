@@ -8,8 +8,8 @@
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
-TESTS=("Autoformat" "Copyright check" "Fail commit string check" "Lint" "Mypy")
-CMDS=("python tools/autoformat.py" "python tools/copyright.py" "tools/fc_check" "python tools/lint.py" "tools/mypy")
+TESTS=("Autoformat" "Branch name" "Copyright check" "Fail commit string check" "Lint" "Mypy")
+CMDS=("./tools/autoformat.py" "./tools/branch_name.py" "./tools/copyright.py" "./tools/fc_check" "./tools/lint.py" "./tools/mypy.py")
 
 
 echo "Running checks:"

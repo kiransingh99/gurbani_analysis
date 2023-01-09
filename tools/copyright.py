@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # ------------------------------------------------------------------------------
 # copyright.py - Script to check for correctly formatted copyright notices
 #
@@ -142,7 +143,7 @@ def _run_check(args: argparse.Namespace) -> int:
                     )
                     break
 
-    if failed:  # pylint: disable=no-else-return
+    if failed:
         print(
             "Copyright notice checks failed! "
             "The following files need to be fixed:"
@@ -158,13 +159,15 @@ def _run_check(args: argparse.Namespace) -> int:
                     f"   - {file}:{line_info.line_number}:    `{line_info.act_line}`"
                 )
 
-        return _CopyrightCheckReturnCodes.CHANGES_REQUIRED
+        rc = _CopyrightCheckReturnCodes.CHANGES_REQUIRED
     else:
         print(
             "Copyright notice checks succeeded! "
             "However, a manual confirmation is always recommended."
         )
-        return _CopyrightCheckReturnCodes.SUCCESS
+        rc = _CopyrightCheckReturnCodes.SUCCESS
+
+    return rc
 
 
 def main() -> None:
@@ -184,7 +187,8 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    sys.exit(_run_check(args))
+    rc = _run_check(args)
+    sys.exit(rc)
 
 
 if __name__ == "__main__":

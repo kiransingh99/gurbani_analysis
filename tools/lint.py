@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # ------------------------------------------------------------------------------
 # lint.py - Run pylint
 #
@@ -15,11 +16,12 @@ __all__: list[str] = []
 
 import argparse
 import subprocess
+import sys
 
 import cmn
 
 
-class _PylintReturnCodes(cmn.ReturnCodes):
+class _LintReturnCodes(cmn.ReturnCodes):
     """Return codes that can be received from pylint."""
 
     SUCCESS = 0
@@ -39,29 +41,40 @@ class _PylintReturnCodes(cmn.ReturnCodes):
     ERROR_REFACTOR_CONVENTION = 26
     WARNING_REFACTOR_CONVENTION = 28
     ERROR_WARNING_REFACTOR_CONVENTION = 30
-    # Error code 32 means a usage error was hit
+    USAGE_ERROR = 32
+
+    COMMAND_NOT_FOUND = 200
 
 
-def _run_lint(args: argparse.Namespace) -> None:
+def _run_lint(args: argparse.Namespace) -> int:
     """
     Runs pylint on python files in workspace.
 
     :param args:
         Namespace object with args to run lint with.
+
+    :return:
+        Return code from CLI.
     """
+    rc = _LintReturnCodes.SUCCESS
+
     include_files = cmn.get_python_files(args.untracked_files)
 
-    cmd = ["python", "-m", "pylint"] + list(include_files)
+    cmd = [cmn.which_python(), "-m", "pylint"] + list(include_files)
 
     try:
         subprocess.run(cmd, check=True)
     except FileNotFoundError as exc:
         if exc.errno is cmn.WinErrorCodes.FILE_NOT_FOUND.value:
-            cmn.handle_missing_package_error("pylint")
+            cmn.handle_missing_package_error(exc.filename)
+            rc = _LintReturnCodes.COMMAND_NOT_FOUND
         else:
             raise
     except subprocess.CalledProcessError as exc:
-        cmn.handle_cli_error(_PylintReturnCodes, exc.returncode, exc.cmd, exc)
+        cmn.handle_cli_error(_LintReturnCodes, exc.returncode, exc.cmd, exc)
+        rc = _LintReturnCodes.USAGE_ERROR
+
+    return rc
 
 
 def main() -> None:
@@ -77,7 +90,8 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    _run_lint(args)
+    rc = _run_lint(args)
+    sys.exit(rc)
 
 
 if __name__ == "__main__":
