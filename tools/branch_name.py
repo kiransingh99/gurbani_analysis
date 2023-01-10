@@ -1,9 +1,10 @@
+#!/usr/bin/python3
 # ------------------------------------------------------------------------------
 # branch_name.py - Check that the branch name is valid.
 #
 # October 2022, Gurkiran Singh
 #
-# Copyright (c) 2022
+# Copyright (c) 2022 - 2023
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
@@ -27,9 +28,9 @@ class _BranchNameReturnCodes(cmn.ReturnCodes):
     """Possible exit codes from this branch name checker."""
 
     SUCCESS = 0
-    MAIN = 1
-    INVALID_BRANCH = 2
-    ERROR = 3
+    MAIN = 0
+    INVALID_BRANCH = 1
+    ERROR = 2
 
 
 def _check_branch_name_validity(branch_name: str) -> int:
@@ -41,7 +42,7 @@ def _check_branch_name_validity(branch_name: str) -> int:
     - invalid (non-main)
     """
 
-    if re.fullmatch(r"GA\d+\.[A-Za-z0-9-.]+", branch_name):
+    if re.fullmatch(r"GA\d+\.[A-Za-z0-9-_.]+", branch_name):
         rc = _BranchNameReturnCodes.SUCCESS
         print(
             "Branch name is valid. "
@@ -50,7 +51,7 @@ def _check_branch_name_validity(branch_name: str) -> int:
     elif branch_name == "main":
         rc = _BranchNameReturnCodes.MAIN
         print(
-            "Oops! Still on `main`. Move your changes to a new branch by doing:\n"
+            "Still on `main`. Move your changes to a new branch by doing:\n"
             "    `git checkout -b <new-branch>"
         )
     else:
@@ -58,6 +59,13 @@ def _check_branch_name_validity(branch_name: str) -> int:
         print(
             "Branch name is invalid. Branch name must be of the format:\n"
             "    GA<issue number>.<hyphenated-description-of-issue>\n"
+        )
+        print(
+            "Permitted characters in the description are:\n"
+            "- Alphanumeric characters\n"
+            "- Hyphen (-)\n"
+            "- Underscore (_)\n"
+            "- Full stop (.)\n"
         )
         print("Resolve by doing the following:")
         print("    1. `git branch -m <new-branch>`")

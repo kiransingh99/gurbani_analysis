@@ -1,9 +1,10 @@
+#!/usr/bin/python3
 # ------------------------------------------------------------------------------
 # copyright.py - Script to check for correctly formatted copyright notices
 #
-# August 2022, Gurkiran Singh
+# September 2022, Gurkiran Singh
 #
-# Copyright (c) 2022
+# Copyright (c) 2022 - 2023
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
@@ -24,11 +25,11 @@ __all__: list[str] = []
 
 from collections.abc import Generator
 from dataclasses import dataclass
-from datetime import date
 
 import argparse
 import os
 import re
+import subprocess
 import sys
 
 import cmn
@@ -71,19 +72,34 @@ def _generate_expected(file_path: str) -> Generator[str, None, None]:
     notice_start_end = r"^# [-]{78}$"
     blank_line = r"^#$"
 
-    # pylint: disable=line-too-long
+    edit_dates = (
+        subprocess.run(
+            ["git", "log", "--format=%ci", "./" + file_path],
+            capture_output=True,
+            check=True,
+        )
+        .stdout.decode("utf-8")
+        .strip()
+        .split("\n")
+    )
+    created_month = cmn.month_name_from_num(int(edit_dates[-1][5:7]))
+    created_year = edit_dates[-1][:4]
+    last_edited_year = edit_dates[0][:4]
+    if created_year == last_edited_year:
+        date_range = created_year
+    else:
+        date_range = created_year + " - " + last_edited_year
+
     exp = [
         notice_start_end,
         rf"^# {file_name} - .+$",
         blank_line,
-        r"^# (January|February|March|April|May|June|July|August|September|October|November|December)"
-        r" 20[0-9]{2}, [A-Za-z -]+$",
+        rf"^# {created_month} {created_year}, [A-Za-z -]+$",
         blank_line,
-        rf"^# Copyright \(c\) (20[0-9]{{2}} - ){{0,1}}{date.today().year}$",
+        rf"^# Copyright \(c\) {date_range}$",
         r"^# All rights reserved.$",
         notice_start_end,
     ]
-    # pylint: enable=line-too-long
 
     for line in exp:
         yield line
@@ -127,7 +143,7 @@ def _run_check(args: argparse.Namespace) -> int:
                     )
                     break
 
-    if failed:  # pylint: disable=no-else-return
+    if failed:
         print(
             "Copyright notice checks failed! "
             "The following files need to be fixed:"
@@ -143,13 +159,15 @@ def _run_check(args: argparse.Namespace) -> int:
                     f"   - {file}:{line_info.line_number}:    `{line_info.act_line}`"
                 )
 
-        return _CopyrightCheckReturnCodes.CHANGES_REQUIRED
+        rc = _CopyrightCheckReturnCodes.CHANGES_REQUIRED
     else:
         print(
             "Copyright notice checks succeeded! "
             "However, a manual confirmation is always recommended."
         )
-        return _CopyrightCheckReturnCodes.SUCCESS
+        rc = _CopyrightCheckReturnCodes.SUCCESS
+
+    return rc
 
 
 def main() -> None:
@@ -169,7 +187,8 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    sys.exit(_run_check(args))
+    rc = _run_check(args)
+    sys.exit(rc)
 
 
 if __name__ == "__main__":

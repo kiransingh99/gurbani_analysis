@@ -25,18 +25,17 @@ jobs:
         uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v3
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install black
-      - name: Analyse code with black
-        run: python tools/autoformat.py -v
+      - name: Check branch name
+        run: python tools/branch_name.py
   copyright:
     name: Copyright notice
     runs-on: ubuntu-latest
     steps:
       - name: Pull git workspace
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
       - name: Check formatting of copyright notices
         run: python tools/copyright.py
   fail-commit:
@@ -45,8 +44,6 @@ jobs:
     steps:
       - name: Pull git workspace
         uses: actions/checkout@v3
-      - name: Set permissions on script
-        run: chmod u+x tools/fc_check
       - name: Check for fail commit strings
         run: tools/fc_check
   mypy:
@@ -59,10 +56,8 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install mypy
-      - name: Set permissions on script
-        run: chmod u+x tools/mypy
       - name: Check typing
-        run: tools/mypy
+        run: tools/mypy.py
   pylint:
     name: Pylint
     runs-on: ubuntu-latest
@@ -80,6 +75,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pylint
+        pip install typing-extensions --upgrade
     - name: Analyse the code with pylint
       run: |
         python tools/lint.py

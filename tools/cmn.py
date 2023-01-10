@@ -3,7 +3,7 @@
 #
 # September 2022, Gurkiran Singh
 #
-# Copyright (c) 2022
+# Copyright (c) 2022 - 2023
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
@@ -16,6 +16,8 @@ __all__ = [
     "get_all_code_files",
     "get_python_files",
     "handle_cli_error",
+    "month_name_from_num",
+    "which_python",
 ]
 
 from collections.abc import Iterable
@@ -179,3 +181,51 @@ def handle_missing_package_error(package: str) -> None:
         Name of missing package.
     """
     print(f"Failed running command. Check `{package}` is installed.")
+
+
+def month_name_from_num(index: int) -> str:
+    """
+    Converts a number into the corresponding month.
+
+    :param index:
+        Number between 1 and 12.
+
+    :return:
+        Month name corresponding to input.
+    """
+    months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ]
+
+    return months[index - 1]
+
+
+def which_python() -> str:
+    """
+    Determine how to invoke python 3.
+
+    :return:
+        Correct invocation of python on the running computer.
+    """
+    options = ["python3", "python"]
+
+    for option in options:
+        try:
+            subprocess.run(["which", option], capture_output=True, check=True)
+        except subprocess.CalledProcessError:
+            pass
+        else:
+            return option
+
+    raise FileNotFoundError  # can't find python on this system

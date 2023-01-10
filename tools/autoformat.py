@@ -1,9 +1,10 @@
+#!/usr/bin/python3
 # ------------------------------------------------------------------------------
 # autoformat.py - Script to check for correctly formatted code
 #
 # August 2022, Gurkiran Singh
 #
-# Copyright (c) 2022
+# Copyright (c) 2022 - 2023
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
@@ -15,11 +16,12 @@ __all__: list[str] = []
 
 import argparse
 import subprocess
+import sys
 
 import cmn
 
 
-class _BlackReturnCodes(cmn.ReturnCodes):
+class _AutoformatReturnCodes(cmn.ReturnCodes):
     """Return codes that can be received from black."""
 
     NOTHING_TO_CHANGE = 0  # all files changed, or no files need to change
@@ -27,16 +29,21 @@ class _BlackReturnCodes(cmn.ReturnCodes):
     FILE_DOES_NOT_EXIST = 2
     COMMAND_NOT_FOUND = 127
 
+    CLI_ERROR = 200
 
-def _run_black(args: argparse.Namespace) -> None:
+
+def _run_black(args: argparse.Namespace) -> int:
     """
     Runs `black` command based on input parameters.
 
     :param args:
         Namespace object with args to run black with.
+
+    :return:
+        Return code.
     """
 
-    cmd = ["python", "-m", "black"]
+    cmd = [cmn.which_python(), "-m", "black"]
     if args.check:
         cmd.append("--check")
     if args.quiet:
@@ -58,14 +65,20 @@ def _run_black(args: argparse.Namespace) -> None:
         print(f"Running: {' '.join(cmd)}\n")
 
     try:
-        subprocess.run(cmd, check=True)
+        rc = subprocess.run(cmd, check=True).returncode
     except FileNotFoundError as exc:
         if exc.errno is cmn.WinErrorCodes.FILE_NOT_FOUND.value:
-            cmn.handle_missing_package_error("black")
+            cmn.handle_missing_package_error(exc.filename)
+            rc = _AutoformatReturnCodes.COMMAND_NOT_FOUND
         else:
             raise
     except subprocess.CalledProcessError as exc:
-        cmn.handle_cli_error(_BlackReturnCodes, exc.returncode, exc.cmd, exc)
+        cmn.handle_cli_error(
+            _AutoformatReturnCodes, exc.returncode, exc.cmd, exc
+        )
+        rc = _AutoformatReturnCodes.CLI_ERROR
+
+    return rc
 
 
 def main() -> None:
@@ -109,7 +122,8 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    _run_black(args)
+    rc = _run_black(args)
+    sys.exit(rc)
 
 
 if __name__ == "__main__":
