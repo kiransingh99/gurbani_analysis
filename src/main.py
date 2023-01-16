@@ -1,9 +1,9 @@
 # ------------------------------------------------------------------------------
 # main.py - Main handler for Gurbani Analysis CLI
 #
-# October 2022, Gurkiran Singh
+# August 2022, Gurkiran Singh
 #
-# Copyright (c) 2022
+# Copyright (c) 2022 - 2023
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
@@ -150,7 +150,6 @@ def main() -> None:
                 rc = _cmn.RC.UNHANDLED_ERROR
                 exception = exc
                 exception = _cmn.UnhandledExceptionError(traceback.format_exc())
-                # raise _cmn.UnhandledExceptionError(traceback.format_exc()) from None
         else:
             parser.print_help()
 

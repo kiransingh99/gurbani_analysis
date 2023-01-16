@@ -1,9 +1,9 @@
 # ------------------------------------------------------------------------------
 # _cmn.py - Common file for Gurbani Analysis CLI
 #
-# October 2022, Gurkiran Singh
+# November 2022, Gurkiran Singh
 #
-# Copyright (c) 2022
+# Copyright (c) 2022 - 2023
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
@@ -17,9 +17,10 @@ __all__ = [
     "Verbosity",
 ]
 
-from typing import Optional
+from typing import Any, Optional
 
 import enum
+import logging
 
 
 class Error(Exception):
@@ -43,6 +44,8 @@ class Error(Exception):
 
 
 class NotImplementedException(Error):
+    """Custom error type for unimplemented code."""
+
     def __init__(self, traceback: str):
         msg = "This code path was not implemented.\n" + traceback
         suggested_steps = [
@@ -75,9 +78,58 @@ class RC(enum.Enum):
 
 
 class UnhandledExceptionError(Error):
-    def __init__(self, msg: str = None):
+    """
+    Custom error type to reraise when there's an unhandled exception raised by
+    an imported library.
+    """
+
+    def __init__(self, msg: str):
         msg = "The following exception was not handled:\n" + msg
         super().__init__(msg)
+
+
+class Logger:
+    """
+    Handles logging for the CLI.
+    """
+
+    def __init__(self, name: str):
+        self.logger = logging.Logger(name)
+        self.handler = logging.StreamHandler()
+        self.logger.addHandler(self.handler)
+
+    def set_level(self, level: Verbosity) -> None:
+        """
+        Set the level of the logger.
+
+        :param level:
+            Verbosity of logging output.
+        """
+        self.handler.setLevel(level.value)
+
+    def suppressed(self, *msg: Any) -> None:
+        """Suppressed level logging."""
+        self.logger.log(
+            Verbosity.SUPPRESSED.value, " ".join(str(item) for item in msg)
+        )
+
+    def standard(self, *msg: str) -> None:
+        """Standard level logging."""
+        self.logger.log(
+            Verbosity.STANDARD.value, " ".join(str(item) for item in msg)
+        )
+
+    def verbose(self, *msg: str) -> None:
+        """Verbose level logging."""
+        self.logger.log(
+            Verbosity.VERBOSE.value, " ".join(str(item) for item in msg)
+        )
+
+    def very_verbose(self, *msg: str) -> None:
+        """Very verbose level logging."""
+        self.logger.log(
+            Verbosity.VERY_VERBOSE.value, " ".join(str(item) for item in msg)
+        )
 
 
 class Verbosity(enum.Enum):
@@ -85,10 +137,10 @@ class Verbosity(enum.Enum):
     Verbosity of output from CLI.
     """
 
-    SUPPRESSED = 0
-    STANDARD = 1
-    VERBOSE = 2
-    VERY_VERBOSE = 3
+    SUPPRESSED = 25
+    STANDARD = 20
+    VERBOSE = 15
+    VERY_VERBOSE = 10
 
     def is_suppressed(self) -> bool:
         """

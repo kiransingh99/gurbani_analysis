@@ -3,7 +3,7 @@
 #
 # October 2022, Gurkiran Singh
 #
-# Copyright (c) 2022
+# Copyright (c) 2022 - 2023
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
@@ -30,6 +30,8 @@ import os
 import re
 
 import _cmn
+
+_log = _cmn.Logger("hukamanama")
 
 _BASE_URL = "https://www.sikhnet.com/hukam/archive/"
 _DATABASE_PATH = "./artifacts/hukamnama/"
@@ -70,6 +72,7 @@ class Function(enum.Enum):
 
 class _Raags(enum.IntEnum):
     """Raags of shabads"""
+
     ASA = 4
     GUJRI = 5
     DEVGANDHARI = 6
@@ -120,17 +123,18 @@ class _Raags(enum.IntEnum):
         :return:
             Enum value corresponding to the `raag` given.
         """
-        if any(r == raag.lower() for r in ["asa"]):
+        # pylint: disable=R0912
+        if any(r == raag.lower() for r in ["aasaa"]):
             obj = cls.ASA
-        elif any(r == raag.lower() for r in ["gujri"]):
+        elif any(r == raag.lower() for r in [""]):
             obj = cls.GUJRI
-        elif any(r == raag.lower() for r in ["devgandhari"]):
+        elif any(r == raag.lower() for r in [""]):
             obj = cls.DEVGANDHARI
         elif any(r == raag.lower() for r in ["bihaagraa"]):
             obj = cls.BIHAGARA
         elif any(r == raag.lower() for r in ["vadhans"]):
             obj = cls.WADHANS
-        elif any(r == raag.lower() for r in ["sorath"]):
+        elif any(r == raag.lower() for r in [""]):
             obj = cls.SORATH
         elif any(r == raag.lower() for r in ["dhanaasree"]):
             obj = cls.DHANASARI
@@ -138,13 +142,13 @@ class _Raags(enum.IntEnum):
             obj = cls.JAITSARI
         elif any(r == raag.lower() for r in ["todee"]):
             obj = cls.TODI
-        elif any(r == raag.lower() for r in ["bairari"]):
+        elif any(r == raag.lower() for r in ["bairaaree"]):
             obj = cls.BAIRARI
-        elif any(r == raag.lower() for r in ["tilang"]):
+        elif any(r == raag.lower() for r in [""]):
             obj = cls.TILANG
         elif any(r == raag.lower() for r in ["soohee"]):
             obj = cls.SUHI
-        elif any(r == raag.lower() for r in ["bilaaval"]):
+        elif any(r == raag.lower() for r in [""]):
             obj = cls.BILAAVAL
         elif any(r == raag.lower() for r in ["gond"]):
             obj = cls.GAUND
@@ -159,9 +163,7 @@ class _Raags(enum.IntEnum):
 class _RaagError(_cmn.Error):
     def __init__(self, raag: str):
         msg = f"The raag '{raag}' was not recognised."
-        steps = [
-            "Add a mapping for this raag to a value in the `_Raag` enum."
-        ]
+        steps = ["Add a mapping for this raag to a value in the `_Raag` enum."]
         super().__init__(msg, steps)
 
 
@@ -315,23 +317,23 @@ class _Writers(enum.IntEnum):
         :return:
             Enum value corresponding to the `name` given.
         """
-        if any(s in name.lower() for s in ["nanak"]):
+        if any(s in name.lower() for s in [""]):
             obj = cls.NANAK
-        elif any(s in name.lower() for s in ["angad"]):
+        elif any(s in name.lower() for s in [""]):
             obj = cls.ANGAD
-        elif any(s in name.lower() for s in ["amar"]):
+        elif any(s in name.lower() for s in [""]):
             obj = cls.AMAR_DAS
-        elif any(s in name.lower() for s in ["raam"]):
+        elif any(s in name.lower() for s in [""]):
             obj = cls.RAM_DAS
-        elif any(s in name.lower() for s in ["arjan"]):
+        elif any(s in name.lower() for s in [""]):
             obj = cls.ARJAN
-        elif any(s in name.lower() for s in ["tegh"]):
+        elif any(s in name.lower() for s in [""]):
             obj = cls.TEGH_BAHADUR
-        elif any(s in name.lower() for s in ["kabir"]):
+        elif any(s in name.lower() for s in ["kabeer"]):
             obj = cls.KABIR
-        elif any(s in name.lower() for s in ["ravi"]):
+        elif any(s in name.lower() for s in [""]):
             obj = cls.RAVIDAS
-        elif any(s in name.lower() for s in ["naam"]):
+        elif any(s in name.lower() for s in [""]):
             obj = cls.NAAMDEV
         else:
             raise _WriterError(name)
@@ -346,14 +348,13 @@ def _data(ctx: argparse.Namespace) -> None:
     :param ctx:
         Context about the original instruction.
     """
-    if ctx.verbosity.is_very_verbose():
-        print("Setting today's date as", _today_date)
+    _log.very_verbose("Setting today's date as", _datetime_to_str(_today_date))
 
     if ctx.update is not None:
         _update_database(ctx)
 
 
-def _database_file_name(date):
+def _database_file_name(date: datetime.datetime) -> str:
     """
     Entries get stored in files based on the date the entry corresponds to.
 
@@ -363,10 +364,15 @@ def _database_file_name(date):
     :return:
         File name for this data entry.
     """
-    return _DATABASE_PATH + str(date.year) + f'.{date.month:02d}' + _DATABASE_FILE_EXT
+    return (
+        _DATABASE_PATH
+        + str(date.year)
+        + f".{date.month:02d}"
+        + _DATABASE_FILE_EXT
+    )
 
 
-def _datetime_to_str(date: datetime) -> str:
+def _datetime_to_str(date: datetime.datetime) -> str:
     """
     Converts a datetime object into a string of the given format.
 
@@ -377,6 +383,7 @@ def _datetime_to_str(date: datetime) -> str:
         String representation of the given date.
     """
     return datetime.datetime.strftime(date, _DATE_FORMAT)
+
 
 def _get_ang(html: str) -> int:
     """
@@ -393,26 +400,24 @@ def _get_ang(html: str) -> int:
     return ang
 
 
-def _get_entry_dates(ctx: argparse.Namespace) -> list[datetime.datetime]:
+def _get_entry_dates() -> list[datetime.datetime]:
     """
     Determines the dates already recorded in the database.
-
-    :param ctx:
-        Context about the original instruction.
 
     :return:
         A list of dates included in the database.
     """
     dates = []
     for file in os.listdir(_DATABASE_PATH):
-        with open(os.path.join(_DATABASE_PATH, file), "r", encoding="utf-8") as f:
+        with open(
+            os.path.join(_DATABASE_PATH, file), "r", encoding="utf-8"
+        ) as f:
             data = json.loads(f.read())
         for entry in data:
             try:
                 dates.append(_str_to_datetime(entry["date"]))
             except KeyError:
-                if ctx.verbosity.is_very_verbose():
-                    print("Missing 'date' entry for: ", entry)
+                _log.very_verbose("Missing 'date' entry for: ", entry)
     return dates
 
 
@@ -434,17 +439,14 @@ def _get_first_letter(line: str) -> str:
     return line[0]
 
 
-def _get_most_recent_entry_date(ctx: argparse.Namespace) -> datetime.datetime:
+def _get_most_recent_entry_date() -> datetime.datetime:
     """
     Get the most recent entry recorded in the database.
-
-    :param ctx:
-        Context about the original instruction.
 
     :return:
         The most recent date recorded in the database.
     """
-    entry_dates = _get_entry_dates(ctx)
+    entry_dates = _get_entry_dates()
     return max(entry_dates)
 
 
@@ -517,30 +519,26 @@ def _get_start_and_end_dates(
     if ctx.update is DataUpdate.WRITE:
         _reset_database()
     elif ctx.update is DataUpdate.UPDATE:
-        start = _get_most_recent_entry_date(ctx) + datetime.timedelta(days=1)
+        start = _get_most_recent_entry_date() + datetime.timedelta(days=1)
     # no need to check if ctx.update is DataUpdate.UPDATE_FILL_GAPS:
 
-    if ctx.verbosity.is_verbose():
-        print(
-            "Operating between dates: "
-            f"{_datetime_to_str(start)} and "
-            f"{_datetime_to_str(end)}"
-        )
+    _log.verbose(
+        "Operating between dates: "
+        f"{_datetime_to_str(start)} and "
+        f"{_datetime_to_str(end)}"
+    )
     return start, end
 
 
-def _get_today_hukam(ctx: argparse.Namespace) -> _ShabadMetaData:
+def _get_today_hukam() -> _ShabadMetaData:
     """
     Get today's hukamnama.
-
-    :param ctx:
-        Context about the original instruction.
 
     :return:
         _ShabadMetaData object corresponding to today's hukamnama
     """
     _today_date_str = _datetime_to_str(_today_date)
-    return _scrape(ctx, _BASE_URL + _today_date_str)
+    return _scrape(_BASE_URL + _today_date_str)
 
 
 def _get_writer(html: str) -> _Writers:
@@ -636,18 +634,14 @@ def parse(ctx: argparse.Namespace) -> None:
         Context received from the Gurbani Analysis CLI. Namespace object
         containing the args received by the CLI.
     """
+    _log.set_level(ctx.verbosity)
     if ctx.function == Function.DATA.value:
         _data(ctx)
 
 
-def _remove_manglacharan(
-    ctx: argparse.Namespace, shabad_lines: MutableSequence[str]
-) -> list[str]:
+def _remove_manglacharan(shabad_lines: MutableSequence[str]) -> list[str]:
     """
     Removes the manglacharan from the beginning of the shabad.
-
-    :param ctx:
-        Context about the original instruction.
 
     :param shabad_lines:
         Lines of Gurbani to remove a manglacharan from.
@@ -687,8 +681,7 @@ def _remove_manglacharan(
     while i < len(mangals):
         mangal = mangals[i]
         if mangal in shabad_lines[0]:
-            if ctx.verbosity.is_very_verbose():
-                print("  Removing manglacharan", shabad_lines[0])
+            _log.very_verbose("  Removing manglacharan", shabad_lines[0])
             shabad_lines.pop(0)
             i = 0
         else:
@@ -703,12 +696,9 @@ def _reset_database() -> None:
         os.remove(os.path.join(_DATABASE_PATH, file))
 
 
-def _scrape(ctx: argparse.Namespace, url: str) -> _ShabadMetaData:
+def _scrape(url: str) -> _ShabadMetaData:
     """
     Scrapes data from the hukamnama.
-
-    :param ctx:
-        Context about the original instruction.
 
     :param url:
         URL of shabad to read data from.
@@ -716,39 +706,32 @@ def _scrape(ctx: argparse.Namespace, url: str) -> _ShabadMetaData:
     :return:
         A _ShabadMetaData object containing information about the shabad.
     """
-    if ctx.verbosity.is_verbose():
-        print("Scraping data from", url)
+    _log.verbose("Scraping data from", url)
 
     date = url[-10:]
     html = _load_webpage_data(url)
 
     ang = _get_ang(html)
-    if ctx.verbosity.is_verbose():
-        print(" - Ang is", ang)
+    _log.verbose(" - Ang is", ang)
 
     shabad_lines = _get_shabad(html)
-    if ctx.verbosity.is_very_verbose():
-        print(" - Shabad is:\n  - ", "\n    ".join(shabad_lines))
+    _log.very_verbose(" - Shabad is:\n  - ", "\n    ".join(shabad_lines))
 
-    first_line = _remove_manglacharan(ctx, shabad_lines)[0]
-    if ctx.verbosity.is_verbose():
-        print(" - First line is", first_line)
+    first_line = _remove_manglacharan(shabad_lines)[0]
+    _log.verbose(" - First line is", first_line)
 
     first_letter = _get_first_letter(first_line)
-    if ctx.verbosity.is_verbose():
-        print(
-            " - First letter is",
-            first_letter,
-            f"({_gurbani_ascii_to_unicode(first_letter)})",
-        )
+    _log.verbose(
+        " - First letter is",
+        first_letter,
+        f"({_gurbani_ascii_to_unicode(first_letter)})",
+    )
 
     raag = _get_raag(html)
-    if ctx.verbosity.is_verbose():
-        print(" - Raag is", raag)
+    _log.verbose(" - Raag is", raag)
 
     writer = _get_writer(html)
-    if ctx.verbosity.is_verbose():
-        print(" - Writer is", writer)
+    _log.verbose(" - Writer is", writer)
 
     return _ShabadMetaData(
         id=_ShabadMetaData.get_id(date),
@@ -761,14 +744,9 @@ def _scrape(ctx: argparse.Namespace, url: str) -> _ShabadMetaData:
     )
 
 
-def _store_hukamnama(
-    ctx: argparse.Namespace, url: str, data: MutableSequence[dict[str, Any]]
-) -> None:
+def _store_hukamnama(url: str, data: MutableSequence[dict[str, Any]]) -> None:
     """
     Scrapes and stores the hukamnama for a given date in the database.
-
-    :param ctx:
-        Context about the original instruction.
 
     :param url:
         URL of the page to parse the hukamnama from.
@@ -776,15 +754,18 @@ def _store_hukamnama(
     :param data:
         JSON data from the database.
     """
-    shabad = _scrape(ctx, url)
-    if shabad == _get_today_hukam(ctx):
-        if ctx.verbosity.is_verbose():
-            print("Shabad is same as today's hukamnama. Skipping.")
+    shabad = _scrape(url)
+    if shabad == _get_today_hukam():
+        _log.verbose("Shabad is same as today's hukamnama. Skipping.")
         shabad = shabad.remove_data()
     data.append(shabad.to_dict())
     if not os.path.exists(_DATABASE_PATH):
         os.makedirs(_DATABASE_PATH)
-    with open(_database_file_name(_str_to_datetime(shabad.date)), "w+", encoding="utf-8") as f:
+    with open(
+        _database_file_name(_str_to_datetime(shabad.date)),
+        "w+",
+        encoding="utf-8",
+    ) as f:
         f.write(json.dumps(data))
 
 
@@ -800,6 +781,7 @@ def _str_to_datetime(date: str) -> datetime.datetime:
     """
     return datetime.datetime.strptime(date, _DATE_FORMAT)
 
+
 def _update_database(ctx: argparse.Namespace) -> None:
     """
     Determines the dates to get hukamnamas for, and populates the database.
@@ -811,11 +793,10 @@ def _update_database(ctx: argparse.Namespace) -> None:
 
     for date in _get_next_date(start, end):
         date_str = _datetime_to_str(date)
-        if not ctx.verbosity.is_suppressed():
-            if date.day == 1:
-                if date.month == 1:
-                    print("  new year: ", date.year)
-                print("   new month: ", date.month)
+        if date.day == 1:
+            if date.month == 1:
+                _log.standard("  new year: ", date.year)
+            _log.standard("   new month: ", date.month)
 
         url = _BASE_URL + date_str
         data: list[dict[str, Any]] = []
@@ -825,22 +806,23 @@ def _update_database(ctx: argparse.Namespace) -> None:
         skip = False
         if (
             ctx.update is DataUpdate.UPDATE_FILL_GAPS
-            and date < _get_most_recent_entry_date(ctx)
+            and date < _get_most_recent_entry_date()
         ):
             for entry in data:
                 # If entry doesn't have a date, it's fatally badly
                 # formatted
                 if "date" not in entry:
                     data.remove(entry)
-                    if ctx.verbosity.is_verbose():
-                        print(
-                            "Removing the following entry due to a "
-                            "missing `date` field:\n",
-                            entry,
-                        )
+                    _log.verbose(
+                        "Removing the following entry due to a "
+                        "missing `date` field:\n",
+                        entry,
+                    )
                     continue
                 if entry["date"] == date_str:
-                    if [*entry] == _ShabadMetaData.get_keys() and not entry["needs_verification"]:
+                    if [*entry] == _ShabadMetaData.get_keys() and not entry[
+                        "needs_verification"
+                    ]:
                         # Fields are all up to date
                         skip = True
                     else:
@@ -849,4 +831,4 @@ def _update_database(ctx: argparse.Namespace) -> None:
                     break
 
         if not skip:
-            _store_hukamnama(ctx, url, data)
+            _store_hukamnama(url, data)
