@@ -156,7 +156,6 @@ class _Raags(enum.IntEnum):
             obj = cls.RAMKALI
         else:
             raise _RaagError(raag)
-        raise _RaagError(raag)
 
         return obj
 
