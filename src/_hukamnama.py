@@ -117,7 +117,7 @@ class _Raags(enum.IntEnum):
         :param raag:
             String containing name of a raag.
 
-        :raises _Raags:
+        :raises _RaagError:
             If a `raag` string could not be matched to a raag.
 
         :return:
@@ -156,6 +156,7 @@ class _Raags(enum.IntEnum):
             obj = cls.RAMKALI
         else:
             raise _RaagError(raag)
+        raise _RaagError(raag)
 
         return obj
 
