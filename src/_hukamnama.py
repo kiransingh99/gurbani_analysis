@@ -7,7 +7,7 @@
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
-"""Parses requests for hukamnama parsing."""
+"""Handler for hukamnama subparser."""
 
 from __future__ import annotations
 
@@ -18,6 +18,7 @@ __all__ = [
 ]
 
 from collections.abc import Generator, MutableSequence
+from functools import cache
 from typing import Any, Optional
 from urllib.request import Request, urlopen
 
@@ -28,6 +29,7 @@ import enum
 import json
 import os
 import re
+import urllib
 
 import _cmn
 
@@ -126,15 +128,15 @@ class _Raags(enum.IntEnum):
         # pylint: disable=R0912
         if any(r == raag.lower() for r in ["aasaa"]):
             obj = cls.ASA
-        elif any(r == raag.lower() for r in [""]):
+        elif any(r == raag.lower() for r in ["gujri"]):
             obj = cls.GUJRI
-        elif any(r == raag.lower() for r in [""]):
+        elif any(r == raag.lower() for r in ["dayv gandhaaree"]):
             obj = cls.DEVGANDHARI
         elif any(r == raag.lower() for r in ["bihaagraa"]):
             obj = cls.BIHAGARA
         elif any(r == raag.lower() for r in ["vadhans"]):
             obj = cls.WADHANS
-        elif any(r == raag.lower() for r in [""]):
+        elif any(r == raag.lower() for r in ["sorath"]):
             obj = cls.SORATH
         elif any(r == raag.lower() for r in ["dhanaasree"]):
             obj = cls.DHANASARI
@@ -144,11 +146,11 @@ class _Raags(enum.IntEnum):
             obj = cls.TODI
         elif any(r == raag.lower() for r in ["bairaaree"]):
             obj = cls.BAIRARI
-        elif any(r == raag.lower() for r in [""]):
+        elif any(r == raag.lower() for r in ["tilang"]):
             obj = cls.TILANG
         elif any(r == raag.lower() for r in ["soohee"]):
             obj = cls.SUHI
-        elif any(r == raag.lower() for r in [""]):
+        elif any(r == raag.lower() for r in ["bilaaval"]):
             obj = cls.BILAAVAL
         elif any(r == raag.lower() for r in ["gond"]):
             obj = cls.GAUND
@@ -168,6 +170,39 @@ class _RaagError(_cmn.Error):
 
 
 @dataclasses.dataclass(frozen=True)
+class _ShabadLines:
+    """
+    Object to store the lines of a shabad.
+
+    manglacharan: manglacharan, if any, of the shabad
+    gurbani: lines of the shabad
+    """
+
+    manglacharan: Optional[list[str]]
+    gurbani: list[str]
+
+    def __eq__(self, other: object) -> bool:
+        """
+        A necessary and sufficient condition to determine that two
+        _ShabadLine objects represent the same shabad is if all the lines of
+        the two shabads are the same.
+
+        :return:
+            True if the lines of the two shabads are the same, False otherwise.
+        """
+        if not isinstance(other, _ShabadLines):
+            return NotImplemented
+        return (
+            self.manglacharan == other.manglacharan
+            and self.gurbani == other.gurbani
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        """Dictionary representation of _ShabadLines object."""
+        return {"manglacharan": self.manglacharan, "gurbani": self.gurbani}
+
+
+@dataclasses.dataclass(frozen=True)
 class _ShabadMetaData:
     """
     Object to store information about each shabad recorded.
@@ -175,16 +210,17 @@ class _ShabadMetaData:
     id: a unique identifier for the date
     date: date the hukamnama was taken
     ang: ang of the hukamnama
-    gurmukhi: lines of the shabad
+    gurmukhi: the actual shabad
     raag: raag the hukamnama was written in
     writer: the author of the shabad
     first_letter: the first consonant of the first line of the hukamnama
+    needs_verification: whether the entry needs to be checked
     """
 
     id: int
     date: str
     ang: Optional[int]
-    gurmukhi: Optional[list]
+    gurmukhi: Optional[_ShabadLines]
     raag: Optional[_Raags]
     writer: Optional[_Writers]
     first_letter: Optional[str]
@@ -229,11 +265,11 @@ class _ShabadMetaData:
     def remove_data(self) -> _ShabadMetaData:
         """
         Return a new _ShabadMetaData object without shabad-specific data. Only
-        the ID and date are retained.
+        the ID and date are retained. `needs_verification` is also set to True.
 
         :return:
             New instance of class without information about the specific
-            hukamnama.
+            hukamnama, and flagged as needing verification.
         """
         return _ShabadMetaData(
             id=self.id,
@@ -254,10 +290,22 @@ class _ShabadMetaData:
         return:
             This object, represented as a dict.
         """
-        data = {}
-        for key in self.get_keys():
-            if getattr(self, key) is not None:
-                data[key] = getattr(self, key)
+        data = {
+            "id": self.id,
+            "date": self.date,
+            "needs_verification": self.needs_verification,
+        }
+
+        if self.ang:
+            data["ang"] = self.ang
+        if self.writer:
+            data["writer"] = self.writer
+        if self.raag:
+            data["raag"] = self.raag
+        if self.gurmukhi:
+            data["gurmukhi"] = _ShabadLines.to_dict(self.gurmukhi)
+        if self.first_letter:
+            data["first_letter"] = self.first_letter
         return data
 
 
@@ -284,6 +332,7 @@ class _Writers(enum.IntEnum):
     KABIR = 11
     RAVIDAS = 12
     NAAMDEV = 16
+    BHIKHAN = 18
     # Bhatts: 26-37
 
     # Gursikhs: 38-40
@@ -299,6 +348,7 @@ class _Writers(enum.IntEnum):
             self.KABIR: "Bhagat Kabir Ji",
             self.RAVIDAS: "Bhagat Ravidas Ji",
             self.NAAMDEV: "Bhagat Naamdev Ji",
+            self.BHIKHAN: "Bhagat Bhikhan Ji",
         }
         return names[self]
 
@@ -317,24 +367,26 @@ class _Writers(enum.IntEnum):
         :return:
             Enum value corresponding to the `name` given.
         """
-        if any(s in name.lower() for s in [""]):
+        if any(s == name.lower() for s in ["guru nanak dev ji"]):
             obj = cls.NANAK
-        elif any(s in name.lower() for s in [""]):
+        elif any(s == name.lower() for s in ["guru angad dev ji"]):
             obj = cls.ANGAD
-        elif any(s in name.lower() for s in [""]):
+        elif any(s == name.lower() for s in ["guru amar daas ji"]):
             obj = cls.AMAR_DAS
-        elif any(s in name.lower() for s in [""]):
+        elif any(s == name.lower() for s in ["guru raam daas ji"]):
             obj = cls.RAM_DAS
-        elif any(s in name.lower() for s in [""]):
+        elif any(s == name.lower() for s in ["guru arjan dev ji"]):
             obj = cls.ARJAN
-        elif any(s in name.lower() for s in [""]):
+        elif any(s == name.lower() for s in ["guru tegh bahaadur ji"]):
             obj = cls.TEGH_BAHADUR
-        elif any(s in name.lower() for s in ["kabeer"]):
+        elif any(s == name.lower() for s in ["bhagat kabeer ji"]):
             obj = cls.KABIR
-        elif any(s in name.lower() for s in [""]):
+        elif any(s == name.lower() for s in ["bhagat ravi daas ji"]):
             obj = cls.RAVIDAS
-        elif any(s in name.lower() for s in [""]):
+        elif any(s == name.lower() for s in ["bhagat naam dev ji"]):
             obj = cls.NAAMDEV
+        elif any(s == name.lower() for s in ["bhagat bheekhan ji"]):
+            obj = cls.BHIKHAN
         else:
             raise _WriterError(name)
 
@@ -374,7 +426,7 @@ def _database_file_name(date: datetime.datetime) -> str:
 
 def _datetime_to_str(date: datetime.datetime) -> str:
     """
-    Converts a datetime object into a string of the given format.
+    Converts a datetime object into a string formatted like `_DATE_FORMAT`.
 
     :param date:
         `datetime` object to be converted.
@@ -439,7 +491,7 @@ def _get_first_letter(line: str) -> str:
     return line[0]
 
 
-def _get_most_recent_entry_date() -> datetime.datetime:
+def _get_most_recent_entry_date() -> Optional[datetime.datetime]:
     """
     Get the most recent entry recorded in the database.
 
@@ -447,7 +499,11 @@ def _get_most_recent_entry_date() -> datetime.datetime:
         The most recent date recorded in the database.
     """
     entry_dates = _get_entry_dates()
-    return max(entry_dates)
+    if entry_dates:
+        most_recent = max(entry_dates)
+    else:
+        most_recent = None
+    return most_recent
 
 
 def _get_next_date(
@@ -455,7 +511,6 @@ def _get_next_date(
 ) -> Generator[datetime.datetime, None, None]:
     """
     Generates dates between the given start and end dates (inclusive) in order.
-    Dates must be in YYYY-MM-DD format.
 
     :param start:
         Date to begin range with.
@@ -519,17 +574,17 @@ def _get_start_and_end_dates(
     if ctx.update is DataUpdate.WRITE:
         _reset_database()
     elif ctx.update is DataUpdate.UPDATE:
-        start = _get_most_recent_entry_date() + datetime.timedelta(days=1)
-    # no need to check if ctx.update is DataUpdate.UPDATE_FILL_GAPS:
+        most_recent = _get_most_recent_entry_date()
+        if most_recent:
+            start = most_recent + datetime.timedelta(days=1)
 
     _log.verbose(
-        "Operating between dates: "
-        f"{_datetime_to_str(start)} and "
-        f"{_datetime_to_str(end)}"
+        "Start: " f"{_datetime_to_str(start)}, end: " f"{_datetime_to_str(end)}"
     )
     return start, end
 
 
+@cache
 def _get_today_hukam() -> _ShabadMetaData:
     """
     Get today's hukamnama.
@@ -559,9 +614,7 @@ def _get_writer(html: str) -> _Writers:
 
 def _gurbani_ascii_to_unicode(letter: str) -> str:
     """
-    Maps the ASCII character representing each letter to the unicode value. Only
-    to be used for display purposes, as words, especially in Gurbani, do not
-    appear well when using unicode.
+    Maps the ASCII character representing each letter to the unicode value.
 
     :param letter:
         ASCII letter in roman alphabet.
@@ -635,19 +688,24 @@ def parse(ctx: argparse.Namespace) -> None:
         containing the args received by the CLI.
     """
     _log.set_level(ctx.verbosity)
-    if ctx.function == Function.DATA.value:
-        _data(ctx)
+    try:
+        if ctx.function == Function.DATA.value:
+            _data(ctx)
+    except urllib.error.URLError as exc:  # @@@ FAIL_COMMIT find out what causes this
+        print(exc)
 
 
-def _remove_manglacharan(shabad_lines: MutableSequence[str]) -> list[str]:
+def _separate_manglacharan(
+    shabad_lines: MutableSequence[str],
+) -> tuple[list[str], list[str]]:
     """
-    Removes the manglacharan from the beginning of the shabad.
+    Separates the manglacharan from the shabad.
 
     :param shabad_lines:
         Lines of Gurbani to remove a manglacharan from.
 
     :return:
-        Shabad as input, but without the manglacharan.
+        Tuple of manglacharan [0] and the rest of the input shabad [1].
     """
     # Characters and phrases exclusive to manglacharans:
     mangals = [
@@ -678,16 +736,18 @@ def _remove_manglacharan(shabad_lines: MutableSequence[str]) -> list[str]:
     ]
 
     i = 0
+    manglacharan = []
+
     while i < len(mangals):
         mangal = mangals[i]
         if mangal in shabad_lines[0]:
             _log.very_verbose("  Removing manglacharan", shabad_lines[0])
-            shabad_lines.pop(0)
+            manglacharan.append(shabad_lines.pop(0))
             i = 0
         else:
             i += 1
 
-    return list(shabad_lines)
+    return manglacharan, list(shabad_lines)
 
 
 def _reset_database() -> None:
@@ -715,9 +775,11 @@ def _scrape(url: str) -> _ShabadMetaData:
     _log.verbose(" - Ang is", ang)
 
     shabad_lines = _get_shabad(html)
-    _log.very_verbose(" - Shabad is:\n  - ", "\n    ".join(shabad_lines))
+    _log.very_verbose(" - Shabad is:\n   -", "\n   - ".join(shabad_lines))
 
-    first_line = _remove_manglacharan(shabad_lines)[0]
+    manglacharan, gurbani = _separate_manglacharan(shabad_lines)
+    _log.verbose(" - Manglacharan is:\n   -", "\n   - ".join(manglacharan))
+    first_line = gurbani[0]
     _log.verbose(" - First line is", first_line)
 
     first_letter = _get_first_letter(first_line)
@@ -733,11 +795,16 @@ def _scrape(url: str) -> _ShabadMetaData:
     writer = _get_writer(html)
     _log.verbose(" - Writer is", writer)
 
+    gurmukhi = _ShabadLines(
+        manglacharan=manglacharan,
+        gurbani=gurbani,
+    )
+
     return _ShabadMetaData(
         id=_ShabadMetaData.get_id(date),
         date=date,
         ang=ang,
-        gurmukhi=shabad_lines,
+        gurmukhi=gurmukhi,
         raag=raag,
         writer=writer,
         first_letter=first_letter,
@@ -771,7 +838,7 @@ def _store_hukamnama(url: str, data: MutableSequence[dict[str, Any]]) -> None:
 
 def _str_to_datetime(date: str) -> datetime.datetime:
     """
-    Converts a date string of the given format, to a `datetime` object.
+    Converts a date string formatted as `_DATE_FORMAT`, to a `datetime` object.
 
     :param date:
         Date to be converted.
@@ -790,6 +857,7 @@ def _update_database(ctx: argparse.Namespace) -> None:
         Context about the original instruction.
     """
     start, end = _get_start_and_end_dates(ctx)
+    most_recent = _get_most_recent_entry_date()
 
     for date in _get_next_date(start, end):
         date_str = _datetime_to_str(date)
@@ -806,7 +874,8 @@ def _update_database(ctx: argparse.Namespace) -> None:
         skip = False
         if (
             ctx.update is DataUpdate.UPDATE_FILL_GAPS
-            and date < _get_most_recent_entry_date()
+            and most_recent is not None
+            and date < most_recent
         ):
             for entry in data:
                 # If entry doesn't have a date, it's fatally badly

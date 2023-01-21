@@ -26,23 +26,22 @@ import _cmn
 import _hukamnama
 
 
+_log = _cmn.Logger("main")
+
+
 def _exit(rc: _cmn.RC, exc: Optional[_cmn.Error] = None) -> None:
     """
-    Exit script with given return code, optionally raising an exception.
+    Exit script with given return code, optionally logging an exception.
 
     :param rc:
         Return code from script.
 
     :param exc:
-        Raise this exception, if given.
+        Log this exception, if given.
     """
-    try:
-        if exc:
-            raise exc
-    except Exception:
-        print(exc)
-    finally:
-        sys.exit(int(rc.value))
+    if exc:
+        _log.suppressed(exc)
+    sys.exit(int(rc.value))
 
 
 def main() -> None:
@@ -51,10 +50,24 @@ def main() -> None:
     subcommand received.
     """
     rc = _cmn.RC.SUCCESS
+    _log.set_level(_cmn.Verbosity.SUPPRESSED)
+
+    # Main parser
+    parser = argparse.ArgumentParser(
+        description="Collect and analyse data about Gurbani."
+    )
 
     # Common parsing
     verbosity_parser = argparse.ArgumentParser(add_help=False)
     verbosity_group = verbosity_parser.add_mutually_exclusive_group()
+    verbosity_group.add_argument(
+        "-s",
+        "--suppress-output",
+        action="store_const",
+        const=_cmn.Verbosity.SUPPRESSED,
+        dest="verbosity",
+        help="Suppress logging output",
+    )
     verbosity_group.add_argument(
         "-v",
         "--verbose",
@@ -71,19 +84,7 @@ def main() -> None:
         dest="verbosity",
         help="Suppress logging output",
     )
-    verbosity_group.add_argument(
-        "-s",
-        "--suppress-output",
-        action="store_const",
-        const=_cmn.Verbosity.SUPPRESSED,
-        dest="verbosity",
-        help="Suppress logging output",
-    )
 
-    # Main parser
-    parser = argparse.ArgumentParser(
-        description="Collect and analyse data about Gurbani."
-    )
     composition = parser.add_subparsers(dest="composition")
 
     # Hukamnama
