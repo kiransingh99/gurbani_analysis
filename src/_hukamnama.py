@@ -72,6 +72,16 @@ class Function(enum.Enum):
     DATA = "data"
 
 
+class _LineType(enum.IntEnum):
+    """
+    Types of lines in Gurbani
+    """
+
+    MANGLACHARAN = 1
+    SIRLEKH = 2
+    GURBANI = 3
+
+
 class _Raags(enum.IntEnum):
     """Raags of shabads"""
 
@@ -168,38 +178,44 @@ class _RaagError(_cmn.Error):
         steps = ["Add a mapping for this raag to a value in the `_Raag` enum."]
         super().__init__(msg, steps)
 
+class _ScrapeHtmlError(_cmn.Error):
+    def __init__(self, attributeNotFound: str, url: str):
+        msg = f"Could not find the {attributeNotFound} in the html at {url}."
+        super().__init__(_cmn.RC.SCRAPE_HTML_ERROR, msg)
 
-@dataclasses.dataclass(frozen=True)
-class _ShabadLines:
-    """
-    Object to store the lines of a shabad.
+_ShabadLine = tuple[str, _LineType]
+_ShabadLines = dict[int, _ShabadLine]
+# @dataclasses.dataclass(frozen=True)
+# class _ShabadLines:
+#     """
+#     Object to store the lines of a shabad.
 
-    manglacharan: manglacharan, if any, of the shabad
-    gurbani: lines of the shabad
-    """
+#     manglacharan: manglacharan, if any, of the shabad
+#     gurbani: lines of the shabad
+#     """
 
-    manglacharan: Optional[list[str]]
-    gurbani: list[str]
+#     manglacharan: Optional[list[str]]
+#     gurbani: list[str]
 
-    def __eq__(self, other: object) -> bool:
-        """
-        A necessary and sufficient condition to determine that two
-        _ShabadLine objects represent the same shabad is if all the lines of
-        the two shabads are the same.
+#     def __eq__(self, other: object) -> bool:
+#         """
+#         A necessary and sufficient condition to determine that two
+#         _ShabadLine objects represent the same shabad is if all the lines of
+#         the two shabads are the same.
 
-        :return:
-            True if the lines of the two shabads are the same, False otherwise.
-        """
-        if not isinstance(other, _ShabadLines):
-            return NotImplemented
-        return (
-            self.manglacharan == other.manglacharan
-            and self.gurbani == other.gurbani
-        )
+#         :return:
+#             True if the lines of the two shabads are the same, False otherwise.
+#         """
+#         if not isinstance(other, _ShabadLines):
+#             return NotImplemented
+#         return (
+#             self.manglacharan == other.manglacharan
+#             and self.gurbani == other.gurbani
+#         )
 
-    def to_dict(self) -> dict[str, Any]:
-        """Dictionary representation of _ShabadLines object."""
-        return {"manglacharan": self.manglacharan, "gurbani": self.gurbani}
+#     def to_dict(self) -> dict[str, Any]:
+#         """Dictionary representation of _ShabadLines object."""
+#         return {"manglacharan": self.manglacharan, "gurbani": self.gurbani}
 
 
 @dataclasses.dataclass(frozen=True)
@@ -210,19 +226,21 @@ class _ShabadMetaData:
     id: a unique identifier for the date
     date: date the hukamnama was taken
     ang: ang of the hukamnama
-    gurmukhi: the actual shabad
     raag: raag the hukamnama was written in
     writer: the author of the shabad
+    first_line: the first line of the shabad
     first_letter: the first consonant of the first line of the hukamnama
     needs_verification: whether the entry needs to be checked
+    gurmukhi: the actual shabad
     """
 
     id: int
     date: str
     ang: Optional[int]
-    gurmukhi: Optional[_ShabadLines]
     raag: Optional[_Raags]
     writer: Optional[_Writers]
+    gurmukhi: Optional[_ShabadLines]
+    first_line: Optional[_ShabadLine]
     first_letter: Optional[str]
     needs_verification: bool = False
 
@@ -275,9 +293,10 @@ class _ShabadMetaData:
             id=self.id,
             date=self.date,
             ang=None,
-            gurmukhi=None,
             raag=None,
             writer=None,
+            gurmukhi=None,
+            first_line=None,
             first_letter=None,
             needs_verification=True,
         )
@@ -303,7 +322,9 @@ class _ShabadMetaData:
         if self.raag:
             data["raag"] = self.raag
         if self.gurmukhi:
-            data["gurmukhi"] = _ShabadLines.to_dict(self.gurmukhi)
+            data["gurmukhi"] = self.gurmukhi
+        if self.first_line:
+            data["first_line"] = self.first_line
         if self.first_letter:
             data["first_letter"] = self.first_letter
         return data
@@ -400,7 +421,7 @@ def _data(ctx: argparse.Namespace) -> None:
     :param ctx:
         Context about the original instruction.
     """
-    _log.very_verbose("Setting today's date as", _datetime_to_str(_today_date))
+    _log.very_verbose("Setting today's date as ", _datetime_to_str(_today_date))
 
     if ctx.update is not None:
         _update_database(ctx)
@@ -447,8 +468,11 @@ def _get_ang(html: str) -> int:
     :return:
         The ang corresponding to the hukamnama.
     """
-    ang_start = html.split('"angs":{"')[1]
-    ang = int(ang_start.split('"')[0])
+    try:
+        ang = re.findall(r'"angs":{"\d+":(\d+)', html)[0]
+    except IndexError:
+        raise _ScrapeHtmlError("ang")
+
     return ang
 
 
@@ -489,6 +513,18 @@ def _get_first_letter(line: str) -> str:
         return line[1]
 
     return line[0]
+
+
+def _get_first_line(shabad: _ShabadLines):
+    """
+    @@@ FAIL_COMMIT
+
+    :param shabad: _description_
+    :return: _description_
+    """
+    for line in shabad.values():
+        if line[1] is _LineType.GURBANI:
+            return line
 
 
 def _get_most_recent_entry_date() -> Optional[datetime.datetime]:
@@ -536,9 +572,12 @@ def _get_raag(html: str) -> _Raags:
     :return:
         The raag corresponding to the hukamnama.
     """
-    raag_start = re.split(r'"raags":{"\d+":"Raag ', html)[1]
-    raag_str = raag_start.split('"}')[0]
-    return _Raags.from_string(raag_str)
+    try:
+        raag = re.findall(r'"raags":{"\d+":"([a-zA-Z ]+)"}', html)[0]
+    except IndexError:
+        raise _ScrapeHtmlError("raag")
+
+    return raag
 
 
 def _get_shabad(html: str) -> list[str]:
@@ -579,7 +618,10 @@ def _get_start_and_end_dates(
             start = most_recent + datetime.timedelta(days=1)
 
     _log.verbose(
-        "Start: " f"{_datetime_to_str(start)}, end: " f"{_datetime_to_str(end)}"
+        "Start: ",
+        _datetime_to_str(start),
+        ", end: ",
+        _datetime_to_str(end),
     )
     return start, end
 
@@ -606,10 +648,12 @@ def _get_writer(html: str) -> _Writers:
     :return:
         The writer of the shabad.
     """
-    writer_start = re.split(r'"writers":{"\d+":"', html)[1]
-    writer_str = writer_start.split('"}')[0]
+    try:
+        writer = re.findall(r'"writers":{"\d+":"([a-zA-Z ]+)"', html)[0]
+    except IndexError:
+        raise _ScrapeHtmlError("writer")
 
-    return _Writers.from_string(writer_str)
+    return writer
 
 
 def _gurbani_ascii_to_unicode(letter: str) -> str:
@@ -697,7 +741,7 @@ def parse(ctx: argparse.Namespace) -> None:
 
 def _separate_manglacharan(
     shabad_lines: MutableSequence[str],
-) -> tuple[list[str], list[str]]:
+) -> dict[int, tuple[str, _LineType]]:
     """
     Separates the manglacharan from the shabad.
 
@@ -705,13 +749,16 @@ def _separate_manglacharan(
         Lines of Gurbani to remove a manglacharan from.
 
     :return:
-        Tuple of manglacharan [0] and the rest of the input shabad [1].
+        A dict mapping the line number to a tuple containing the line and an
+        enum representing the type of line.
     """
     # Characters and phrases exclusive to manglacharans:
-    mangals = [
+    manglacharans = [
         "\\u003C\\u003E",
         " siqgur pRswid ]",
-        " 1",
+    ]
+    sirlekhs = [
+        # " 1",
         " 2",
         " 3",
         " 4",
@@ -738,16 +785,27 @@ def _separate_manglacharan(
     i = 0
     manglacharan = []
 
-    while i < len(mangals):
-        mangal = mangals[i]
-        if mangal in shabad_lines[0]:
-            _log.very_verbose("  Removing manglacharan", shabad_lines[0])
-            manglacharan.append(shabad_lines.pop(0))
-            i = 0
-        else:
-            i += 1
+    shabad = {}
 
-    return manglacharan, list(shabad_lines)
+    for i, line in enumerate(shabad_lines):
+        line_type = None
+        for manglacharan in manglacharans:
+            if manglacharan in line:
+                line_type = _LineType.MANGLACHARAN
+                break
+        if not line_type:
+            for sirlekh in sirlekhs:
+                if sirlekh in line:
+                    line_type = _LineType.SIRLEKH
+                    break
+        if not line_type:
+            line_type = _LineType.GURBANI
+
+        _log.very_verbose("  Line is ", line)
+        _log.very_verbose("  Line type is ", line_type)
+        shabad[i] = (line, line_type)
+
+    return shabad
 
 
 def _reset_database() -> None:
@@ -756,7 +814,7 @@ def _reset_database() -> None:
         os.remove(os.path.join(_DATABASE_PATH, file))
 
 
-def _scrape(url: str) -> _ShabadMetaData:
+def _scrape(url: str) -> Optional[_ShabadMetaData]:
     """
     Scrapes data from the hukamnama.
 
@@ -766,47 +824,46 @@ def _scrape(url: str) -> _ShabadMetaData:
     :return:
         A _ShabadMetaData object containing information about the shabad.
     """
-    _log.verbose("Scraping data from", url)
+    _log.verbose("Scraping data from ", url)
 
     date = url[-10:]
     html = _load_webpage_data(url)
 
-    ang = _get_ang(html)
-    _log.verbose(" - Ang is", ang)
+    try:
+        ang = _get_ang(html)
+        _log.verbose(" - Ang is ", ang)
 
-    shabad_lines = _get_shabad(html)
-    _log.very_verbose(" - Shabad is:\n   -", "\n   - ".join(shabad_lines))
+        raag = _get_raag(html)
+        _log.verbose(" - Raag is ", raag)
 
-    manglacharan, gurbani = _separate_manglacharan(shabad_lines)
-    _log.verbose(" - Manglacharan is:\n   -", "\n   - ".join(manglacharan))
-    first_line = gurbani[0]
-    _log.verbose(" - First line is", first_line)
+        writer = _get_writer(html)
+        _log.verbose(" - Writer is ", writer)
 
-    first_letter = _get_first_letter(first_line)
+        shabad_lines = _get_shabad(html)
+        _log.very_verbose(" - Shabad is:\n   - ", "\n   - ".join(shabad_lines))
+    except _ScrapeHtmlError as exc:
+        _log.suppressed(exc.msg, "\nURL being parsed: ", url)
+        return None
+
+    gurmukhi = _separate_manglacharan(shabad_lines)
+    first_line = _get_first_line(gurmukhi)
+    _log.verbose(" - First line is ", first_line)
+
+    first_letter = _get_first_letter(first_line[0])
     _log.verbose(
-        " - First letter is",
+        " - First letter is ",
         first_letter,
-        f"({_gurbani_ascii_to_unicode(first_letter)})",
-    )
-
-    raag = _get_raag(html)
-    _log.verbose(" - Raag is", raag)
-
-    writer = _get_writer(html)
-    _log.verbose(" - Writer is", writer)
-
-    gurmukhi = _ShabadLines(
-        manglacharan=manglacharan,
-        gurbani=gurbani,
+        f" ({_gurbani_ascii_to_unicode(first_letter)})",
     )
 
     return _ShabadMetaData(
         id=_ShabadMetaData.get_id(date),
         date=date,
         ang=ang,
-        gurmukhi=gurmukhi,
         raag=raag,
         writer=writer,
+        gurmukhi=gurmukhi,
+        first_line=first_line,
         first_letter=first_letter,
     )
 
@@ -822,7 +879,7 @@ def _store_hukamnama(url: str, data: MutableSequence[dict[str, Any]]) -> None:
         JSON data from the database.
     """
     shabad = _scrape(url)
-    if shabad == _get_today_hukam():
+    if shabad and shabad == _get_today_hukam():
         _log.verbose("Shabad is same as today's hukamnama. Skipping.")
         shabad = shabad.remove_data()
     data.append(shabad.to_dict())
@@ -878,8 +935,7 @@ def _update_database(ctx: argparse.Namespace) -> None:
             and date < most_recent
         ):
             for entry in data:
-                # If entry doesn't have a date, it's fatally badly
-                # formatted
+                # If entry doesn't have a date, it's fatally badly formatted
                 if "date" not in entry:
                     data.remove(entry)
                     _log.verbose(

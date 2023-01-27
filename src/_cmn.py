@@ -31,7 +31,8 @@ class Error(Exception):
     Base error class for all errors in the Gurbani Analysis CLI.
     """
 
-    def __init__(self, msg: str, suggested_steps: Optional[list[str]] = None):
+    def __init__(self, msg: str, rc: Optional[RC] = None, suggested_steps: Optional[list[str]] = None):
+        self.rc = rc
         self.msg = msg
         self.suggested_steps = suggested_steps
 
@@ -56,6 +57,20 @@ class Logger:
         self.handler = logging.StreamHandler()
         self.logger.addHandler(self.handler)
 
+    def _log(self, level: Verbosity, *msg: Any) -> None:
+        """
+        Logging function.
+
+        :param level:
+            Level at which to log the message.
+
+        :param msg:
+            Message to log.
+        """
+        self.logger.log(
+            level.value, "".join(str(item) for item in msg)
+        )
+
     def set_level(self, level: Verbosity) -> None:
         """
         Set the level of the logger.
@@ -66,31 +81,51 @@ class Logger:
         self.handler.setLevel(level.value)
 
     def suppressed(self, *msg: Any) -> None:
-        """Suppressed level logging."""
-        self.logger.log(
-            Verbosity.SUPPRESSED.value, " ".join(str(item) for item in msg)
+        """
+        Suppressed level logging.
+
+        :param msg:
+            Message to log.
+        """
+        self._log(
+            Verbosity.SUPPRESSED, *msg
         )
 
     def standard(self, *msg: str) -> None:
-        """Standard level logging."""
-        self.logger.log(
-            Verbosity.STANDARD.value, " ".join(str(item) for item in msg)
+        """
+        Standard level logging.
+
+        :param msg:
+            Message to log.
+        """
+        self._log(
+            Verbosity.STANDARD, *msg
         )
 
     def verbose(self, *msg: str) -> None:
-        """Verbose level logging."""
-        self.logger.log(
-            Verbosity.VERBOSE.value, " ".join(str(item) for item in msg)
+        """
+        Verbose level logging.
+
+        :param msg:
+            Message to log.
+        """
+        self._log(
+            Verbosity.VERBOSE, *msg
         )
 
     def very_verbose(self, *msg: str) -> None:
-        """Very verbose level logging."""
-        self.logger.log(
-            Verbosity.VERY_VERBOSE.value, " ".join(str(item) for item in msg)
+        """
+        Very verbose level logging.
+
+        :param msg:
+            Message to log.
+        """
+        self._log(
+            Verbosity.VERY_VERBOSE, *msg
         )
 
 
-class NotImplementedException(Error):
+class NotImplesmentedException(Error):
     """Custom error type for unimplemented code."""
 
     def __init__(self, traceback: str):
@@ -110,6 +145,7 @@ class RC(enum.Enum):
 
     # Misc errors
     UNHANDLED_ERROR = "10"
+    SCRAPE_HTML_ERROR = "11"
 
     # Development errors
     NOT_IMPLEMENTED = "90"

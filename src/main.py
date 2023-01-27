@@ -147,9 +147,11 @@ def main() -> None:
             except NotImplementedError:
                 rc = _cmn.RC.NOT_IMPLEMENTED
                 exception = _cmn.NotImplementedException(traceback.format_exc())
+            except _cmn.Error as exc:
+                rc = exc.rc
+                exception = exc
             except Exception as exc:
                 rc = _cmn.RC.UNHANDLED_ERROR
-                exception = exc
                 exception = _cmn.UnhandledExceptionError(traceback.format_exc())
         else:
             parser.print_help()
