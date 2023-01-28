@@ -27,11 +27,15 @@ import logging
 
 
 class Error(Exception):
-    """
-    Base error class for all errors in the Gurbani Analysis CLI.
-    """
+    """Base error class for all errors in the Gurbani Analysis CLI."""
 
-    def __init__(self, msg: str, rc: Optional[RC] = None, suggested_steps: Optional[list[str]] = None):
+    def __init__(
+        self,
+        msg: str,
+        *,
+        rc: Optional[RC] = None,
+        suggested_steps: Optional[list[str]] = None,
+    ):
         self.rc = rc
         self.msg = msg
         self.suggested_steps = suggested_steps
@@ -48,9 +52,7 @@ class Error(Exception):
 
 
 class Logger:
-    """
-    Handles logging for the CLI.
-    """
+    """Handles logging for the CLI."""
 
     def __init__(self, name: str):
         self.logger = logging.Logger(name)
@@ -58,74 +60,50 @@ class Logger:
         self.logger.addHandler(self.handler)
 
     def _log(self, level: Verbosity, *msg: Any) -> None:
-        """
-        Logging function.
+        """Logging function.
 
-        :param level:
-            Level at which to log the message.
-
-        :param msg:
-            Message to log.
+        :param level: level at which to log the message.
+        :param *msg: message to log.
         """
-        self.logger.log(
-            level.value, "".join(str(item) for item in msg)
-        )
+        self.logger.log(level.value, "".join(str(item) for item in msg))
 
     def set_level(self, level: Verbosity) -> None:
-        """
-        Set the level of the logger.
+        """Set the level of the logger.
 
-        :param level:
-            Verbosity of logging output.
+        :param level: verbosity of logging output.
         """
         self.handler.setLevel(level.value)
 
     def suppressed(self, *msg: Any) -> None:
-        """
-        Suppressed level logging.
+        """Suppressed level logging.
 
-        :param msg:
-            Message to log.
+        :param *msg: message to log.
         """
-        self._log(
-            Verbosity.SUPPRESSED, *msg
-        )
+        self._log(Verbosity.SUPPRESSED, *msg)
 
     def standard(self, *msg: str) -> None:
-        """
-        Standard level logging.
+        """Standard level logging.
 
-        :param msg:
-            Message to log.
+        :param msg: message to log.
         """
-        self._log(
-            Verbosity.STANDARD, *msg
-        )
+        self._log(Verbosity.STANDARD, *msg)
 
     def verbose(self, *msg: str) -> None:
-        """
-        Verbose level logging.
+        """Verbose level logging.
 
-        :param msg:
-            Message to log.
+        :param msg: message to log.
         """
-        self._log(
-            Verbosity.VERBOSE, *msg
-        )
+        self._log(Verbosity.VERBOSE, *msg)
 
     def very_verbose(self, *msg: str) -> None:
+        """Very verbose level logging.
+
+        :param msg: message to log.
         """
-        Very verbose level logging.
-
-        :param msg:
-            Message to log.
-        """
-        self._log(
-            Verbosity.VERY_VERBOSE, *msg
-        )
+        self._log(Verbosity.VERY_VERBOSE, *msg)
 
 
-class NotImplesmentedException(Error):
+class NotImplementedException(Error):
     """Custom error type for unimplemented code."""
 
     def __init__(self, traceback: str):
@@ -133,13 +111,11 @@ class NotImplesmentedException(Error):
         suggested_steps = [
             "Contact the developers and explain the steps to recreate this error."
         ]
-        super().__init__(msg, suggested_steps)
+        super().__init__(msg, suggested_steps=suggested_steps)
 
 
 class RC(enum.Enum):
-    """
-    Return codes that can be output from this script.
-    """
+    """Return codes that can be output from this script."""
 
     SUCCESS = "00"
 
@@ -151,19 +127,16 @@ class RC(enum.Enum):
     NOT_IMPLEMENTED = "90"
 
     def is_ok(self) -> bool:
-        """
-        Determines if error shows that an error has occurred.
+        """Determines if error shows that an error has occurred.
 
-        :return:
-            True if error code does not signify an error, False otherwise.
+        :return: true if error code does not signify an error, False otherwise.
         """
         return self in [self.SUCCESS]
 
 
 class UnhandledExceptionError(Error):
-    """
-    Custom error type to reraise when there's an unhandled exception raised by
-    an imported library.
+    """Custom error type to reraise when there's an unhandled exception raised
+    by an imported library.
     """
 
     def __init__(self, msg: str):
@@ -172,9 +145,7 @@ class UnhandledExceptionError(Error):
 
 
 class Verbosity(enum.Enum):
-    """
-    Verbosity of output from CLI.
-    """
+    """Verbosity of output from CLI."""
 
     SUPPRESSED = 25
     STANDARD = 20

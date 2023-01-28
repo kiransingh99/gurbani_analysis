@@ -45,15 +45,14 @@ _today_date = datetime.datetime.today()
 
 
 class DataUpdate(enum.IntEnum):
-    """
-    Methods of updating data in the database.
+    """Methods of updating data in the database.
 
     WRITE: Starting from the beginning of the archives, (re)populate all entries
-        until today (overwrites existing data)
+        until today (overwrites existing data).
     UPDATE: Add information to database, continuing from the most recently
-        populated entry, until today
+        populated entry, until today.
     UPDATE_FILL_GAPS: Starting from the beginning of the archives, populate
-        entries without any data (does not overwrites existing data)
+        entries without any data (does not overwrites existing data).
     """
 
     UNKNOWN = 0
@@ -63,19 +62,16 @@ class DataUpdate(enum.IntEnum):
 
 
 class Function(enum.Enum):
-    """
-    Subfunctions within Hukamnama Analysis.
+    """Subfunctions within Hukamnama Analysis.
 
-    DATA: Update/repopulate the database
+    DATA: Update/repopulate the database.
     """
 
     DATA = "data"
 
 
 class _LineType(enum.IntEnum):
-    """
-    Types of lines in Gurbani
-    """
+    """Types of lines in Gurbani."""
 
     MANGLACHARAN = 1
     SIRLEKH = 2
@@ -83,7 +79,7 @@ class _LineType(enum.IntEnum):
 
 
 class _Raags(enum.IntEnum):
-    """Raags of shabads"""
+    """Raags of shabads."""
 
     ASA = 4
     GUJRI = 5
@@ -123,17 +119,11 @@ class _Raags(enum.IntEnum):
 
     @classmethod
     def from_string(cls, raag: str) -> _Raags:
-        """
-        Converts a string with a single raag into a _Raags enum value.
+        """Converts a string with a single raag into a _Raags enum value.
 
-        :param raag:
-            String containing name of a raag.
-
-        :raises _RaagError:
-            If a `raag` string could not be matched to a raag.
-
-        :return:
-            Enum value corresponding to the `raag` given.
+        :param raag: string containing name of a raag.
+        :raises _RaagError: if a `raag` string could not be matched to a raag.
+        :return: enum value corresponding to the `raag` given.
         """
         # pylint: disable=R0912
         if any(r == raag.lower() for r in ["aasaa"]):
@@ -173,55 +163,31 @@ class _Raags(enum.IntEnum):
 
 
 class _RaagError(_cmn.Error):
+    """Error raised when a raag is not recognised by the parser."""
+
     def __init__(self, raag: str):
         msg = f"The raag '{raag}' was not recognised."
         steps = ["Add a mapping for this raag to a value in the `_Raag` enum."]
         super().__init__(msg, steps)
 
+
 class _ScrapeHtmlError(_cmn.Error):
-    def __init__(self, attributeNotFound: str, url: str):
-        msg = f"Could not find the {attributeNotFound} in the html at {url}."
+    """Error raised when there was a problem scraping values from the html
+    source code.
+    """
+
+    def __init__(self, attribute_not_found: str):
+        msg = f"Could not find the {attribute_not_found}."
         super().__init__(_cmn.RC.SCRAPE_HTML_ERROR, msg)
+
 
 _ShabadLine = tuple[str, _LineType]
 _ShabadLines = dict[int, _ShabadLine]
-# @dataclasses.dataclass(frozen=True)
-# class _ShabadLines:
-#     """
-#     Object to store the lines of a shabad.
-
-#     manglacharan: manglacharan, if any, of the shabad
-#     gurbani: lines of the shabad
-#     """
-
-#     manglacharan: Optional[list[str]]
-#     gurbani: list[str]
-
-#     def __eq__(self, other: object) -> bool:
-#         """
-#         A necessary and sufficient condition to determine that two
-#         _ShabadLine objects represent the same shabad is if all the lines of
-#         the two shabads are the same.
-
-#         :return:
-#             True if the lines of the two shabads are the same, False otherwise.
-#         """
-#         if not isinstance(other, _ShabadLines):
-#             return NotImplemented
-#         return (
-#             self.manglacharan == other.manglacharan
-#             and self.gurbani == other.gurbani
-#         )
-
-#     def to_dict(self) -> dict[str, Any]:
-#         """Dictionary representation of _ShabadLines object."""
-#         return {"manglacharan": self.manglacharan, "gurbani": self.gurbani}
 
 
 @dataclasses.dataclass(frozen=True)
 class _ShabadMetaData:
-    """
-    Object to store information about each shabad recorded.
+    """Object to store information about each shabad recorded.
 
     id: a unique identifier for the date
     date: date the hukamnama was taken
@@ -245,13 +211,11 @@ class _ShabadMetaData:
     needs_verification: bool = False
 
     def __eq__(self, other: object) -> bool:
-        """
-        A necessary and sufficient condition to determine that two
+        """A necessary and sufficient condition to determine that two
         _ShabadMetaData objects represent the same shabad is if all the lines of
         the two shabads are the same.
 
-        :return:
-            True if the lines of the two hukamnamas are the same, False
+        :return: true if the lines of the two hukamnamas are the same, False
             otherwise.
         """
         if not isinstance(other, _ShabadMetaData):
@@ -260,33 +224,28 @@ class _ShabadMetaData:
 
     @classmethod
     def get_id(cls, date: str) -> int:
-        """
-        Generates a unique, sequential, integer ID for the date of the
+        """Generates a unique, sequential, integer ID for the date of the
         hukamnama.
 
-        :param date:
-            Date of hukamnama as a string, formatted as `_DATE_FORMAT`.
+        :param date: date of hukamnama as a string, formatted as `_DATE_FORMAT`.
         """
         difference = _str_to_datetime(date) - _str_to_datetime(_FIRST_DATE)
         return difference.days + 1
 
     @classmethod
     def get_keys(cls) -> list[str]:
-        """
-        Get a list of the attributes of this object.
+        """Get a list of the attributes of this object.
 
-        :return:
-            Attributes of _ShabadMetaData object.
+        :return: attributes of _ShabadMetaData object.
         """
         return [item.name for item in dataclasses.fields(cls)]
 
     def remove_data(self) -> _ShabadMetaData:
-        """
-        Return a new _ShabadMetaData object without shabad-specific data. Only
-        the ID and date are retained. `needs_verification` is also set to True.
+        """Return a new _ShabadMetaData object without shabad-specific data.
+        Only the ID and date are retained. `needs_verification` is also set to
+        True.
 
-        :return:
-            New instance of class without information about the specific
+        :return: new instance of class without information about the specific
             hukamnama, and flagged as needing verification.
         """
         return _ShabadMetaData(
@@ -302,12 +261,10 @@ class _ShabadMetaData:
         )
 
     def to_dict(self) -> dict[str, Any]:
-        """
-        Produces a dictionary that represents a shabad's metadata. Attributes
+        """Produces a dictionary that represents a shabad's metadata. Attributes
         with the value `None` are not included.
 
-        return:
-            This object, represented as a dict.
+        return: this object, represented as a dict.
         """
         data = {
             "id": self.id,
@@ -331,6 +288,8 @@ class _ShabadMetaData:
 
 
 class _WriterError(_cmn.Error):
+    """Error raised when a writer is not recognised by the parser."""
+
     def __init__(self, writer: str):
         msg = f"The writer '{writer}' was not recognised."
         steps = [
@@ -340,7 +299,7 @@ class _WriterError(_cmn.Error):
 
 
 class _Writers(enum.IntEnum):
-    """Writers of shabads"""
+    """Writers of shabads."""
 
     # Gurus: 1-10
     NANAK = 1
@@ -375,18 +334,13 @@ class _Writers(enum.IntEnum):
 
     @classmethod
     def from_string(cls, name: str) -> _Writers:
-        """
-        Converts a string with a single writer's name into a _Writers enum
+        """Converts a string with a single writer's name into a _Writers enum
         value.
 
-        :param name:
-            String containing name of a writer.
-
-        :raises _WriterError:
-            If a `name` string could not be matched to a writer.
-
-        :return:
-            Enum value corresponding to the `name` given.
+        :param name: string containing name of a writer.
+        :raises _WriterError: if a `name` string could not be matched to a
+            writer.
+        :return: enum value corresponding to the `name` given.
         """
         if any(s == name.lower() for s in ["guru nanak dev ji"]):
             obj = cls.NANAK
@@ -415,11 +369,9 @@ class _Writers(enum.IntEnum):
 
 
 def _data(ctx: argparse.Namespace) -> None:
-    """
-    Handler for all data requests to the Hukamnama CLI.
+    """Handler for all data requests to the Hukamnama CLI.
 
-    :param ctx:
-        Context about the original instruction.
+    :param ctx: context about the original instruction.
     """
     _log.very_verbose("Setting today's date as ", _datetime_to_str(_today_date))
 
@@ -428,14 +380,10 @@ def _data(ctx: argparse.Namespace) -> None:
 
 
 def _database_file_name(date: datetime.datetime) -> str:
-    """
-    Entries get stored in files based on the date the entry corresponds to.
+    """Entries get stored in files based on the date the entry corresponds to.
 
-    :param date:
-        Date of data entry.
-
-    :return:
-        File name for this data entry.
+    :param date: date of data entry.
+    :return: file name for this data entry.
     """
     return (
         _DATABASE_PATH
@@ -446,42 +394,32 @@ def _database_file_name(date: datetime.datetime) -> str:
 
 
 def _datetime_to_str(date: datetime.datetime) -> str:
-    """
-    Converts a datetime object into a string formatted like `_DATE_FORMAT`.
+    """Converts a datetime object into a string formatted like `_DATE_FORMAT`.
 
-    :param date:
-        `datetime` object to be converted.
-
-    :return:
-        String representation of the given date.
+    :param date: `datetime` object to be converted.
+    :return: string representation of the given date.
     """
     return datetime.datetime.strftime(date, _DATE_FORMAT)
 
 
 def _get_ang(html: str) -> int:
-    """
-    Gets the ang of the hukamnama from the HTML.
+    """Gets the ang of the hukamnama from the HTML.
 
-    :param html:
-        Full HTML source code.
-
-    :return:
-        The ang corresponding to the hukamnama.
+    :param html: full HTML source code.
+    :return: the ang corresponding to the hukamnama.
     """
     try:
         ang = re.findall(r'"angs":{"\d+":(\d+)', html)[0]
     except IndexError:
-        raise _ScrapeHtmlError("ang")
+        raise _ScrapeHtmlError("ang") from None
 
     return ang
 
 
 def _get_entry_dates() -> list[datetime.datetime]:
-    """
-    Determines the dates already recorded in the database.
+    """Determines the dates already recorded in the database.
 
-    :return:
-        A list of dates included in the database.
+    :return: a list of dates included in the database.
     """
     dates = []
     for file in os.listdir(_DATABASE_PATH):
@@ -498,16 +436,12 @@ def _get_entry_dates() -> list[datetime.datetime]:
 
 
 def _get_first_letter(line: str) -> str:
-    """
-    Gets the first letter of a line written in Gurmukhi. Usually just the first
-    letter, except if the first letter is a sihaari, in which case it's the
-    second letter of the line.
+    """Gets the first letter of a line written in Gurmukhi. Usually just the
+    first letter, except if the first letter is a sihaari, in which case it's
+    the second letter of the line.
 
-    :param line:
-        The line to get the first letter of.
-
-    :return:
-        The first letter of the line, when read in the Gurmukhi.
+    :param line: the line to get the first letter of.
+    :return: the first letter of the line, when read in the Gurmukhi.
     """
     if line[0] == "i":  # sihaari
         return line[1]
@@ -515,24 +449,23 @@ def _get_first_letter(line: str) -> str:
     return line[0]
 
 
-def _get_first_line(shabad: _ShabadLines):
-    """
-    @@@ FAIL_COMMIT
+def _get_first_line(shabad: _ShabadLines) -> _ShabadLine:
+    """Get the first line of Gurbani in sthe shabad.
 
-    :param shabad: _description_
-    :return: _description_
+    :param shabad: the lines of the shabad.
+    :return: the first Gurbani line (not manglachara/sirlekh) in the shabad.
     """
     for line in shabad.values():
         if line[1] is _LineType.GURBANI:
             return line
 
+    raise IndexError  # this should never be hit as every shabad has Gurbani.
+
 
 def _get_most_recent_entry_date() -> Optional[datetime.datetime]:
-    """
-    Get the most recent entry recorded in the database.
+    """Get the most recent entry recorded in the database.
 
-    :return:
-        The most recent date recorded in the database.
+    :return: the most recent date recorded in the database.
     """
     entry_dates = _get_entry_dates()
     if entry_dates:
@@ -545,17 +478,11 @@ def _get_most_recent_entry_date() -> Optional[datetime.datetime]:
 def _get_next_date(
     start: datetime.datetime, end: datetime.datetime
 ) -> Generator[datetime.datetime, None, None]:
-    """
-    Generates dates between the given start and end dates (inclusive) in order.
+    """Generates dates between the given start and end dates (inclusive) in order.
 
-    :param start:
-        Date to begin range with.
-
-    :param end:
-        Date to end range with.
-
-    :yield:
-        Next date within the range.
+    :param start: date to begin range with.
+    :param end: date to end range with.
+    :yield: next date within the range.
     """
     difference = (end - start).days + 1
     for days in range(0, difference):
@@ -563,32 +490,24 @@ def _get_next_date(
 
 
 def _get_raag(html: str) -> _Raags:
-    """
-    Gets the raag of the hukamnama from the HTML.
+    """Gets the raag of the hukamnama from the HTML.
 
-    :param html:
-        Full HTML source code.
-
-    :return:
-        The raag corresponding to the hukamnama.
+    :param html: full HTML source code.
+    :return: the raag corresponding to the hukamnama.
     """
     try:
         raag = re.findall(r'"raags":{"\d+":"([a-zA-Z ]+)"}', html)[0]
     except IndexError:
-        raise _ScrapeHtmlError("raag")
+        raise _ScrapeHtmlError("raag") from None
 
     return raag
 
 
 def _get_shabad(html: str) -> list[str]:
-    """
-    Gets the shabad from the HTML.
+    """Gets the shabad from the HTML.
 
-    :param html:
-        Full HTML source code.
-
-    :return:
-        The hukamnama, in separated lines.
+    :param html: full HTML source code.
+    :return: the hukamnama, in separated lines.
     """
     shabad_start = html.split('shabad_lines":{"gurmukhi":["')[1]
     shabad = shabad_start.split('"],"transliteration')[0]
@@ -599,14 +518,10 @@ def _get_shabad(html: str) -> list[str]:
 def _get_start_and_end_dates(
     ctx: argparse.Namespace,
 ) -> tuple[datetime.datetime, datetime.datetime]:
-    """
-    Determine when the search should start and finish.
+    """Determine when the search should start and finish.
 
-    :param ctx:
-        Context about the original instruction.
-
-    :return:
-        Tuple of the correct start and end dates of the search.
+    :param ctx: context about the original instruction.
+    :return: tuple of the correct start and end dates of the search.
     """
     start = _str_to_datetime(_FIRST_DATE)
     end = _today_date
@@ -628,43 +543,38 @@ def _get_start_and_end_dates(
 
 @cache
 def _get_today_hukam() -> _ShabadMetaData:
-    """
-    Get today's hukamnama.
+    """Get today's hukamnama.
 
-    :return:
-        _ShabadMetaData object corresponding to today's hukamnama
+    :return: _ShabadMetaData object corresponding to today's hukamnama
     """
     _today_date_str = _datetime_to_str(_today_date)
-    return _scrape(_BASE_URL + _today_date_str)
+    today_hukam = _scrape(_BASE_URL + _today_date_str)
+
+    # TYPE_CHECKING: we can always get today's hukamnama.
+    assert today_hukam is not None
+
+    return today_hukam
 
 
 def _get_writer(html: str) -> _Writers:
-    """
-    Gets the writer of the hukamnama from the HTML.
+    """Gets the writer of the hukamnama from the HTML.
 
-    :param html:
-        Full HTML source code.
-
-    :return:
-        The writer of the shabad.
+    :param html: full HTML source code.
+    :return: the writer of the shabad.
     """
     try:
         writer = re.findall(r'"writers":{"\d+":"([a-zA-Z ]+)"', html)[0]
     except IndexError:
-        raise _ScrapeHtmlError("writer")
+        raise _ScrapeHtmlError("writer") from None
 
     return writer
 
 
 def _gurbani_ascii_to_unicode(letter: str) -> str:
-    """
-    Maps the ASCII character representing each letter to the unicode value.
+    """Maps the ASCII character representing each letter to the unicode value.
 
-    :param letter:
-        ASCII letter in roman alphabet.
-
-    :return:
-        The corresponding letter in unicode.
+    :param letter: ASCII letter in roman alphabet.
+    :return: the corresponding letter in unicode.
     """
     mapping = {
         "a": "ੳ",
@@ -707,14 +617,10 @@ def _gurbani_ascii_to_unicode(letter: str) -> str:
 
 
 def _load_webpage_data(url: str) -> str:
-    """
-    Loads the website and gets the HTML source code.
+    """Loads the website and gets the HTML source code.
 
-    :param url:
-        The URL of the page to read.
-
-    :return:
-        The source code of the page.
+    :param url: the URL of the page to read.
+    :return: the source code of the page.
     """
     req = Request(url, headers={"User-Agent": "Mozilla/5.0"})
     with urlopen(req) as page:
@@ -723,12 +629,10 @@ def _load_webpage_data(url: str) -> str:
 
 
 def parse(ctx: argparse.Namespace) -> None:
-    """
-    Main handler for Hukamnama CLI. This is the API called by the main Gurbani
-    Analysis CLI.
+    """Main handler for Hukamnama CLI. This is the API called by the main
+    Gurbani Analysis CLI.
 
-    :param ctx:
-        Context received from the Gurbani Analysis CLI. Namespace object
+    :param ctx: context received from the Gurbani Analysis CLI. Namespace object
         containing the args received by the CLI.
     """
     _log.set_level(ctx.verbosity)
@@ -742,15 +646,11 @@ def parse(ctx: argparse.Namespace) -> None:
 def _separate_manglacharan(
     shabad_lines: MutableSequence[str],
 ) -> dict[int, tuple[str, _LineType]]:
-    """
-    Separates the manglacharan from the shabad.
+    """Separates the manglacharan from the shabad.
 
-    :param shabad_lines:
-        Lines of Gurbani to remove a manglacharan from.
-
-    :return:
-        A dict mapping the line number to a tuple containing the line and an
-        enum representing the type of line.
+    :param shabad_lines: lines of Gurbani to remove a manglacharan from.
+    :return: a dict mapping the line number to a tuple containing the line and
+        an enum representing the type of line.
     """
     # Characters and phrases exclusive to manglacharans:
     manglacharans = [
@@ -783,7 +683,6 @@ def _separate_manglacharan(
     ]
 
     i = 0
-    manglacharan = []
 
     shabad = {}
 
@@ -815,14 +714,10 @@ def _reset_database() -> None:
 
 
 def _scrape(url: str) -> Optional[_ShabadMetaData]:
-    """
-    Scrapes data from the hukamnama.
+    """Scrapes data from the hukamnama.
 
-    :param url:
-        URL of shabad to read data from.
-
-    :return:
-        A _ShabadMetaData object containing information about the shabad.
+    :param url: URL of shabad to read data from.
+    :return: a _ShabadMetaData object containing information about the shabad.
     """
     _log.verbose("Scraping data from ", url)
 
@@ -869,49 +764,40 @@ def _scrape(url: str) -> Optional[_ShabadMetaData]:
 
 
 def _store_hukamnama(url: str, data: MutableSequence[dict[str, Any]]) -> None:
-    """
-    Scrapes and stores the hukamnama for a given date in the database.
+    """Scrapes and stores the hukamnama for a given date in the database.
 
-    :param url:
-        URL of the page to parse the hukamnama from.
-
-    :param data:
-        JSON data from the database.
+    :param url: URL of the page to parse the hukamnama from.
+    :param data: JSON data from the database.
     """
     shabad = _scrape(url)
     if shabad and shabad == _get_today_hukam():
         _log.verbose("Shabad is same as today's hukamnama. Skipping.")
         shabad = shabad.remove_data()
-    data.append(shabad.to_dict())
-    if not os.path.exists(_DATABASE_PATH):
-        os.makedirs(_DATABASE_PATH)
-    with open(
-        _database_file_name(_str_to_datetime(shabad.date)),
-        "w+",
-        encoding="utf-8",
-    ) as f:
-        f.write(json.dumps(data))
+    if shabad:
+        data.append(shabad.to_dict())
+        if not os.path.exists(_DATABASE_PATH):
+            os.makedirs(_DATABASE_PATH)
+        with open(
+            _database_file_name(_str_to_datetime(shabad.date)),
+            "w+",
+            encoding="utf-8",
+        ) as f:
+            f.write(json.dumps(data))
 
 
 def _str_to_datetime(date: str) -> datetime.datetime:
-    """
-    Converts a date string formatted as `_DATE_FORMAT`, to a `datetime` object.
+    """Converts a date string formatted as `_DATE_FORMAT`, to a `datetime` object.
 
-    :param date:
-        Date to be converted.
-
-    :return:
-        `datetime` object representing the given date.
+    :param date: date to be converted.
+    :return: `datetime` object representing the given date.
     """
     return datetime.datetime.strptime(date, _DATE_FORMAT)
 
 
 def _update_database(ctx: argparse.Namespace) -> None:
-    """
-    Determines the dates to get hukamnamas for, and populates the database.
+    """Determines the dates to get hukamnamas for, and populates the database.
 
-    :param ctx:
-        Context about the original instruction.
+    :param ctx context about the original instruction.
     """
     start, end = _get_start_and_end_dates(ctx)
     most_recent = _get_most_recent_entry_date()

@@ -30,14 +30,10 @@ _log = _cmn.Logger("main")
 
 
 def _exit(rc: _cmn.RC, exc: Optional[_cmn.Error] = None) -> None:
-    """
-    Exit script with given return code, optionally logging an exception.
+    """Exit script with given return code, optionally logging an exception.
 
-    :param rc:
-        Return code from script.
-
-    :param exc:
-        Log this exception, if given.
+    :param rc: return code from script.
+    :param exc: log this exception, if given, defaults to None.
     """
     if exc:
         _log.suppressed(exc)
@@ -45,8 +41,7 @@ def _exit(rc: _cmn.RC, exc: Optional[_cmn.Error] = None) -> None:
 
 
 def main() -> None:
-    """
-    Main handler for Gurbani Analysis CLI. Calls callbacks based on the
+    """Main handler for Gurbani Analysis CLI. Calls callbacks based on the
     subcommand received.
     """
     rc = _cmn.RC.SUCCESS
@@ -150,7 +145,7 @@ def main() -> None:
             except _cmn.Error as exc:
                 rc = exc.rc
                 exception = exc
-            except Exception as exc:
+            except Exception:
                 rc = _cmn.RC.UNHANDLED_ERROR
                 exception = _cmn.UnhandledExceptionError(traceback.format_exc())
         else:
