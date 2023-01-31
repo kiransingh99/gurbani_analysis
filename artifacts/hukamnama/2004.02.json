@@ -492,5 +492,60 @@
             3
         ],
         "first_letter": "d"
+    },
+    {
+        "id": 768,
+        "date": "2004-02-07",
+        "needs_verification": false,
+        "ang": "738",
+        "writer": "Guru Arjan Dev Ji",
+        "raag": "Raag Soohee",
+        "gurmukhi": {
+            "0": [
+                "sUhI mhlw 5 ]",
+                2
+            ],
+            "1": [
+                "ikAw gux qyry swir sm@wlI moih inrgun ky dwqwry ]",
+                3
+            ],
+            "2": [
+                "bY KrIdu ikAw kry cqurweI iehu jIau ipMfu sBu Qwry ]1]",
+                3
+            ],
+            "3": [
+                "lwl rMgIly pRIqm mnmohn qyry drsn kau hm bwry ]1] rhwau ]",
+                3
+            ],
+            "4": [
+                "pRBu dwqw moih dInu ByKwrI qum@ sdw sdw aupkwry ]",
+                3
+            ],
+            "5": [
+                "so ikCu nwhI ij mY qy hovY myry Twkur Agm Apwry ]2]",
+                3
+            ],
+            "6": [
+                "ikAw syv kmwvau ikAw kih rIJwvau ibiD ikqu pwvau drswry ]",
+                3
+            ],
+            "7": [
+                "imiq nhI pweIAY AMqu n lhIAY mnu qrsY crnwry ]3]",
+                3
+            ],
+            "8": [
+                "pwvau dwnu FITu hoie mwgau muiK lwgY sMq rynwry ]",
+                3
+            ],
+            "9": [
+                "jn nwnk kau guir ikrpw DwrI pRiB hwQ dyie insqwry ]4]6]",
+                3
+            ]
+        },
+        "first_line": [
+            "ikAw gux qyry swir sm@wlI moih inrgun ky dwqwry ]",
+            3
+        ],
+        "first_letter": "k"
     }
 ]

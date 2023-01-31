@@ -194,10 +194,10 @@ class _ShabadMetaData:
     ang: ang of the hukamnama
     raag: raag the hukamnama was written in
     writer: the author of the shabad
+    gurmukhi: the actual shabad
     first_line: the first line of the shabad
     first_letter: the first consonant of the first line of the hukamnama
     needs_verification: whether the entry needs to be checked
-    gurmukhi: the actual shabad
     """
 
     id: int
@@ -215,6 +215,7 @@ class _ShabadMetaData:
         _ShabadMetaData objects represent the same shabad is if all the lines of
         the two shabads are the same.
 
+        :param: the object to compare with.
         :return: true if the lines of the two hukamnamas are the same, False
             otherwise.
         """
@@ -225,9 +226,10 @@ class _ShabadMetaData:
     @classmethod
     def get_id(cls, date: str) -> int:
         """Generates a unique, sequential, integer ID for the date of the
-        hukamnama.
+        hukamnama. ID is equal to the number of dates since the start date + 1.
 
         :param date: date of hukamnama as a string, formatted as `_DATE_FORMAT`.
+        :return: a unique id for the given date
         """
         difference = _str_to_datetime(date) - _str_to_datetime(_FIRST_DATE)
         return difference.days + 1
@@ -308,11 +310,13 @@ class _Writers(enum.IntEnum):
     RAM_DAS = 4
     ARJAN = 5
     TEGH_BAHADUR = 9
+
     # Bhagats: 11-25
     KABIR = 11
     RAVIDAS = 12
     NAAMDEV = 16
     BHIKHAN = 18
+
     # Bhatts: 26-37
 
     # Gursikhs: 38-40
@@ -509,8 +513,9 @@ def _get_shabad(html: str) -> list[str]:
     :param html: full HTML source code.
     :return: the hukamnama, in separated lines.
     """
-    shabad_start = html.split('shabad_lines":{"gurmukhi":["')[1]
-    shabad = shabad_start.split('"],"transliteration')[0]
+    shabad = re.findall(
+        r'shabad_lines":{"gurmukhi":\["(.*)"\],"transliteration', html
+    )[0]
     shabad_lines = shabad.split('","')
     return shabad_lines
 
@@ -658,15 +663,15 @@ def _separate_manglacharan(
         " siqgur pRswid ]",
     ]
     sirlekhs = [
-        # " 1",
+        " 1",
         " 2",
         " 3",
         " 4",
         " 5",
         " 9",
-        "slok m",
+        "slok m ",
         "slok ]",
-        "sloku m",
+        "sloku m ",
         "sloku ]",
         "pauVI",
         "sUhI",
@@ -763,13 +768,14 @@ def _scrape(url: str) -> Optional[_ShabadMetaData]:
     )
 
 
-def _store_hukamnama(url: str, data: MutableSequence[dict[str, Any]]) -> None:
-    """Scrapes and stores the hukamnama for a given date in the database.
+def _store_hukamnama(
+    data: MutableSequence[dict[str, Any]], shabad: Optional[_ShabadMetaData]
+) -> None:
+    """Stores the hukamnama for a given date in the database.
 
-    :param url: URL of the page to parse the hukamnama from.
-    :param data: JSON data from the database.
+    :param data: existing JSON data from the database.
+    :param shabad: the hukamnama to store in the database.
     """
-    shabad = _scrape(url)
     if shabad and shabad == _get_today_hukam():
         _log.verbose("Shabad is same as today's hukamnama. Skipping.")
         shabad = shabad.remove_data()
@@ -797,7 +803,7 @@ def _str_to_datetime(date: str) -> datetime.datetime:
 def _update_database(ctx: argparse.Namespace) -> None:
     """Determines the dates to get hukamnamas for, and populates the database.
 
-    :param ctx context about the original instruction.
+    :param ctx: context about the original instruction.
     """
     start, end = _get_start_and_end_dates(ctx)
     most_recent = _get_most_recent_entry_date()
@@ -825,8 +831,8 @@ def _update_database(ctx: argparse.Namespace) -> None:
                 if "date" not in entry:
                     data.remove(entry)
                     _log.verbose(
-                        "Removing the following entry due to a "
-                        "missing `date` field:\n",
+                        "Removing the following entry due to a missing `date` "
+                        "field:\n",
                         entry,
                     )
                     continue
@@ -842,4 +848,5 @@ def _update_database(ctx: argparse.Namespace) -> None:
                     break
 
         if not skip:
-            _store_hukamnama(url, data)
+            shabad = _scrape(url)
+            _store_hukamnama(data, shabad)
