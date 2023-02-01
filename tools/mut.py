@@ -54,7 +54,7 @@ def _run_cmd(
 
     :param cmd: the command to run.
     :param capture_output: True, to return stdout. False to print it,
-    :return: a tuple of (return code, stdout)
+    :return: the return code of the CLI, or a tuple of (return code, stdout)
     """
     try:
         output = subprocess.run(cmd, capture_output=capture_output, check=False)
