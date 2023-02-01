@@ -55,7 +55,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
       - name: Run MUT
-        run: tools/mut.py
+        run: python tools/mut.py
   mypy:
     name: Mypy
     runs-on: ubuntu-latest
