@@ -14,7 +14,7 @@ from __future__ import annotations
 
 __all__: list[str] = []
 
-from typing import Union
+from typing import overload, Union
 
 import argparse
 import re
@@ -36,7 +36,19 @@ class _UnitTestReturnCodes(cmn.ReturnCodes):
     COMMAND_NOT_FOUND = 127
 
 
-def _run_cmd(cmd: list[str], *, capture_output: bool = False) -> Union[int, tuple[int, str]]:
+@overload
+def _run_cmd(cmd: list[str]) -> int:
+    ...
+
+
+@overload
+def _run_cmd(cmd: list[str], *, capture_output: bool) -> tuple[int, str]:
+    ...
+
+
+def _run_cmd(
+    cmd: list[str], *, capture_output: bool = False
+) -> Union[int, tuple[int, str]]:
     """Run a given command in the bash prompt.
 
     :param cmd: the command to run.
@@ -59,8 +71,8 @@ def _run_cmd(cmd: list[str], *, capture_output: bool = False) -> Union[int, tupl
 
     if capture_output:
         return rc, output.stdout.decode("utf-8")
-    else:
-        return rc
+
+    return rc
 
 
 def _run_cov() -> int:
