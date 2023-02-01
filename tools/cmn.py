@@ -37,6 +37,14 @@ class ReturnCodes(enum.IntEnum):
         """Returns a list of all the known error code values."""
         return [error.value for error in cls]
 
+    @classmethod
+    def is_ok(cls, value: int) -> bool:
+        """A return code is okay if it is 0.
+
+        :return: True if the return code does not imply any issues.
+        """
+        return value == 0
+
 
 class WinErrorCodes(ReturnCodes):
     """WINError codes."""

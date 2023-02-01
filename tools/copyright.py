@@ -82,27 +82,29 @@ def _generate_expected(file_path: str) -> Generator[str, None, None]:
         .strip()
         .split("\n")
     )
-    created_month = cmn.month_name_from_num(int(edit_dates[-1][5:7]))
-    created_year = edit_dates[-1][:4]
-    last_edited_year = edit_dates[0][:4]
-    if created_year == last_edited_year:
-        date_range = created_year
-    else:
-        date_range = created_year + " - " + last_edited_year
 
-    exp = [
-        notice_start_end,
-        rf"^# {file_name} - .+$",
-        blank_line,
-        rf"^# {created_month} {created_year}, [A-Za-z -]+$",
-        blank_line,
-        rf"^# Copyright \(c\) {date_range}$",
-        r"^# All rights reserved.$",
-        notice_start_end,
-    ]
+    if edit_dates[0]:
+        created_month = cmn.month_name_from_num(int(edit_dates[-1][5:7]))
+        created_year = edit_dates[-1][:4]
+        last_edited_year = edit_dates[0][:4]
+        if created_year == last_edited_year:
+            date_range = created_year
+        else:
+            date_range = created_year + " - " + last_edited_year
 
-    for line in exp:
-        yield line
+        exp = [
+            notice_start_end,
+            rf"^# {file_name} - .+$",
+            blank_line,
+            rf"^# {created_month} {created_year}, [A-Za-z -]+$",
+            blank_line,
+            rf"^# Copyright \(c\) {date_range}$",
+            r"^# All rights reserved.$",
+            notice_start_end,
+        ]
+
+        for line in exp:
+            yield line
 
 
 def _run_check(args: argparse.Namespace) -> int:
@@ -111,6 +113,7 @@ def _run_check(args: argparse.Namespace) -> int:
 
     :param args:
         Namespace object with args to run check on.
+    :return: return code from CLI
     """
     failed = {}
     line_number = 0
