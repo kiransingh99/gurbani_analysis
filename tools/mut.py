@@ -94,7 +94,7 @@ def _run_cov() -> int:
 
     if cmn.ReturnCodes.is_ok(rc):
         rc, output = _run_cmd(["coverage", "report"], capture_output=True)
-    else:
+    elif rc is _UnitTestReturnCodes.FAIL:
         print("Check MUT is passing before running coverage!")
 
     if cmn.ReturnCodes.is_ok(rc):
