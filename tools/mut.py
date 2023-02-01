@@ -26,7 +26,8 @@ import cmn
 
 class _UnitTestReturnCodes(cmn.ReturnCodes):
     """Possible exit codes from the unittest module, with some locally
-    introduced ones."""
+    introduced ones.
+    """
 
     PASS = 0
     FAIL = 1

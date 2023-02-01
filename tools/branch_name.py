@@ -34,12 +34,14 @@ class _BranchNameReturnCodes(cmn.ReturnCodes):
 
 
 def _check_branch_name_validity(branch_name: str) -> int:
-    """
-    Checks the branch name and handles the following cases by outputting and
+    """Checks the branch name and handles the following cases by outputting and
     setting an error code:
     - valid
     - still on main
     - invalid (non-main)
+
+    :param branch_name: the branch name to test.
+    :return: return code indicating validity.
     """
 
     if re.fullmatch(r"GA\d+\.[A-Za-z0-9-_.]+", branch_name):
@@ -76,11 +78,9 @@ def _check_branch_name_validity(branch_name: str) -> int:
 
 
 def _get_current_branch() -> str:
-    """
-    Queries git to get the current branch name.
+    """Queries git to get the current branch name.
 
-    :return:
-        The current branch name
+    :return: the current branch name.
     """
     cmd = ["git", "rev-parse", "--abbrev-ref", "HEAD"]
     try:

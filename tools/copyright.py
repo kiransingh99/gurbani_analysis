@@ -46,8 +46,7 @@ class _CopyrightCheckReturnCodes(cmn.ReturnCodes):
 
 @dataclass(frozen=True)
 class _LineMatchInfo:
-    """
-    Structure to hold data about a given line of a copyright notice.
+    """Structure to hold data about a given line of a copyright notice.
 
     Tracks the line number of the notice, the actual line read in from the file
     being tested, and the expected regex rule for the line.
@@ -59,14 +58,10 @@ class _LineMatchInfo:
 
 
 def _generate_expected(file_path: str) -> Generator[str, None, None]:
-    """
-    Generator that outputs each line of a correctly formatted copyright notice.
+    """Generator that outputs each line of a correctly formatted copyright notice.
 
-    :param file_path:
-        Path to the file to generate an copyright notice for.
-
-    :yield:
-        Regex for a copyright notice, output line-by-line.
+    :param file_path: path to the file to generate an copyright notice for.
+    :yield: regex for a copyright notice, output line-by-line.
     """
     file_name = file_path.split("/")[-1]
     notice_start_end = r"^# [-]{78}$"
@@ -108,11 +103,9 @@ def _generate_expected(file_path: str) -> Generator[str, None, None]:
 
 
 def _run_check(args: argparse.Namespace) -> int:
-    """
-    Runs copyright checks on input parameters.
+    """Runs copyright checks on input parameters.
 
-    :param args:
-        Namespace object with args to run check on.
+    :param args: namespace object with args to run check on.
     :return: return code from CLI
     """
     failed = {}

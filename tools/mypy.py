@@ -31,14 +31,10 @@ class _MypyReturnCodes(cmn.ReturnCodes):
 
 
 def _run_mypy(_: argparse.Namespace) -> int:
-    """
-    Runs mypy on python files in workspace.
+    """Runs mypy on python files in workspace.
 
-    :param _:
-        Namespace object with args to run mypy with.
-
-    :return:
-        Return code from CLI.
+    :param _: namespace object with args to run mypy with.
+    :return: return code from CLI.
     """
     rc = _MypyReturnCodes.SUCCESS
 

@@ -47,14 +47,10 @@ class _LintReturnCodes(cmn.ReturnCodes):
 
 
 def _run_lint(args: argparse.Namespace) -> int:
-    """
-    Runs pylint on python files in workspace.
+    """Runs pylint on python files in workspace.
 
-    :param args:
-        Namespace object with args to run lint with.
-
-    :return:
-        Return code from CLI.
+    :param args: namespace object with args to run lint with.
+    :return: return code from CLI.
     """
     rc = _LintReturnCodes.SUCCESS
 
