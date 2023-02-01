@@ -99,7 +99,7 @@ def _run_cov() -> int:
 
     if cmn.ReturnCodes.is_ok(rc):
         coverage = int(re.findall(r" (\d+)%", output)[-1])
-        print(f"Code coverage is {coverage}")
+        print(f"Code coverage is {coverage}%")
         if coverage != 100:
             rc = _UnitTestReturnCodes.COVERAGE_LOW
 
