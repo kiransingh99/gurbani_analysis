@@ -14,6 +14,8 @@ from __future__ import annotations
 
 __all__: list[str] = []
 
+from typing import Union
+
 import argparse
 import re
 import subprocess
@@ -34,14 +36,15 @@ class _UnitTestReturnCodes(cmn.ReturnCodes):
     COMMAND_NOT_FOUND = 127
 
 
-def _run_cmd(cmd: list[str]) -> tuple[int, str]:
+def _run_cmd(cmd: list[str], *, capture_output: bool = False) -> Union[int, tuple[int, str]]:
     """Run a given command in the bash prompt.
 
     :param cmd: the command to run.
+    :param capture_output: True, to return stdout. False to print it,
     :return: a tuple of (return code, stdout)
     """
     try:
-        output = subprocess.run(cmd, capture_output=True, check=False)
+        output = subprocess.run(cmd, capture_output=capture_output, check=False)
     except FileNotFoundError as exc:
         if exc.errno is cmn.WinErrorCodes.FILE_NOT_FOUND.value:
             cmn.handle_missing_package_error(exc.filename)
@@ -54,7 +57,10 @@ def _run_cmd(cmd: list[str]) -> tuple[int, str]:
     else:
         rc = output.returncode
 
-    return rc, output.stdout.decode("utf-8")
+    if capture_output:
+        return rc, output.stdout.decode("utf-8")
+    else:
+        return rc
 
 
 def _run_cov() -> int:
@@ -62,7 +68,7 @@ def _run_cov() -> int:
 
     :return: Return code from MUT and coverage checks.
     """
-    rc, _ = _run_cmd(
+    rc = _run_cmd(
         [
             "coverage",
             "run",
@@ -75,7 +81,7 @@ def _run_cov() -> int:
     )
 
     if cmn.ReturnCodes.is_ok(rc):
-        rc, output = _run_cmd(["coverage", "report"])
+        rc, output = _run_cmd(["coverage", "report"], capture_output=True)
     else:
         print("Check MUT is passing before running coverage!")
 
@@ -94,19 +100,18 @@ def _run_mut(args: argparse.Namespace) -> int:
     :param args: Namespace object with args to run check on.
     :return: return code from CLI.
     """
-    if hasattr(args, "coverage"):
+    if args.coverage:
         return _run_cov()
 
     cmd = [cmn.which_python(), "-m", "unittest"]
     cmd.append(*args.modules)
 
-    if hasattr(args, "testcases"):
+    if args.testcases:
         for module in args.testcases:
             cmd.append("-k")
             cmd.append(module)
 
-    print(cmd)
-    rc, _ = _run_cmd(cmd)
+    rc = _run_cmd(cmd)
 
     return rc
 
