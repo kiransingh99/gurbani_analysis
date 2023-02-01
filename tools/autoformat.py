@@ -33,14 +33,10 @@ class _AutoformatReturnCodes(cmn.ReturnCodes):
 
 
 def _run_black(args: argparse.Namespace) -> int:
-    """
-    Runs `black` command based on input parameters.
+    """Runs `black` command based on input parameters.
 
-    :param args:
-        Namespace object with args to run black with.
-
-    :return:
-        Return code.
+    :param args: namespace object with args to run black with.
+    :return: return code.
     """
 
     cmd = [cmn.which_python(), "-m", "black"]
