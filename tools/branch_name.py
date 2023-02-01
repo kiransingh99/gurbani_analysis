@@ -89,9 +89,8 @@ def _get_current_branch() -> str:
         print("\nERROR")
         print(f"Exception raised running `{' '.join(cmd)}`:")
         raise
-    else:
-        branch_name = output.stdout.decode("utf-8").strip("\n")
-        return branch_name
+    branch_name = output.stdout.decode("utf-8").strip("\n")
+    return branch_name
 
 
 def main() -> None:
