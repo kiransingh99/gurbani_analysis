@@ -48,14 +48,14 @@ jobs:
         run: tools/fc_check
   mut:
     name: MUT
-    runs-on: ubuntu-lates
+    runs-on: ubuntu-latest
     steps:
       - name: Pull git workspace
         uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v3
       - name: Run MUT
-        run: python tools/mut.py
+        run: tools/mut.py
   mypy:
     name: Mypy
     runs-on: ubuntu-latest
