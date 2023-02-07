@@ -20,6 +20,7 @@ __all__ = [
 from collections.abc import Generator, MutableSequence
 from functools import cache
 from typing import Any, Optional
+from urllib.error import URLError
 from urllib.request import Request, urlopen
 
 import argparse
@@ -77,6 +78,18 @@ class _LineType(enum.IntEnum):
     SIRLEKH = 2
     GURBANI = 3
 
+
+class _LoadWebContentError(_cmn.Error):
+    """When there is an issue loading up web content."""
+
+    def __init__(self, url: str):
+        msg = f"Failed to launch webpage {url}."
+        steps = ["Check your internet connection."]
+        super().__init__(
+            msg,
+            rc=_cmn.RC.LOAD_WEBPAGE_ERROR,
+            suggested_steps=steps
+        )
 
 class _Raags(enum.IntEnum):
     """Raags of shabads."""
@@ -628,8 +641,11 @@ def _load_webpage_data(url: str) -> str:
     :return: the source code of the page.
     """
     req = Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    with urlopen(req) as page:
-        html = page.read().decode("utf-8")
+    try:
+        with urlopen(req) as page:
+            html = page.read().decode("utf-8")
+    except URLError:
+        raise _LoadWebContentError(url)
     return html
 
 

@@ -121,7 +121,10 @@ class RC(enum.Enum):
 
     # Misc errors
     UNHANDLED_ERROR = "10"
-    SCRAPE_HTML_ERROR = "11"
+
+    # Parser errors
+    LOAD_WEBPAGE_ERROR = "11"
+    SCRAPE_HTML_ERROR = "12"
 
     # Development errors
     NOT_IMPLEMENTED = "90"
