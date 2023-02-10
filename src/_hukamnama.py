@@ -30,7 +30,6 @@ import enum
 import json
 import os
 import re
-import urllib
 
 try:
     import _cmn
@@ -89,10 +88,9 @@ class _LoadWebContentError(_cmn.Error):
         msg = f"Failed to launch webpage {url}."
         steps = ["Check your internet connection."]
         super().__init__(
-            msg,
-            rc=_cmn.RC.LOAD_WEBPAGE_ERROR,
-            suggested_steps=steps
+            msg, rc=_cmn.RC.LOAD_WEBPAGE_ERROR, suggested_steps=steps
         )
+
 
 class _Raags(enum.IntEnum):
     """Raags of shabads."""
@@ -647,8 +645,8 @@ def _load_webpage_data(url: str) -> str:
     try:
         with urlopen(req) as page:
             html = page.read().decode("utf-8")
-    except URLError:
-        raise _LoadWebContentError(url)
+    except URLError as exc:
+        raise _LoadWebContentError(url) from exc
     return html
 
 
@@ -660,12 +658,8 @@ def parse(ctx: argparse.Namespace) -> None:
         containing the args received by the CLI.
     """
     _log.set_level(ctx.verbosity)
-    breakpoint()
-    try:
-        if ctx.function == Function.DATA.value:
-            _data(ctx)
-    except urllib.error.URLError as exc:  # @@@ FAIL_COMMIT find out what causes this
-        print(exc)
+    if ctx.function == Function.DATA.value:
+        _data(ctx)
 
 
 def _separate_manglacharan(
