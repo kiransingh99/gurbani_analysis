@@ -16,3 +16,5 @@ import unittest
 
 class BaseTest(unittest.TestCase):
     """Base test for all MUT cases."""
+    def __init__(self, *args):
+        pass

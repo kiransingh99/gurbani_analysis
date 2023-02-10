@@ -32,7 +32,10 @@ import os
 import re
 import urllib
 
-import _cmn
+try:
+    import _cmn
+except ModuleNotFoundError:
+    from . import _cmn
 
 _log = _cmn.Logger("hukamanama")
 
@@ -657,6 +660,7 @@ def parse(ctx: argparse.Namespace) -> None:
         containing the args received by the CLI.
     """
     _log.set_level(ctx.verbosity)
+    breakpoint()
     try:
         if ctx.function == Function.DATA.value:
             _data(ctx)

@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # ------------------------------------------------------------------------------
 # main.py - Main handler for Gurbani Analysis CLI
 #
@@ -22,8 +23,12 @@ import argparse
 import sys
 import traceback
 
-import _cmn
-import _hukamnama
+try:
+    import _cmn
+    import _hukamnama
+except ModuleNotFoundError:
+    from . import _cmn
+    from . import _hukamnama
 
 
 _log = _cmn.Logger("main")
