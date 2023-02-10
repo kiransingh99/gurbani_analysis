@@ -23,12 +23,8 @@ import argparse
 import sys
 import traceback
 
-try:
-    import _cmn
-    import _hukamnama
-except ModuleNotFoundError:
-    from . import _cmn
-    from . import _hukamnama
+import _cmn
+import _hukamnama
 
 
 _log = _cmn.Logger("main")

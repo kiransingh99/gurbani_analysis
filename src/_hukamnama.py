@@ -31,10 +31,7 @@ import json
 import os
 import re
 
-try:
-    import _cmn
-except ModuleNotFoundError:
-    from . import _cmn
+import _cmn
 
 _log = _cmn.Logger("hukamanama")
 
