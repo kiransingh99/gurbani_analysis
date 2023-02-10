@@ -17,7 +17,6 @@ __all__: list[str] = []
 from typing import overload, Union
 
 import argparse
-import re
 import subprocess
 import sys
 
