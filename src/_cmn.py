@@ -7,7 +7,7 @@
 # All rights reserved.
 # ------------------------------------------------------------------------------
 
-"""Common objects Gurbani Analysis CLI."""
+"""Common objects for the Gurbani Analysis CLI."""
 
 from __future__ import annotations
 
@@ -117,14 +117,13 @@ class NotImplementedException(Error):
 class RC(enum.Enum):
     """Return codes that can be output from this script."""
 
+    # Misc
     SUCCESS = "00"
-
-    # Misc errors
     UNHANDLED_ERROR = "10"
 
     # Parser errors
-    LOAD_WEBPAGE_ERROR = "11"
-    SCRAPE_HTML_ERROR = "12"
+    LOAD_WEBPAGE_ERROR = "20"
+    SCRAPE_HTML_ERROR = "21"
 
     # Development errors
     NOT_IMPLEMENTED = "90"
@@ -132,7 +131,7 @@ class RC(enum.Enum):
     def is_ok(self) -> bool:
         """Determines if error shows that an error has occurred.
 
-        :return: true if error code does not signify an error, False otherwise.
+        :return: True if error code does not signify an error, False otherwise.
         """
         return self in [self.SUCCESS]
 

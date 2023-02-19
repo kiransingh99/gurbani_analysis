@@ -418,7 +418,7 @@ def _datetime_to_str(date: datetime.datetime) -> str:
 
 
 def _get_ang(html: str) -> int:
-    """Gets the ang of the hukamnama from the HTML.
+    """Gets the ang of the hukamnama from the Sikhnet HTML.
 
     :param html: full HTML source code.
     :return: the ang corresponding to the hukamnama.
@@ -493,7 +493,8 @@ def _get_most_recent_entry_date() -> Optional[datetime.datetime]:
 def _get_next_date(
     start: datetime.datetime, end: datetime.datetime
 ) -> Generator[datetime.datetime, None, None]:
-    """Generates dates between the given start and end dates (inclusive) in order.
+    """Generates dates between the given start and end dates (inclusive) in
+    order.
 
     :param start: date to begin range with.
     :param end: date to end range with.
@@ -505,7 +506,7 @@ def _get_next_date(
 
 
 def _get_raag(html: str) -> _Raags:
-    """Gets the raag of the hukamnama from the HTML.
+    """Gets the raag of the hukamnama from the Sikhnet HTML.
 
     :param html: full HTML source code.
     :return: the raag corresponding to the hukamnama.
@@ -519,7 +520,7 @@ def _get_raag(html: str) -> _Raags:
 
 
 def _get_shabad(html: str) -> list[str]:
-    """Gets the shabad from the HTML.
+    """Gets the shabad from the Sikhnet HTML.
 
     :param html: full HTML source code.
     :return: the hukamnama, in separated lines.
@@ -573,7 +574,7 @@ def _get_today_hukam() -> _ShabadMetaData:
 
 
 def _get_writer(html: str) -> _Writers:
-    """Gets the writer of the hukamnama from the HTML.
+    """Gets the writer of the hukamnama from the Sikhnet HTML.
 
     :param html: full HTML source code.
     :return: the writer of the shabad.
