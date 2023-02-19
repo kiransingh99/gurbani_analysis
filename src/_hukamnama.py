@@ -595,6 +595,7 @@ def _gurbani_ascii_to_unicode(letter: str) -> str:
     """
     mapping = {
         "a": "ੳ",
+        "E": "ੳ",
         "A": "ਅ",
         "e": "ੲ",
         "s": "ਸ",
