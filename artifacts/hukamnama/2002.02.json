@@ -1,0 +1,1180 @@
+[
+    {
+        "id": 32,
+        "date": "2002-02-01",
+        "needs_verification": true
+    },
+    {
+        "id": 33,
+        "date": "2002-02-02",
+        "needs_verification": true
+    },
+    {
+        "id": 34,
+        "date": "2002-02-03",
+        "needs_verification": true
+    },
+    {
+        "id": 35,
+        "date": "2002-02-04",
+        "needs_verification": true
+    },
+    {
+        "id": 36,
+        "date": "2002-02-05",
+        "needs_verification": false,
+        "ang": "669",
+        "writer": 4,
+        "raag": 10,
+        "gurmukhi": {
+            "0": [
+                "DnwsrI mhlw 4 ]",
+                2
+            ],
+            "1": [
+                "syvk isK pUjx siB Awvih siB gwvih hir hir aUqm bwnI ]",
+                3
+            ],
+            "2": [
+                "gwivAw suixAw iqn kw hir Qwie pwvY ijn siqgur kI AwigAw siq siq kir mwnI ]1]",
+                3
+            ],
+            "3": [
+                "bolhu BweI hir kIriq hir Bvjl qIriQ ]",
+                3
+            ],
+            "4": [
+                "hir dir iqn kI aUqm bwq hY sMqhu hir kQw ijn jnhu jwnI ] rhwau ]",
+                3
+            ],
+            "5": [
+                "Awpy guru cylw hY Awpy Awpy hir pRBu coj ivfwnI ]",
+                3
+            ],
+            "6": [
+                "jn nwnk Awip imlwey soeI hir imlsI Avr sB iqAwig Ehw hir BwnI ]2]5]11]",
+                3
+            ]
+        },
+        "first_line": [
+            "syvk isK pUjx siB Awvih siB gwvih hir hir aUqm bwnI ]",
+            3
+        ],
+        "first_letter": "s"
+    },
+    {
+        "id": 37,
+        "date": "2002-02-06",
+        "needs_verification": true
+    },
+    {
+        "id": 38,
+        "date": "2002-02-07",
+        "needs_verification": true
+    },
+    {
+        "id": 39,
+        "date": "2002-02-08",
+        "needs_verification": false,
+        "ang": "731",
+        "writer": 4,
+        "raag": 15,
+        "gurmukhi": {
+            "0": [
+                "rwgu sUhI mhlw 4 Gru 1",
+                2
+            ],
+            "1": [
+                "\\u003C\\u003E siqgur pRswid ]",
+                1
+            ],
+            "2": [
+                "min rwm nwmu AwrwiDAw gur sbid gurU gur ky ]",
+                3
+            ],
+            "3": [
+                "siB ieCw min qin pUrIAw sBu cUkw fru jm ky ]1]",
+                3
+            ],
+            "4": [
+                "myry mn gux gwvhu rwm nwm hir ky ]",
+                3
+            ],
+            "5": [
+                "guir quTY mnu prboiDAw hir pIAw rsu gtky ]1] rhwau ]",
+                3
+            ],
+            "6": [
+                "sqsMgiq aUqm siqgur kyrI gun gwvY hir pRB ky ]",
+                3
+            ],
+            "7": [
+                "hir ikrpw Dwir mylhu sqsMgiq hm Dovh pg jn ky ]2]",
+                3
+            ],
+            "8": [
+                "rwm nwmu sBu hY rwm nwmw rsu gurmiq rsu rsky ]",
+                3
+            ],
+            "9": [
+                "hir AMimRqu hir jlu pwieAw sB lwQI iqs iqs ky ]3]",
+                3
+            ],
+            "10": [
+                "hmrI jwiq pwiq guru siqguru hm vyicE isru gur ky ]",
+                3
+            ],
+            "11": [
+                "jn nwnk nwmu pirE gur cylw gur rwKhu lwj jn ky ]4]1]",
+                3
+            ]
+        },
+        "first_line": [
+            "min rwm nwmu AwrwiDAw gur sbid gurU gur ky ]",
+            3
+        ],
+        "first_letter": "m"
+    },
+    {
+        "id": 40,
+        "date": "2002-02-09",
+        "needs_verification": false,
+        "ang": "641",
+        "writer": 5,
+        "raag": 9,
+        "gurmukhi": {
+            "0": [
+                "soriT mhlw 5 Gru 2 AstpdIAw",
+                2
+            ],
+            "1": [
+                "\\u003C\\u003E siqgur pRswid ]",
+                1
+            ],
+            "2": [
+                "pwTu piVE Aru bydu bIcwirE invil BuAMgm swDy ]",
+                3
+            ],
+            "3": [
+                "pMc jnw isau sMgu n CutikE AiDk AhMbuiD bwDy ]1]",
+                3
+            ],
+            "4": [
+                "ipAwry ien ibiD imlxu n jweI mY kIey krm Anykw ]",
+                3
+            ],
+            "5": [
+                "hwir pirE suAwmI kY duAwrY dIjY buiD ibbykw ] rhwau ]",
+                3
+            ],
+            "6": [
+                "moin BieE krpwqI rihE ngn iPirE bn mwhI ]",
+                3
+            ],
+            "7": [
+                "qt qIrQ sB DrqI BRimE duibDw CutkY nwhI ]2]",
+                3
+            ],
+            "8": [
+                "mn kwmnw qIrQ jwie bisE isir krvq Drwey ]",
+                3
+            ],
+            "9": [
+                "mn kI mYlu n auqrY ieh ibiD jy lK jqn krwey ]3]",
+                3
+            ],
+            "10": [
+                "kink kwimnI hYvr gYvr bhu ibiD dwnu dwqwrw ]",
+                3
+            ],
+            "11": [
+                "AMn bsqR BUim bhu Arpy nh imlIAY hir duAwrw ]4]",
+                3
+            ],
+            "12": [
+                "pUjw Arcw bMdn fMfauq Ktu krmw rqu rhqw ]",
+                3
+            ],
+            "13": [
+                "hau hau krq bMDn mih pirAw nh imlIAY ieh jugqw ]5]",
+                3
+            ],
+            "14": [
+                "jog isD Awsx caurwsIh ey BI kir kir rihAw ]",
+                3
+            ],
+            "15": [
+                "vfI Awrjw iPir iPir jnmY hir isau sMgu n gihAw ]6]",
+                3
+            ],
+            "16": [
+                "rwj lIlw rwjn kI rcnw kirAw hukmu APwrw ]",
+                3
+            ],
+            "17": [
+                "syj sohnI cMdnu coAw nrk Gor kw duAwrw ]7]",
+                3
+            ],
+            "18": [
+                "hir kIriq swDsMgiq hY isir krmn kY krmw ]",
+                3
+            ],
+            "19": [
+                "khu nwnk iqsu BieE prwpiq ijsu purb ilKy kw lhnw ]8]",
+                3
+            ],
+            "20": [
+                "qyro syvku ieh rMig mwqw ]",
+                3
+            ],
+            "21": [
+                "BieE ik\\u00aepwlu dIn duK BMjnu hir hir kIrqin iehu mnu rwqw ] rhwau dUjw ]1]3]",
+                3
+            ]
+        },
+        "first_line": [
+            "pwTu piVE Aru bydu bIcwirE invil BuAMgm swDy ]",
+            3
+        ],
+        "first_letter": "p"
+    },
+    {
+        "id": 41,
+        "date": "2002-02-10",
+        "needs_verification": true
+    },
+    {
+        "id": 42,
+        "date": "2002-02-11",
+        "needs_verification": false,
+        "ang": "858",
+        "writer": 12,
+        "raag": 16,
+        "gurmukhi": {
+            "0": [
+                "ijh kul swDu bYsnO hoie\\u00a0]",
+                3
+            ],
+            "1": [
+                "brn Abrn rMku nhI eIsuru ibml bwsu jwnIAY jig soie\\u00a0]1]",
+                3
+            ],
+            "2": [
+                "rhwau\\u00a0]",
+                3
+            ],
+            "3": [
+                "bRhmn bYs sUd Aru KHqRI fom cMfwr mlyC mn soie\\u00a0]",
+                3
+            ],
+            "4": [
+                "hoie punIq BgvMq Bjn qy Awpu qwir qwry kul doie\\u00a0]1]",
+                3
+            ],
+            "5": [
+                "DMin su gwau DMin so Twau DMin punIq kutMb sB loie\\u00a0]",
+                3
+            ],
+            "6": [
+                "ijin pIAw swr rsu qjy Awn rs hoie rs mgn fwry ibKu Koie\\u00a0]2]",
+                3
+            ],
+            "7": [
+                "pMifq sUr CqRpiq rwjw Bgq brwbir Aauru n koie\\u00a0]",
+                3
+            ],
+            "8": [
+                "jYsy purYn pwq rhY jl smIp Bin rivdws jnmy jig Eie\\u00a0]3]2]]",
+                3
+            ]
+        },
+        "first_line": [
+            "ijh kul swDu bYsnO hoie\\u00a0]",
+            3
+        ],
+        "first_letter": "j"
+    },
+    {
+        "id": 43,
+        "date": "2002-02-12",
+        "needs_verification": true
+    },
+    {
+        "id": 44,
+        "date": "2002-02-13",
+        "needs_verification": true
+    },
+    {
+        "id": 45,
+        "date": "2002-02-14",
+        "needs_verification": false,
+        "ang": "858",
+        "writer": 12,
+        "raag": 16,
+        "gurmukhi": {
+            "0": [
+                "iblwvlu ]",
+                2
+            ],
+            "1": [
+                "ijh kul swDu bYsnO hoie ]",
+                3
+            ],
+            "2": [
+                "brn Abrn rMku nhI eIsuru ibml bwsu jwnIAY jig soie ]1] rhwau ]",
+                3
+            ],
+            "3": [
+                "bRhmn bYs sUd Aru K\\u00b4qRI fom cMfwr mlyC mn soie ]",
+                3
+            ],
+            "4": [
+                "hoie punIq BgvMq Bjn qy Awpu qwir qwry kul doie ]1]",
+                3
+            ],
+            "5": [
+                "DMin su gwau DMin so Twau DMin punIq kutMb sB loie ]",
+                3
+            ],
+            "6": [
+                "ijin pIAw swr rsu qjy Awn rs hoie rs mgn fwry ibKu Koie ]2]",
+                3
+            ],
+            "7": [
+                "pMifq sUr CqRpiq rwjw Bgq brwbir Aauru n koie ]",
+                3
+            ],
+            "8": [
+                "jYsy purYn pwq rhY jl smIp Bin rivdws jnmy jig Eie ]3]2]",
+                3
+            ]
+        },
+        "first_line": [
+            "ijh kul swDu bYsnO hoie ]",
+            3
+        ],
+        "first_letter": "j"
+    },
+    {
+        "id": 46,
+        "date": "2002-02-15",
+        "needs_verification": false,
+        "ang": "634",
+        "writer": 1,
+        "raag": 9,
+        "gurmukhi": {
+            "0": [
+                "soriT mhlw 1 Gru 1 AstpdIAw cauqukI",
+                2
+            ],
+            "1": [
+                "\\u003C\\u003E siqgur pRswid ]",
+                1
+            ],
+            "2": [
+                "duibDw n pVau hir ibnu horu n pUjau mVY mswix n jweI ]",
+                3
+            ],
+            "3": [
+                "iqRsnw rwic n pr Gir jwvw iqRsnw nwim buJweI ]",
+                3
+            ],
+            "4": [
+                "Gr BIqir Gru gurU idKwieAw shij rqy mn BweI ]",
+                3
+            ],
+            "5": [
+                "qU Awpy dwnw Awpy bInw qU dyvih miq sweI ]1]",
+                3
+            ],
+            "6": [
+                "mnu bYrwig rqau bYrwgI sbid mnu byiDAw myrI mweI ]",
+                3
+            ],
+            "7": [
+                "AMqir joiq inrMqir bwxI swcy swihb isau ilv lweI ] rhwau ]",
+                3
+            ],
+            "8": [
+                "AsMK bYrwgI khih bYrwg so bYrwgI ij KsmY BwvY ]",
+                3
+            ],
+            "9": [
+                "ihrdY sbid sdw BY ricAw gur kI kwr kmwvY ]",
+                3
+            ],
+            "10": [
+                "eyko cyqY mnUAw n folY Dwvqu vrij rhwvY ]",
+                3
+            ],
+            "11": [
+                "shjy mwqw sdw rMig rwqw swcy ky gux gwvY ]2]",
+                3
+            ],
+            "12": [
+                "mnUAw pauxu ibMdu suKvwsI nwim vsY suK BweI ]",
+                3
+            ],
+            "13": [
+                "ijhbw nyqR soqR sic rwqy jil bUJI quJih buJweI ]",
+                3
+            ],
+            "14": [
+                "Aws inrws rhY bYrwgI inj Gir qwVI lweI ]",
+                3
+            ],
+            "15": [
+                "iBiKAw nwim rjy sMqoKI AMimRqu shij pIAweI ]3]",
+                3
+            ],
+            "16": [
+                "duibDw ivic bYrwgu n hovI jb lgu dUjI rweI ]",
+                3
+            ],
+            "17": [
+                "sBu jgu qyrw qU eyko dwqw Avru n dUjw BweI ]",
+                3
+            ],
+            "18": [
+                "mnmuiK jMq duiK sdw invwsI gurmuiK dy vifAweI ]",
+                3
+            ],
+            "19": [
+                "Apr Apwr AgMm Agocr khxY kIm n pweI ]4]",
+                3
+            ],
+            "20": [
+                "suMn smwiD mhw prmwrQu qIin Bvx piq nwmM ]",
+                3
+            ],
+            "21": [
+                "msqik lyKu jIAw jig jonI isir isir lyKu shwmM ]",
+                3
+            ],
+            "22": [
+                "krm sukrm krwey Awpy Awpy Bgiq idRVwmM ]",
+                3
+            ],
+            "23": [
+                "min muiK jUiT lhY BY mwn\\u00b5 Awpy igAwnu AgwmM ]5]",
+                3
+            ],
+            "24": [
+                "ijn cwiKAw syeI swdu jwxin ijau guMgy imiTAweI ]",
+                3
+            ],
+            "25": [
+                "AkQY kw ikAw kQIAY BweI cwlau sdw rjweI ]",
+                3
+            ],
+            "26": [
+                "guru dwqw myly qw miq hovY ingury miq n kweI ]",
+                3
+            ],
+            "27": [
+                "ijau clwey iqau cwlh BweI hor ikAw ko kry cqurweI ]6]",
+                3
+            ],
+            "28": [
+                "ieik Brim Bulwey ieik BgqI rwqy qyrw Kylu Apwrw ]",
+                3
+            ],
+            "29": [
+                "ijqu quDu lwey qyhw Plu pwieAw qU hukim clwvxhwrw ]",
+                3
+            ],
+            "30": [
+                "syvw krI jy ikCu hovY Apxw jIau ipMfu qumwrw ]",
+                3
+            ],
+            "31": [
+                "siqguir imilAY ikrpw kInI AMimRq nwmu ADwrw ]7]",
+                3
+            ],
+            "32": [
+                "ggn\\u00b5qir vwisAw gux prgwisAw gux mih igAwn iDAwn\\u00b5 ]",
+                3
+            ],
+            "33": [
+                "nwmu min BwvY khY khwvY qqo qqu vKwn\\u00b5 ]",
+                3
+            ],
+            "34": [
+                "sbdu gur pIrw gihr gMBIrw ibnu sbdY jgu baurwn\\u00b5 ]",
+                3
+            ],
+            "35": [
+                "pUrw bYrwgI shij suBwgI scu nwnk mnu mwn\\u00b5 ]8]1]",
+                3
+            ]
+        },
+        "first_line": [
+            "duibDw n pVau hir ibnu horu n pUjau mVY mswix n jweI ]",
+            3
+        ],
+        "first_letter": "d"
+    },
+    {
+        "id": 47,
+        "date": "2002-02-16",
+        "needs_verification": true
+    },
+    {
+        "id": 48,
+        "date": "2002-02-17",
+        "needs_verification": true
+    },
+    {
+        "id": 49,
+        "date": "2002-02-18",
+        "needs_verification": true
+    },
+    {
+        "id": 50,
+        "date": "2002-02-19",
+        "needs_verification": false,
+        "ang": "763",
+        "writer": 1,
+        "raag": 15,
+        "gurmukhi": {
+            "0": [
+                "rwgu sUhI CMq mhlw 1 Gru 1",
+                2
+            ],
+            "1": [
+                "\\u003C\\u003E siqgur pRswid ]",
+                1
+            ],
+            "2": [
+                "Bir jobin mY mq pyeIAVY Gir pwhuxI bil rwm jIau ]",
+                3
+            ],
+            "3": [
+                "mYlI Avgix iciq ibnu gur gux n smwvnI bil rwm jIau ]",
+                3
+            ],
+            "4": [
+                "gux swr n jwxI Brim BulwxI jobnu bwid gvwieAw ]",
+                3
+            ],
+            "5": [
+                "vru Gru dru drsnu nhI jwqw ipr kw shju n BwieAw ]",
+                3
+            ],
+            "6": [
+                "siqgur pUiC n mwrig cwlI sUqI rYix ivhwxI ]",
+                3
+            ],
+            "7": [
+                "nwnk bwlqix rwfypw ibnu ipr Dn kumlwxI ]1]",
+                3
+            ],
+            "8": [
+                "bwbw mY vru dyih mY hir vru BwvY iqs kI bil rwm jIau ]",
+                3
+            ],
+            "9": [
+                "riv rihAw jug cwir iqRBvx bwxI ijs kI bil rwm jIau ]",
+                3
+            ],
+            "10": [
+                "iqRBvx kMqu rvY sohwgix AvgxvMqI dUry ]",
+                3
+            ],
+            "11": [
+                "jYsI Awsw qYsI mnsw pUir rihAw BrpUry ]",
+                3
+            ],
+            "12": [
+                "hir kI nwir su srb suhwgix rWf n mYlY vysy ]",
+                3
+            ],
+            "13": [
+                "nwnk mY vru swcw BwvY juig juig pRIqm qYsy ]2]",
+                3
+            ],
+            "14": [
+                "bwbw lgnu gxwie hM BI vM\\\\w swhurY bil rwm jIau ]",
+                3
+            ],
+            "15": [
+                "swhw hukmu rjwie so n tlY jo pRBu krY bil rwm jIau ]",
+                3
+            ],
+            "16": [
+                "ikrqu pieAw krqY kir pwieAw myit n skY koeI ]",
+                3
+            ],
+            "17": [
+                "jw\\\\I nwau nrh inhkyvlu riv rihAw iqhu loeI ]",
+                3
+            ],
+            "18": [
+                "mwie inrwsI roie ivCuMnI bwlI bwlY hyqy ]",
+                3
+            ],
+            "19": [
+                "nwnk swc sbid suK mhlI gur crxI pRBu cyqy ]3]",
+                3
+            ],
+            "20": [
+                "bwbuil idqVI dUir nw AwvY Gir pyeIAY bil rwm jIau ]",
+                3
+            ],
+            "21": [
+                "rhsI vyiK hdUir ipir rwvI Gir sohIAY bil rwm jIau ]",
+                3
+            ],
+            "22": [
+                "swcy ipr loVI pRIqm joVI miq pUrI prDwny ]",
+                3
+            ],
+            "23": [
+                "sMjogI mylw Qwin suhylw guxvMqI gur igAwny ]",
+                3
+            ],
+            "24": [
+                "squ sMqoKu sdw scu plY scu bolY ipr Bwey ]",
+                3
+            ],
+            "25": [
+                "nwnk ivCuiV nw duKu pwey gurmiq AMik smwey ]4]1]",
+                3
+            ]
+        },
+        "first_line": [
+            "Bir jobin mY mq pyeIAVY Gir pwhuxI bil rwm jIau ]",
+            3
+        ],
+        "first_letter": "B"
+    },
+    {
+        "id": 51,
+        "date": "2002-02-20",
+        "needs_verification": false,
+        "ang": "673",
+        "writer": 5,
+        "raag": 10,
+        "gurmukhi": {
+            "0": [
+                "DnwsrI mhlw 5 ]",
+                2
+            ],
+            "1": [
+                "qum dwqy Twkur pRiqpwlk nwiek Ksm hmwry ]",
+                3
+            ],
+            "2": [
+                "inmK inmK qum hI pRiqpwlhu hm bwirk qumry Dwry ]1]",
+                3
+            ],
+            "3": [
+                "ijhvw eyk kvn gun khIAY ]",
+                3
+            ],
+            "4": [
+                "bysumwr byAMq suAwmI qyro AMqu n ikn hI lhIAY ]1] rhwau ]",
+                3
+            ],
+            "5": [
+                "koit prwD hmwry KMfhu Aink ibDI smJwvhu ]",
+                3
+            ],
+            "6": [
+                "hm AigAwn Alp miq QorI qum Awpn ibrdu rKwvhu ]2]",
+                3
+            ],
+            "7": [
+                "qumrI srix qumwrI Awsw qum hI sjn suhyly ]",
+                3
+            ],
+            "8": [
+                "rwKhu rwKnhwr dieAwlw nwnk Gr ky goly ]3]12]",
+                3
+            ]
+        },
+        "first_line": [
+            "qum dwqy Twkur pRiqpwlk nwiek Ksm hmwry ]",
+            3
+        ],
+        "first_letter": "q"
+    },
+    {
+        "id": 52,
+        "date": "2002-02-21",
+        "needs_verification": false,
+        "ang": "633",
+        "writer": 9,
+        "raag": 9,
+        "gurmukhi": {
+            "0": [
+                "soriT mhlw 9 ]",
+                2
+            ],
+            "1": [
+                "jo nru duK mY duKu nhI mwnY ]",
+                3
+            ],
+            "2": [
+                "suK snyhu Aru BY nhI jw kY kMcn mwtI mwnY ]1] rhwau ]",
+                3
+            ],
+            "3": [
+                "nh inMidAw nh ausqiq jw kY loBu mohu AiBmwnw ]",
+                3
+            ],
+            "4": [
+                "hrK sog qy rhY inAwrau nwih mwn Apmwnw ]1]",
+                3
+            ],
+            "5": [
+                "Awsw mnsw sgl iqAwgY jg qy rhY inrwsw ]",
+                3
+            ],
+            "6": [
+                "kwmu k\\u00aeoDu ijh prsY nwhin iqh Git bRhmu invwsw ]2]",
+                3
+            ],
+            "7": [
+                "gur ikrpw ijh nr kau kInI iqh ieh jugiq pCwnI ]",
+                3
+            ],
+            "8": [
+                "nwnk lIn BieE goibMd isau ijau pwnI sMig pwnI ]3]11]",
+                3
+            ]
+        },
+        "first_line": [
+            "jo nru duK mY duKu nhI mwnY ]",
+            3
+        ],
+        "first_letter": "j"
+    },
+    {
+        "id": 53,
+        "date": "2002-02-22",
+        "needs_verification": true
+    },
+    {
+        "id": 54,
+        "date": "2002-02-23",
+        "needs_verification": false,
+        "ang": "635",
+        "writer": 1,
+        "raag": 9,
+        "gurmukhi": {
+            "0": [
+                "soriT mhlw 1 iqqukI ]",
+                2
+            ],
+            "1": [
+                "Awsw mnsw bMDnI BweI krm Drm bMDkwrI ]",
+                3
+            ],
+            "2": [
+                "pwip puMin jgu jwieAw BweI ibnsY nwmu ivswrI ]",
+                3
+            ],
+            "3": [
+                "ieh mwieAw jig mohxI BweI krm sBy vykwrI ]1]",
+                3
+            ],
+            "4": [
+                "suix pMifq krmw kwrI ]",
+                3
+            ],
+            "5": [
+                "ijqu krim suKu aUpjY BweI su Awqm qqu bIcwrI ] rhwau ]",
+                3
+            ],
+            "6": [
+                "swsqu bydu bkY KVo BweI krm krhu sMswrI ]",
+                3
+            ],
+            "7": [
+                "pwKMif mYlu n cUkeI BweI AMqir mYlu ivkwrI ]",
+                3
+            ],
+            "8": [
+                "ien ibiD fUbI mwkurI BweI aUNfI isr kY BwrI ]2]",
+                3
+            ],
+            "9": [
+                "durmiq GxI ivgUqI BweI dUjY Bwie KuAweI ]",
+                3
+            ],
+            "10": [
+                "ibnu siqgur nwmu n pweIAY BweI ibnu nwmY Brmu n jweI ]",
+                3
+            ],
+            "11": [
+                "siqguru syvy qw suKu pwey BweI Awvxu jwxu rhweI ]3]",
+                3
+            ],
+            "12": [
+                "swcu shju gur qy aUpjY BweI mnu inrmlu swic smweI ]",
+                3
+            ],
+            "13": [
+                "guru syvy so bUJY BweI gur ibnu mgu n pweI ]",
+                3
+            ],
+            "14": [
+                "ijsu AMqir loBu ik krm kmwvY BweI kUVu boil ibKu KweI ]4]",
+                3
+            ],
+            "15": [
+                "pMifq dhI ivloeIAY BweI ivchu inklY qQu ]",
+                3
+            ],
+            "16": [
+                "jlu mQIAY jlu dyKIAY BweI iehu jgu eyhw vQu ]",
+                3
+            ],
+            "17": [
+                "gur ibnu Brim ivgUcIAY BweI Git Git dyau AlKu ]5]",
+                3
+            ],
+            "18": [
+                "iehu jgu qwgo sUq ko BweI dh ids bwDo mwie ]",
+                3
+            ],
+            "19": [
+                "ibnu gur gwiT n CUteI BweI Qwky krm kmwie ]",
+                3
+            ],
+            "20": [
+                "iehu jgu Brim BulwieAw BweI khxw ikCU n jwie ]6]",
+                3
+            ],
+            "21": [
+                "gur imilAY Bau min vsY BweI BY mrxw scu lyKu ]",
+                3
+            ],
+            "22": [
+                "mjnu dwnu cMigAweIAw BweI drgh nwmu ivsyKu ]",
+                3
+            ],
+            "23": [
+                "guru AMksu ijin nwmu idRVwieAw BweI min visAw cUkw ByKu ]7]",
+                3
+            ],
+            "24": [
+                "iehu qnu hwtu srwP ko BweI vKru nwmu Apwru ]",
+                3
+            ],
+            "25": [
+                "iehu vKru vwpwrI so idRVY BweI gur sbid kry vIcwru ]",
+                3
+            ],
+            "26": [
+                "Dnu vwpwrI nwnkw BweI myil kry vwpwru ]8]2]",
+                3
+            ]
+        },
+        "first_line": [
+            "Awsw mnsw bMDnI BweI krm Drm bMDkwrI ]",
+            3
+        ],
+        "first_letter": "A"
+    },
+    {
+        "id": 55,
+        "date": "2002-02-24",
+        "needs_verification": false,
+        "ang": "625",
+        "writer": 5,
+        "raag": 9,
+        "gurmukhi": {
+            "0": [
+                "soriT mhlw 5 Gru 3 dupdy",
+                2
+            ],
+            "1": [
+                "\\u003C\\u003E siqgur pRswid ]",
+                1
+            ],
+            "2": [
+                "rwmdws srovir nwqy ]",
+                3
+            ],
+            "3": [
+                "siB auqry pwp kmwqy ]",
+                3
+            ],
+            "4": [
+                "inrml hoey kir iesnwnw ]",
+                3
+            ],
+            "5": [
+                "guir pUrY kIny dwnw ]1]",
+                3
+            ],
+            "6": [
+                "siB kusl Kym pRiB Dwry ]",
+                3
+            ],
+            "7": [
+                "shI slwmiq siB Qok aubwry gur kw sbdu vIcwry ] rhwau ]",
+                3
+            ],
+            "8": [
+                "swDsMig mlu lwQI ]",
+                3
+            ],
+            "9": [
+                "pwrbRhmu BieE swQI ]",
+                3
+            ],
+            "10": [
+                "nwnk nwmu iDAwieAw ]",
+                3
+            ],
+            "11": [
+                "Awid purK pRBu pwieAw ]2]1]65]",
+                3
+            ]
+        },
+        "first_line": [
+            "rwmdws srovir nwqy ]",
+            3
+        ],
+        "first_letter": "r"
+    },
+    {
+        "id": 56,
+        "date": "2002-02-25",
+        "needs_verification": false,
+        "ang": "667",
+        "writer": 4,
+        "raag": 10,
+        "gurmukhi": {
+            "0": [
+                "DnwsrI mhlw 4 ]",
+                2
+            ],
+            "1": [
+                "hm AMDuly AMD ibKY ibKu rwqy ikau cwlh gur cwlI ]",
+                3
+            ],
+            "2": [
+                "sqguru dieAw kry suKdwqw hm lwvY Awpn pwlI ]1]",
+                3
+            ],
+            "3": [
+                "gurisK mIq clhu gur cwlI ]",
+                3
+            ],
+            "4": [
+                "jo guru khY soeI Bl mwnhu hir hir kQw inrwlI ]1] rhwau ]",
+                3
+            ],
+            "5": [
+                "hir ky sMq suxhu jn BweI guru syivhu byig bygwlI ]",
+                3
+            ],
+            "6": [
+                "sqguru syiv Krcu hir bwDhu mq jwxhu Awju ik kwl@I ]2]",
+                3
+            ],
+            "7": [
+                "hir ky sMq jphu hir jpxw hir sMqu clY hir nwlI ]",
+                3
+            ],
+            "8": [
+                "ijn hir jipAw sy hir hoey hir imilAw kyl kylwlI ]3]",
+                3
+            ],
+            "9": [
+                "hir hir jpnu jip loc luocwnI hir ikrpw kir bnvwlI ]",
+                3
+            ],
+            "10": [
+                "jn nwnk sMgiq swD hir mylhu hm swD jnw pg rwlI ]4]4]",
+                3
+            ]
+        },
+        "first_line": [
+            "hm AMDuly AMD ibKY ibKu rwqy ikau cwlh gur cwlI ]",
+            3
+        ],
+        "first_letter": "h"
+    },
+    {
+        "id": 57,
+        "date": "2002-02-26",
+        "needs_verification": false,
+        "ang": "819",
+        "writer": 5,
+        "raag": 16,
+        "gurmukhi": {
+            "0": [
+                "iblwvlu mhlw 5 ]",
+                2
+            ],
+            "1": [
+                "Apxy bwlk Awip riKAnu pwrbRhm gurdyv ]",
+                3
+            ],
+            "2": [
+                "suK sWiq shj Awnd Bey pUrn BeI syv ]1] rhwau ]",
+                3
+            ],
+            "3": [
+                "Bgq jnw kI bynqI suxI pRiB Awip ]",
+                3
+            ],
+            "4": [
+                "rog imtwie jIvwilAnu jw kw vf prqwpu ]1]",
+                3
+            ],
+            "5": [
+                "doK hmwry bKisAnu ApxI kl DwrI ]",
+                3
+            ],
+            "6": [
+                "mn bWCq Pl idiqAnu nwnk bilhwrI ]2]16]80]",
+                3
+            ]
+        },
+        "first_line": [
+            "Apxy bwlk Awip riKAnu pwrbRhm gurdyv ]",
+            3
+        ],
+        "first_letter": "A"
+    },
+    {
+        "id": 58,
+        "date": "2002-02-27",
+        "needs_verification": false,
+        "ang": "793",
+        "writer": 12,
+        "raag": 15,
+        "gurmukhi": {
+            "0": [
+                "sUhI ]",
+                2
+            ],
+            "1": [
+                "jo idn Awvih so idn jwhI ]",
+                3
+            ],
+            "2": [
+                "krnw kUcu rhnu iQru nwhI ]",
+                3
+            ],
+            "3": [
+                "sMgu clq hY hm BI clnw ]",
+                3
+            ],
+            "4": [
+                "dUir gvnu isr aUpir mrnw ]1]",
+                3
+            ],
+            "5": [
+                "ikAw qU soieAw jwgu ieAwnw ]",
+                3
+            ],
+            "6": [
+                "qY jIvnu jig scu kir jwnw ]1] rhwau ]",
+                3
+            ],
+            "7": [
+                "ijin jIau dIAw su irjku AMbrwvY ]",
+                3
+            ],
+            "8": [
+                "sB Gt BIqir hwtu clwvY ]",
+                3
+            ],
+            "9": [
+                "kir bMidgI Cwif mY myrw ]",
+                3
+            ],
+            "10": [
+                "ihrdY nwmu sm@wir svyrw ]2]",
+                3
+            ],
+            "11": [
+                "jnmu isrwno pMQu n svwrw ]",
+                3
+            ],
+            "12": [
+                "sWJ prI dh ids AMiDAwrw ]",
+                3
+            ],
+            "13": [
+                "kih rivdws indwin idvwny ]",
+                3
+            ],
+            "14": [
+                "cyqis nwhI dunIAw Pn Kwny ]3]2]",
+                3
+            ]
+        },
+        "first_line": [
+            "jo idn Awvih so idn jwhI ]",
+            3
+        ],
+        "first_letter": "j"
+    },
+    {
+        "id": 59,
+        "date": "2002-02-28",
+        "needs_verification": false,
+        "ang": "797",
+        "writer": 3,
+        "raag": 16,
+        "gurmukhi": {
+            "0": [
+                "iblwvlu mhlw 3 ]",
+                2
+            ],
+            "1": [
+                "pUrw Qwtu bxwieAw pUrY vyKhu eyk smwnw ]",
+                3
+            ],
+            "2": [
+                "iesu prpMc mih swcy nwm kI vifAweI mqu ko Drhu gumwnw ]1]",
+                3
+            ],
+            "3": [
+                "siqgur kI ijs no miq AwvY so siqgur mwih smwnw ]",
+                3
+            ],
+            "4": [
+                "ieh bwxI jo jIAhu jwxY iqsu AMqir rvY hir nwmw ]1] rhwau ]",
+                3
+            ],
+            "5": [
+                "chu jugw kw huix inbyVw nr mnuKw no eyku inDwnw ]",
+                3
+            ],
+            "6": [
+                "jqu sMjm qIrQ Enw jugw kw Drmu hY kil mih kIriq hir nwmw ]2]",
+                3
+            ],
+            "7": [
+                "juig juig Awpo Awpxw Drmu hY soiD dyKhu byd purwnw ]",
+                3
+            ],
+            "8": [
+                "gurmuiK ijnI iDAwieAw hir hir jig qy pUry prvwnw ]3]",
+                3
+            ],
+            "9": [
+                "khq nwnku scy isau pRIiq lwey cUkY min AiBmwnw ]",
+                3
+            ],
+            "10": [
+                "khq suxq sBy suK pwvih mwnq pwih inDwnw ]4]4]",
+                3
+            ]
+        },
+        "first_line": [
+            "pUrw Qwtu bxwieAw pUrY vyKhu eyk smwnw ]",
+            3
+        ],
+        "first_letter": "p"
+    }
+]

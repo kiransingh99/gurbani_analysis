@@ -16,7 +16,7 @@ RC_PASS=0
 RC_FAIL=1
 RC_ERROR=2
 
-declare -a EXCLUDE_DIR=(".git/" ".github/" "__pycache__/")
+declare -a EXCLUDE_DIR=(".git/" ".github/" "__pycache__/" "htmlcov/")
 
 CMD="grep -rni $FC_STRING"
 
