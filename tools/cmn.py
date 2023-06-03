@@ -29,6 +29,22 @@ import subprocess
 import sys
 
 
+MONTHS = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+]
+
+
 class ReturnCodes(enum.IntEnum):
     """Subclass for all return code enums."""
 
@@ -179,22 +195,8 @@ def month_name_from_num(index: int) -> str:
     :param index: number between 1 and 12.
     :return: month name corresponding to input.
     """
-    months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-    ]
 
-    return months[index - 1]
+    return MONTHS[index - 1]
 
 
 def which_python() -> str:
