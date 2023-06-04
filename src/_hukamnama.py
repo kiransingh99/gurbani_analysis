@@ -649,7 +649,7 @@ def _load_webpage_data(url: str) -> str:
     return html
 
 
-def parse(ctx: argparse.Namespace) -> None:
+def parse(ctx: argparse.Namespace) -> int:
     """Main handler for Hukamnama CLI. This is the API called by the main
     Gurbani Analysis CLI.
 
@@ -659,6 +659,8 @@ def parse(ctx: argparse.Namespace) -> None:
     _log.set_level(ctx.verbosity)
     if ctx.function == Function.DATA.value:
         _data(ctx)
+
+    return _cmn.RC.SUCCESS
 
 
 def _separate_manglacharan(

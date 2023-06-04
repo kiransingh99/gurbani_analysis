@@ -24,7 +24,7 @@ import sys
 import traceback
 
 import _cmn
-import _hukamnama
+import _ardaas, _hukamnama
 
 
 _log = _cmn.Logger("main")
@@ -83,6 +83,27 @@ def main() -> None:
 
     composition = parser.add_subparsers(dest="composition")
 
+    # Ardaas
+    ardaas = composition.add_parser(
+        "ardaas", description="Generate the customised portion of ardaas."
+    )
+    ardaas_subparser = ardaas.add_subparsers(dest="function")
+
+    # Ardaas -> Font
+    # ASCII (default)
+    # Unicode
+    # Romanised
+
+    # Individual
+    # In sangat
+
+    # Akhand paath (arambh, bhog)
+    # Hukamnama
+    # Read bani
+    # Sehaj paath (arambh, madh, bhog, raul)
+    # Sukhmani sahib
+    # Sukhaasan
+
     # Hukamnama
     hukamnama = composition.add_parser(
         "hukamnama", description="Data regarding hukamnama archives."
@@ -135,22 +156,24 @@ def main() -> None:
     if rc.is_ok():
         if args.composition == "hukamnama":
             subparser = _hukamnama
-
-            try:
-                rc = subparser.parse(args)
-            except KeyboardInterrupt:
-                pass
-            except NotImplementedError:
-                rc = _cmn.RC.NOT_IMPLEMENTED
-                exception = _cmn.NotImplementedException(traceback.format_exc())
-            except _cmn.Error as exc:
-                rc = exc.rc
-                exception = exc
-            except Exception:
-                rc = _cmn.RC.UNHANDLED_ERROR
-                exception = _cmn.UnhandledExceptionError(traceback.format_exc())
+        elif args.composition == "ardaas":
+            subparser = _ardaas
         else:
             parser.print_help()
+
+        try:
+            rc = subparser.parse(args)
+        except KeyboardInterrupt:
+            pass
+        except NotImplementedError:
+            rc = _cmn.RC.NOT_IMPLEMENTED
+            exception = _cmn.NotImplementedException(traceback.format_exc())
+        except _cmn.Error as exc:
+            rc = exc.rc
+            exception = exc
+        except Exception:
+            rc = _cmn.RC.UNHANDLED_ERROR
+            exception = _cmn.UnhandledExceptionError(traceback.format_exc())
 
     _exit(rc, exception)
 
