@@ -84,9 +84,7 @@ class _LoadWebContentError(_cmn.Error):
     def __init__(self, url: str):
         msg = f"Failed to launch webpage {url}."
         steps = ["Check your internet connection."]
-        super().__init__(
-            msg, rc=_cmn.RC.LOAD_WEBPAGE_ERROR, suggested_steps=steps
-        )
+        super().__init__(msg, rc=_cmn.RC.LOAD_WEBPAGE_ERROR, suggested_steps=steps)
 
 
 class _Raags(enum.IntEnum):
@@ -305,9 +303,7 @@ class _WriterError(_cmn.Error):
 
     def __init__(self, writer: str):
         msg = f"The writer '{writer}' was not recognised."
-        steps = [
-            "Add a mapping for this writer to a value in the `_Writers` enum."
-        ]
+        steps = ["Add a mapping for this writer to a value in the `_Writers` enum."]
         super().__init__(msg, steps)
 
 
@@ -400,12 +396,7 @@ def _database_file_name(date: datetime.datetime) -> str:
     :param date: date of data entry.
     :return: file name for this data entry.
     """
-    return (
-        _DATABASE_PATH
-        + str(date.year)
-        + f".{date.month:02d}"
-        + _DATABASE_FILE_EXT
-    )
+    return _DATABASE_PATH + str(date.year) + f".{date.month:02d}" + _DATABASE_FILE_EXT
 
 
 def _datetime_to_str(date: datetime.datetime) -> str:
@@ -438,9 +429,7 @@ def _get_entry_dates() -> list[datetime.datetime]:
     """
     dates = []
     for file in os.listdir(_DATABASE_PATH):
-        with open(
-            os.path.join(_DATABASE_PATH, file), "r", encoding="utf-8"
-        ) as f:
+        with open(os.path.join(_DATABASE_PATH, file), "r", encoding="utf-8") as f:
             data = json.loads(f.read())
         for entry in data:
             try:
@@ -525,9 +514,9 @@ def _get_shabad(html: str) -> list[str]:
     :param html: full HTML source code.
     :return: the hukamnama, in separated lines.
     """
-    shabad = re.findall(
-        r'shabad_lines":{"gurmukhi":\["(.*)"\],"transliteration', html
-    )[0]
+    shabad = re.findall(r'shabad_lines":{"gurmukhi":\["(.*)"\],"transliteration', html)[
+        0
+    ]
     shabad_lines = shabad.split('","')
     return shabad_lines
 
