@@ -18,6 +18,7 @@ __all__ = [
     "RC",
     "UnhandledExceptionError",
     "Verbosity",
+    "gurbani_ascii_to_unicode",
 ]
 
 from typing import Any, Optional
@@ -153,3 +154,125 @@ class Verbosity(enum.Enum):
     STANDARD = 20
     VERBOSE = 15
     VERY_VERBOSE = 10
+
+
+def gurbani_unicode_to_romanised(unicode_line):
+    grammar_mapping = {
+        " ": " ",  # space
+        "[": ".",  # full stop
+        "]": ".",  # double full stop
+    }
+    oora_aera_eeri_mapping = {
+        # For oora aera and eeri, add mukta sound. Presence of a vowel will
+        # modify this further.
+        "a": "",  # oora
+        "A": "a",  # aera
+        "e": "",  # eeri
+    }
+    consonant_mapping = {
+        # Oora, aera and eeri are in the vowels mapping as they follow that
+        # pattern better.
+        "s": "s",  # sassa
+        "h": "h",  # haha
+        "k": "k",  # kakka
+        "K": "kh",  # khakha
+        "g": "g",  # gagga
+        "G": "gh",  # ghagha
+        "|": "ng",  # nganga
+        "c": "ch",  # chacha
+        "C": "chh",  # chhachha
+        "j": "j",  # jaja
+        "J": "jh",  # jhajha
+        "\\": "nj",  # njanja
+        "t": "tt",  # tainka
+        "T": "tth",  # ttattha
+        "f": "dd",  # ddadda
+        "F": "ddh",  # ddhaddha
+        "x": "ṉ",  # nana
+        "q": "t",  # tata
+        "Q": "th",  # thatha
+        "d": "d",  # dada
+        "D": "dh",  # dhadha
+        "n": "n",  # nana
+        "p": "p",  # pappa
+        "P": "ph",  # phapha
+        "b": "b",  # babba
+        "B": "bh",  # bhabha
+        "m": "m",  # mamma
+        "X": "y",  # yaya
+        "r": "r",  # rara
+        "l": "l",  # lala
+        "v": "v",  # vava
+        "V": "ṙ",  # rrarra
+        "S": "sh", # shasha
+        "Z": "ghh", # ghhaghha
+        "@@@": "", # khhakhha @@@
+        "z": "z", # zazza
+        "@@@": "", # faffa @@@
+        "L": "ḷ", # lalla pair bindi
+    }
+    vowel_mapping = {
+        # True vowels.
+        "w": "aa",  # kannaa
+        "W": "aaṅ",  # kannaa bindi
+        "i": "i",  # sihaari
+        "I": "ee",  # bihaari
+        "u": "u",  # aunkar
+        "U": "oo",  # dulainkar
+        "o": "o",  # horaa
+        "O": "ou",  # kanhaura
+        "y": "e",  # laav
+        "Y": "ai",  # dulaav
+        "H": "h", # pairee haha
+        "N": "ṅ", # bindee
+        "M": "ṅ", # tippee
+        "µ": "ṅ", # tippee
+    }
+    special_mapping = {
+        "~": None # adhak
+    }
+    mapping = {}
+    mapping.update(grammar_mapping)
+    mapping.update(oora_aera_eeri_mapping)
+    mapping.update(consonant_mapping)
+    mapping.update(vowel_mapping)
+    mapping.update(special_mapping)
+
+    romanised = []
+    buf = ""
+
+    for i, char in enumerate(unicode_line):
+        mapped_char = mapping[char]
+
+        if romanised and char == " ":
+            if romanised[-1] in ("u", "i"):
+                romanised = romanised[:-1] + ["(" + romanised[-1] + ")"]
+        if char == "i":  # sihaari
+            buf = mapped_char
+        elif char == "~": # adhak
+            buf = mapping[unicode_line[i+1]]
+        else:
+            if romanised and romanised[-1] == "a" and "aa" in mapped_char:
+                romanised[-1] = ""
+            # For consecutive consonants, and for vowels after oora aera eeri, add mukta sound between them
+            elif romanised and (
+                (
+                    romanised[-1] in consonant_mapping.values()
+                    and char in list(oora_aera_eeri_mapping.keys()) + list(consonant_mapping.keys())
+                )
+                or (
+                    romanised[-1] in oora_aera_eeri_mapping.values()
+                    and char in vowel_mapping.keys()
+                )
+            ):
+                romanised[-1] += "a"
+            if mapped_char:
+                romanised.append(mapped_char)
+            if buf:
+                romanised.append(buf)
+                buf = ""
+
+    return "".join(romanised)
+
+
+gurbani_unicode_to_romanised("ijnI nwmu iDAwieAw gey mskiq Gwil ]")

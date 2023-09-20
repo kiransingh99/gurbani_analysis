@@ -50,12 +50,12 @@ def main() -> None:
 
     # Main parser
     parser = argparse.ArgumentParser(
-        description="Collect and analyse data about Gurbani."
+        description="Collect and analyse data about Gurbani.", add_help=True
     )
 
     # Common parsing
-    verbosity_parser = argparse.ArgumentParser(add_help=False)
-    verbosity_group = verbosity_parser.add_mutually_exclusive_group()
+    common_parser = argparse.ArgumentParser(add_help=False)
+    verbosity_group = parser.add_mutually_exclusive_group()
     verbosity_group.add_argument(
         "-s",
         "--suppress-output",
@@ -87,22 +87,35 @@ def main() -> None:
     ardaas = composition.add_parser(
         "ardaas", description="Generate the customised portion of ardaas."
     )
-    ardaas_subparser = ardaas.add_subparsers(dest="function")
 
-    # Ardaas -> Font
-    # ASCII (default)
-    # Unicode
-    # Romanised
+    # @@@ Ardaas -> Language
+    language_group = ardaas.add_mutually_exclusive_group()
+    language_group.add_argument(
+        "--unicode",
+        action="store_true",
+        help="Give output in unicode encoding",
+    )
+    language_group.add_argument(
+        "--romanised",
+        action="store_true",
+        help="Give output in romanised font",
+    )
+    ardaas.add_argument(
+        "-m",
+        "--multiple",
+        action="store_true",
+        help="Ardaas for multiple people",
+    )
 
-    # Individual
-    # In sangat
+    # @@@ Akhand paath (arambh, bhog)
+    # @@@ Sehaj paath (arambh, madh, bhog, raul)
 
-    # Akhand paath (arambh, bhog)
     # Hukamnama
-    # Read bani
-    # Sehaj paath (arambh, madh, bhog, raul)
-    # Sukhmani sahib
-    # Sukhaasan
+    ardaas.add_argument("--hukamnama", action="store_true")
+
+    # @@@ Read bani
+    # @@@ Sukhmani sahib
+    # @@@ Sukhaasan
 
     # Hukamnama
     hukamnama = composition.add_parser(
@@ -114,7 +127,7 @@ def main() -> None:
     data = hukamnama_subparser.add_parser(
         _hukamnama.Function.DATA.value,
         description="Update database from archives.",
-        parents=[verbosity_parser],
+        parents=[common_parser],
     )
     update_method = data.add_mutually_exclusive_group(required=True)
     update_method.add_argument(
@@ -151,9 +164,14 @@ def main() -> None:
     if not hasattr(args, "verbosity") or args.verbosity is None:
         args.verbosity = _cmn.Verbosity.STANDARD
 
+    _log.set_level(args.verbosity)
+
+    _log.very_verbose(args)
+
     exception = None
 
     if rc.is_ok():
+        subparser = None
         if args.composition == "hukamnama":
             subparser = _hukamnama
         elif args.composition == "ardaas":
@@ -162,7 +180,8 @@ def main() -> None:
             parser.print_help()
 
         try:
-            rc = subparser.parse(args)
+            if subparser:
+                rc = subparser.parse(args)
         except KeyboardInterrupt:
             pass
         except NotImplementedError:
