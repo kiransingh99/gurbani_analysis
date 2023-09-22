@@ -126,6 +126,13 @@ def main() -> None:
 
     args = parser.parse_args()
 
+    ## Hukamnama -> Analysis
+    analysis = hukamnama_subparser.add_parser(
+        _hukamnama.Function.ANALYSIS.value,
+        description="Get stats from hukamnama archives.",
+        # parents=[verbosity_parser],
+    )
+
     # Defaults
     if not hasattr(args, "verbosity") or args.verbosity is None:
         args.verbosity = _cmn.Verbosity.STANDARD
@@ -135,6 +142,7 @@ def main() -> None:
     if rc.is_ok():
         if args.composition == "hukamnama":
             subparser = _hukamnama
+            breakpoint()  # FAIL_COMMIT
 
             try:
                 rc = subparser.parse(args)

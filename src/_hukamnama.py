@@ -67,6 +67,7 @@ class Function(enum.Enum):
     DATA: Update/repopulate the database.
     """
 
+    ANALYSIS = "analysis"
     DATA = "data"
 
 
@@ -379,6 +380,26 @@ class _Writers(enum.IntEnum):
         return obj
 
 
+def _analysis(ctx: argparse.Namespace) -> None:
+    """Handler for any analysis requests to the Hukamnama CLI.
+
+    :param ctx: context about the original instruction.
+    """
+    # Ang stats
+    for file in os.listdir(_DATABASE_PATH):
+        with open(os.path.join(_DATABASE_PATH, file), "r", encoding="utf-8") as f:
+            data = json.loads(f.read())
+        for entry in data:
+            if entry["needs_verification"]:
+                continue
+            try:
+                ang = entry["ang"]
+                breakpoint()  # FAIL_COMMIT
+            except KeyError:
+                _log.standard("Missing 'ang' entry for: ", entry)
+                continue
+
+
 def _data(ctx: argparse.Namespace) -> None:
     """Handler for all data requests to the Hukamnama CLI.
 
@@ -648,6 +669,8 @@ def parse(ctx: argparse.Namespace) -> None:
     _log.set_level(ctx.verbosity)
     if ctx.function == Function.DATA.value:
         _data(ctx)
+    elif ctx.function == Function.ANALYSIS.value:
+        _analysis(ctx)
 
 
 def _separate_manglacharan(
