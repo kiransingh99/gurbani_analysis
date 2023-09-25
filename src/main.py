@@ -114,14 +114,16 @@ def main() -> None:
         "--read-bani", action="store_true", help="Specific banis were read"
     )
     ardaas.add_argument("--sukhmani", "--sukhmani-sahib", action="store_true")
-    ardaas.add_argument("--kirtan", action="store_true")
+    ardaas.add_argument("--kirtan", action="store_true", help="Kirtan was sung")
     # @@@ Katha
     ardaas.add_argument(
         "--anand-sahib", action="store_true", help="6 pauri Anand Sahib"
     )
     # @@@ Sukhaasan
 
-    ardaas.add_argument("--hukamnama", action="store_true")
+    ardaas.add_argument(
+        "--hukamnama", action="store_true", help="Hukamnama is to be taken"
+    )
     ardaas.add_argument(
         "--parshaad", action="store_true", help="Doing bhog of Parshaad"
     )
