@@ -88,7 +88,7 @@ def main() -> None:
         "ardaas", description="Generate the customised portion of ardaas."
     )
 
-    # @@@ Ardaas -> Language
+    # Ardaas -> Language
     language_group = ardaas.add_mutually_exclusive_group()
     language_group.add_argument(
         "--unicode",
@@ -100,22 +100,24 @@ def main() -> None:
         action="store_true",
         help="Give output in romanised font",
     )
+
+    # Ardaas -> Contexts
     ardaas.add_argument(
         "-m",
         "--multiple",
         action="store_true",
         help="Ardaas for multiple people",
     )
-
     # @@@ Akhand paath (arambh, bhog)
     # @@@ Sehaj paath (arambh, madh, bhog, raul)
-
-    # Hukamnama
-    ardaas.add_argument("--hukamnama", action="store_true")
-
     # @@@ Read bani
-    # @@@ Sukhmani sahib
+    ardaas.add_argument("--sukhmani", "--sukhmani-sahib", action="store_true")
+    # @@@ Kirtan
+    # @@@ Katha
+    # @@@ 6 pauri anand sahib
     # @@@ Sukhaasan
+
+    ardaas.add_argument("--hukamnama", action="store_true")
 
     # Hukamnama
     hukamnama = composition.add_parser(

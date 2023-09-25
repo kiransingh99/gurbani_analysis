@@ -156,11 +156,12 @@ class Verbosity(enum.Enum):
     VERY_VERBOSE = 10
 
 
-def gurbani_unicode_to_romanised(unicode_line):
+def gurbani_unicode_to_romanised(unicode):
     grammar_mapping = {
         " ": " ",  # space
         "[": ".",  # full stop
         "]": ".",  # double full stop
+        ",": ",",  # comma
     }
     oora_aera_eeri_mapping = {
         # For oora aera and eeri, add mukta sound. Presence of a vowel will
@@ -204,12 +205,16 @@ def gurbani_unicode_to_romanised(unicode_line):
         "l": "l",  # lala
         "v": "v",  # vava
         "V": "ṙ",  # rrarra
-        "S": "sh", # shasha
-        "Z": "ghh", # ghhaghha
-        "@@@": "", # khhakhha @@@
-        "z": "z", # zazza
-        "@@@": "", # faffa @@@
-        "L": "ḷ", # lalla pair bindi
+        "S": "sh",  # shasha
+        "Z": "ghh",  # ghhaghha
+        "@@@": "",  # khhakhha @@@
+        "z": "z",  # zazza
+        "@@@": "",  # faffa @@@
+        "L": "ḷ",  # lalla pair bindi
+    }
+    pairee_mapping = {
+        "H": "h",  # haha
+        "R": "r",  # rara
     }
     vowel_mapping = {
         # True vowels.
@@ -223,25 +228,31 @@ def gurbani_unicode_to_romanised(unicode_line):
         "O": "ou",  # kanhaura
         "y": "e",  # laav
         "Y": "ai",  # dulaav
-        "H": "h", # pairee haha
-        "N": "ṅ", # bindee
-        "M": "ṅ", # tippee
-        "µ": "ṅ", # tippee
+    }
+    semi_vowel_mapping = {
+        "N": "ṅ",  # bindee
+        "M": "ṅ",  # tippee
+        "µ": "ṅ",  # tippee
     }
     special_mapping = {
-        "~": None # adhak
+        "~": None,  # adhak
+        "`": None,  # adhak
     }
+
     mapping = {}
     mapping.update(grammar_mapping)
     mapping.update(oora_aera_eeri_mapping)
     mapping.update(consonant_mapping)
+    mapping.update(pairee_mapping)
     mapping.update(vowel_mapping)
+    mapping.update(semi_vowel_mapping)
     mapping.update(special_mapping)
 
     romanised = []
     buf = ""
+    adhak = False
 
-    for i, char in enumerate(unicode_line):
+    for i, char in enumerate(unicode):
         mapped_char = mapping[char]
 
         if romanised and char == " ":
@@ -249,24 +260,35 @@ def gurbani_unicode_to_romanised(unicode_line):
                 romanised = romanised[:-1] + ["(" + romanised[-1] + ")"]
         if char == "i":  # sihaari
             buf = mapped_char
-        elif char == "~": # adhak
-            buf = mapping[unicode_line[i+1]]
+        elif char in pairee_mapping.keys():
+            if romanised[-1] == "i":
+                romanised = romanised[:-2] + [mapped_char, romanised[-1]]
+            else:
+                romanised.append(mapped_char)
+        elif char == "~":  # adhak
+            adhak = True
         else:
-            if romanised and romanised[-1] == "a" and "aa" in mapped_char:
+            if romanised and romanised[-1].lower() == "a" and "aa" in mapped_char:
                 romanised[-1] = ""
             # For consecutive consonants, and for vowels after oora aera eeri, add mukta sound between them
             elif romanised and (
                 (
-                    romanised[-1] in consonant_mapping.values()
-                    and char in list(oora_aera_eeri_mapping.keys()) + list(consonant_mapping.keys())
+                    romanised[-1].lower() in consonant_mapping.values()
+                    and char
+                    in list(oora_aera_eeri_mapping.keys())
+                    + list(consonant_mapping.keys())
+                    + list(pairee_mapping.keys())
                 )
                 or (
-                    romanised[-1] in oora_aera_eeri_mapping.values()
+                    romanised[-1].lower() in oora_aera_eeri_mapping.values()
                     and char in vowel_mapping.keys()
                 )
             ):
                 romanised[-1] += "a"
             if mapped_char:
+                if adhak:
+                    mapped_char = mapped_char.upper()
+                    adhak = False
                 romanised.append(mapped_char)
             if buf:
                 romanised.append(buf)
