@@ -38,6 +38,8 @@ def _generate(ctx: argparse.Namespace) -> None:
 
     if ctx.sukhmani:
         ardaas_unicode.extend(_sukhmani())
+    if ctx.kirtan:
+        ardaas_unicode.extend(_kirtan())
     # For any banis that were read:
     if ctx.sukhmani or ctx.read_bani:
         ardaas_unicode.extend(_read_banis(ctx.multiple))
@@ -71,6 +73,16 @@ nwnk Avru n suJeI hir ibnu bKsxhwru] "
     )
 
     return [jagat_jalandhaa, hukamanama_benti]
+
+
+def _kirtan() -> list[str]:
+    """Add lines to the ardaas to state that kirtan was done.
+
+    :return: list of lines to add to the ardaas.
+    """
+    return [
+        "Sbd kIrqn hoey[ ",
+    ]
 
 
 def parse(ctx: argparse.Namespace) -> None:
@@ -119,7 +131,7 @@ def _read_banis(multiple) -> list[str]:
 
 
 def _sukhmani() -> list[str]:
-    """Add lines to the ardaas to state that sukhmani sahib was read.
+    """Add lines to the ardaas to state that Sukhmani Sahib was read.
 
     :return: list of lines to add to the ardaas.
     """
