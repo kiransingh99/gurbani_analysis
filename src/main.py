@@ -110,7 +110,9 @@ def main() -> None:
     )
     # @@@ Akhand paath (arambh, bhog)
     # @@@ Sehaj paath (arambh, madh, bhog, raul)
-    ardaas.add_argument("--read-bani", action="store_true")
+    ardaas.add_argument(
+        "--read-bani", action="store_true", help="Specific banis were read"
+    )
     ardaas.add_argument("--sukhmani", "--sukhmani-sahib", action="store_true")
     ardaas.add_argument("--kirtan", action="store_true")
     # @@@ Katha

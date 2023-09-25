@@ -161,6 +161,7 @@ def gurbani_unicode_to_romanised(unicode):
         " ": " ",  # space
         "[": ".",  # full stop
         "]": ".",  # double full stop
+        ".": ".",  # full stop (probably used in elipses)
         ",": ",",  # comma
     }
     oora_aera_eeri_mapping = {
@@ -226,7 +227,7 @@ def gurbani_unicode_to_romanised(unicode):
         "U": "oo",  # dulainkar
         "o": "o",  # horaa
         "O": "ou",  # kanhaura
-        "y": "e",  # laav
+        "y": "ae",  # laav
         "Y": "ai",  # dulaav
     }
     semi_vowel_mapping = {

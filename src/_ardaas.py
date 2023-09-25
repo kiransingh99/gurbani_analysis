@@ -54,7 +54,7 @@ krI pwkswl soc pivqRw huix lwvhu Bogu hir rwey] "
         f"{degh} swjky hwzr hn[ ",
         anik_prakar,
         f"prvwn kIqw {degh} swD sMgq dw rsnw dy lwiek hox[ ",
-        "jo jI C~ky so qyrw hI nwm jpy",
+        "jo jI C~ky so qyrw hI nwm jpy[ ",
     ]
 
 
@@ -74,6 +74,8 @@ def _generate(ctx: argparse.Namespace) -> None:
 
     ardaas_unicode = []
 
+    if ctx.read_bani:
+        ardaas_unicode.extend(_read_specific_banis())
     if ctx.sukhmani:
         ardaas_unicode.extend(_sukhmani())
     if ctx.kirtan:
@@ -81,7 +83,7 @@ def _generate(ctx: argparse.Namespace) -> None:
     if ctx.anand_sahib:
         ardaas_unicode.extend(_anand_sahib())
     # For any banis that were read:
-    if ctx.sukhmani or ctx.read_bani:
+    if ctx.read_bani or ctx.sukhmani or ctx.kirtan or ctx.anand_sahib:
         ardaas_unicode.extend(_read_banis(ctx.multiple))
 
     if ctx.hukamnama:
@@ -169,6 +171,14 @@ def _read_banis(multiple) -> list[str]:
         "bwnI pVHn, suxn Aqy ivcwr krn dy ivc AnkyW prkwr dIAw glqIAW hoieAw[ ",
         "Bul cu`k mwP krnI[ ",
     ]
+
+
+def _read_specific_banis() -> list[str]:
+    """Add lines to the ardaas to state that specific banis were read.
+
+    :return: list of lines to add to the ardaas.
+    """
+    return ["Awp jI ... dy jwp krvwieAw[ "]
 
 
 def _sukhmani() -> list[str]:
