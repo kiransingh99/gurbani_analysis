@@ -20,6 +20,16 @@ import _cmn
 _log = _cmn.Logger("ardaas")
 
 
+def _anand_sahib() -> list[str]:
+    """Add lines to the ardaas to state that 6 pauri Anand Sahib was read/sung.
+
+    :return: list of lines to add to the ardaas.
+    """
+    return [
+        "Cy pauVI AnMd swihb hoey[ ",
+    ]
+
+
 def _generate(ctx: argparse.Namespace) -> None:
     """Handler for all generate requests to the Ardaas CLI.
 
@@ -40,6 +50,8 @@ def _generate(ctx: argparse.Namespace) -> None:
         ardaas_unicode.extend(_sukhmani())
     if ctx.kirtan:
         ardaas_unicode.extend(_kirtan())
+    if ctx.anand_sahib:
+        ardaas_unicode.extend(_anand_sahib())
     # For any banis that were read:
     if ctx.sukhmani or ctx.read_bani:
         ardaas_unicode.extend(_read_banis(ctx.multiple))

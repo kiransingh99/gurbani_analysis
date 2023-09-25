@@ -114,10 +114,14 @@ def main() -> None:
     ardaas.add_argument("--sukhmani", "--sukhmani-sahib", action="store_true")
     ardaas.add_argument("--kirtan", action="store_true")
     # @@@ Katha
-    # @@@ 6 pauri anand sahib
+    ardaas.add_argument(
+        "--anand-sahib", action="store_true", help="6 pauri Anand Sahib"
+    )
     # @@@ Sukhaasan
 
     ardaas.add_argument("--hukamnama", action="store_true")
+    # @@@ Parshaad
+    # @@@ Langar
 
     # Hukamnama
     hukamnama = composition.add_parser(
