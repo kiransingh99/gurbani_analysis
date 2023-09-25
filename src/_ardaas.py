@@ -80,9 +80,7 @@ ijqu duAwrY aubrY iqqY lYhu aubwir] \
 siqguir suKu vyKwilAw scw sbdu bIcwir] \
 nwnk Avru n suJeI hir ibnu bKsxhwru] "
 
-    hukamanama_benti = (
-        f"{_pluralise('dws', multiple)} nUM awp jI dw pwvn pivqr hukmnwmw bKSo jI[ "
-    )
+    hukamanama_benti = f"{_pluralise('dws', multiple)} nUM awp jI dw pwvn pivqr hukmnwmw bKSo jI qy hukmnwmy dy c~lx dI smr~Qw bKSo[ "
 
     return [jagat_jalandhaa, hukamanama_benti]
 
