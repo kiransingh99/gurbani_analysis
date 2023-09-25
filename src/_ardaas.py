@@ -30,6 +30,34 @@ def _anand_sahib() -> list[str]:
     ]
 
 
+def _degh(parshaad: bool, langar: bool) -> list[str]:
+    """Add lines to the ardaas to state that bhog of parshaad and/or langar was
+    done.
+
+    :param parshaad: Parshaad is present
+    :param langar: Langar is present
+    :return: list of lines to add to the ardaas.
+    """
+    anik_prakar = "Aink pRkwr Bojn bhu kIey bhu ibMjn imstwey] \
+krI pwkswl soc pivqRw huix lwvhu Bogu hir rwey] "
+
+    if parshaad and langar:
+        degh = "kVwh pRswd dI dyG Aqy lwgwr"
+    elif parshaad:
+        degh = "kVwh pRswd dI dyG"
+    elif langar:
+        degh = "lwgwr"
+    else:
+        raise ValueError("Either parshaad or langar must be True")
+
+    return [
+        f"{degh} swjky hwzr hn[ ",
+        anik_prakar,
+        f"prvwn kIqw {degh} swD sMgq dw rsnw dy lwiek hox[ ",
+        "jo jI C~ky so qyrw hI nwm jpy",
+    ]
+
+
 def _generate(ctx: argparse.Namespace) -> None:
     """Handler for all generate requests to the Ardaas CLI.
 
@@ -58,6 +86,9 @@ def _generate(ctx: argparse.Namespace) -> None:
 
     if ctx.hukamnama:
         ardaas_unicode.extend(_hukamnama(ctx.multiple))
+
+    if ctx.parshaad or ctx.langar:
+        ardaas_unicode.extend(_degh(ctx.parshaad, ctx.langar))
 
     ardaas_unicode = start_unicode + ardaas_unicode + end_unicode + ["["]
     ardaas = "".join(ardaas_unicode)
