@@ -39,9 +39,8 @@ def _generate(ctx: argparse.Namespace) -> None:
     if ctx.sukhmani:
         ardaas_unicode.extend(_sukhmani())
     # For any banis that were read:
-    if ctx.sukhmani:
+    if ctx.sukhmani or ctx.read_bani:
         ardaas_unicode.extend(_read_banis(ctx.multiple))
-        # @@@ is bani da bhav is bani da ful sangata de hirde vich vasaona
 
     if ctx.hukamnama:
         ardaas_unicode.extend(_hukamnama(ctx.multiple))
@@ -113,6 +112,7 @@ def _read_banis(multiple) -> list[str]:
     """
     return [
         f"{_pluralise('dws', multiple)} ny Awp jI dy crnw kmlw pws Su~D Aqy sp~St bwnI pVI, suxI Aqy ivcwr kIqIaw[ ",
+        "ies bwnI dw Bwv, ies bwnI dw P~l sMgqw dy ihrdy ivc vswauxw[ ",
         "bwnI pVHn, suxn Aqy ivcwr krn dy ivc AnkyW prkwr dIAw glqIAW hoieAw[ ",
         "Bul cu`k mwP krnI[ ",
     ]
