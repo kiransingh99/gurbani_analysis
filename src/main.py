@@ -128,6 +128,9 @@ def main() -> None:
         "--parshaad", action="store_true", help="Doing bhog of Parshaad"
     )
     ardaas.add_argument("--langar", action="store_true", help="Doing bhog of Langar")
+    ardaas.add_argument(
+        "--amrit-vela", action="store_true", help="Wake up at Amrit vela"
+    )
 
     # Hukamnama
     hukamnama = composition.add_parser(

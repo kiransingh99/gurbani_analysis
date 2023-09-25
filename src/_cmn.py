@@ -257,7 +257,12 @@ def gurbani_unicode_to_romanised(unicode):
         mapped_char = mapping[char]
 
         if romanised and char == " ":
-            if romanised[-1] in ("u", "i"):
+            # If the last character is a sihaari without an eeri, or an aunkar
+            # without an oora, add brackets around the romanised sound
+            if len(unicode) > 2 and (
+                (unicode[i - 2] == "i" and unicode[i - 1] != "e")
+                or (unicode[i - 1] == "u" and unicode[i - 2] != "a")
+            ):
                 romanised = romanised[:-1] + ["(" + romanised[-1] + ")"]
         if char == "i":  # sihaari
             buf = mapped_char

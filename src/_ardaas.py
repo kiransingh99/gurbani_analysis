@@ -20,6 +20,19 @@ import _cmn
 _log = _cmn.Logger("ardaas")
 
 
+def _amrit_vela(multiple: bool) -> list[str]:
+    """Add lines to the ardaas to request to be woken up for amrit vela.
+
+    :param multiple: set to True if multiple people are in the sangat.
+    :return: list of lines to add to the ardaas.
+    """
+    return [
+        f"{_pluralise('dws', multiple)} nUM sie rihq Aqy pUrw Srdw bKSo jI[ ",
+        f"kl svyry nUM, kl AMimRq vyly iv~c {_pluralise('dws', multiple)} nUM AMimRq vylw iv~c jgW ky auTw ky gurbwnI pVwau[ ",
+        f"{_pluralise('dws', multiple)} nUM AMimRq vylw dI dwn bKSo[ ",
+    ]
+
+
 def _anand_sahib() -> list[str]:
     """Add lines to the ardaas to state that 6 pauri Anand Sahib was read/sung.
 
@@ -92,6 +105,16 @@ def _generate(ctx: argparse.Namespace) -> None:
     if ctx.parshaad or ctx.langar:
         ardaas_unicode.extend(_degh(ctx.parshaad, ctx.langar))
 
+    ardaas_unicode.extend(
+        [
+            f"{_pluralise('Awpxy', ctx.multiple)} Axjwx {_pluralise('b~cy', ctx.multiple)} dy isr qy myhr BirAw h~Q r~Kxw[ ",
+            f"{_pluralise('Awpxy', ctx.multiple)} {_pluralise('b~cy', ctx.multiple)} nUM kwm kRoD loB moh AhMkwr ausqq inMidAw cuglIAw qoN bcwA ky r~Kxw[ ",
+        ]
+    )
+
+    if ctx.amrit_vela:
+        ardaas_unicode.extend(_amrit_vela(ctx.multiple))
+
     ardaas_unicode = start_unicode + ardaas_unicode + end_unicode + ["["]
     ardaas = "".join(ardaas_unicode)
 
@@ -157,7 +180,13 @@ def _pluralise(word: str, plural: bool) -> str:
     if word in special_cases:
         return special_cases[word]
 
-    return word + "W"  # add kannaa
+    if word[-1] == "y":
+        plural = (
+            word[:-2] + "i" + word[-2] + "AW"
+        )  # change laav to sihaari + aera + kannaa bindi
+    else:
+        plural = word + "W"  # add kannaa
+    return plural
 
 
 def _read_banis(multiple) -> list[str]:
