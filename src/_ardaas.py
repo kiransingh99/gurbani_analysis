@@ -55,11 +55,11 @@ def _degh(parshaad: bool, langar: bool) -> list[str]:
 krI pwkswl soc pivqRw huix lwvhu Bogu hir rwey] "
 
     if parshaad and langar:
-        degh = "kVwh pRswd dI dyG Aqy lwgwr"
+        degh = "kVwh pRswd dI dyG Aqy lMgr"
     elif parshaad:
         degh = "kVwh pRswd dI dyG"
     elif langar:
-        degh = "lwgwr"
+        degh = "lMgr"
     else:
         raise ValueError("Either parshaad or langar must be True")
 
@@ -108,7 +108,7 @@ def _generate(ctx: argparse.Namespace) -> None:
     ardaas_unicode.extend(
         [
             f"{_pluralise('Awpxy', ctx.multiple)} Axjwx {_pluralise('b~cy', ctx.multiple)} dy isr qy myhr BirAw h~Q r~Kxw[ ",
-            f"{_pluralise('Awpxy', ctx.multiple)} {_pluralise('b~cy', ctx.multiple)} nUM kwm kRoD loB moh AhMkwr ausqq inMidAw cuglIAw qoN bcwA ky r~Kxw[ ",
+            f"{_pluralise('Awpxy', ctx.multiple)} {_pluralise('b~cy', ctx.multiple)} nUM kwm kRoD loB moh AhMkwr ausq~q inMidAw cuglIAw qoN bcwA ky r~Kxw[ ",
         ]
     )
 
@@ -195,7 +195,7 @@ def _read_banis(multiple) -> list[str]:
     :param multiple: set to True if multiple people are in the sangat.
     """
     return [
-        f"{_pluralise('dws', multiple)} ny Awp jI dy crnw kmlw pws Su~D Aqy sp~St bwnI pVI, suxI Aqy ivcwr kIqIaw[ ",
+        f"{_pluralise('dws', multiple)} ny Awp jI dy crnw kmlw pws Su~D Aqy sp~St bwnI pVI, suxI Aqy ivcwr kIqw[ ",
         "ies bwnI dw Bwv, ies bwnI dw P~l sMgqw dy ihrdy ivc vswauxw[ ",
         "bwnI pVHn, suxn Aqy ivcwr krn dy ivc AnkyW prkwr dIAw glqIAW hoieAw[ ",
         "Bul cu`k mwP krnI[ ",
@@ -207,7 +207,7 @@ def _read_specific_banis() -> list[str]:
 
     :return: list of lines to add to the ardaas.
     """
-    return ["Awp jI ... dy jwp krvwieAw[ "]
+    return ["Awp jI ... dw jwp krvwieAw[ "]
 
 
 def _sukhmani() -> list[str]:
