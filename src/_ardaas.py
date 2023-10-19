@@ -110,6 +110,17 @@ def _generate(ctx: argparse.Namespace) -> None:
     if ctx.katha:
         ardaas_unicode.extend(_katha())
 
+    if ctx.akhand_paath_arambh:
+        ardaas_unicode.extend(_akhand_paath_arambh())
+    if ctx.akhand_paath_bhog:
+        ardaas_unicode.extend(_akhand_paath_bhog())
+    if ctx.sehaj_paath_arambh:
+        ardaas_unicode.extend(_sehaj_paath_arambh(ctx.multiple))
+    if ctx.sehaj_paath_madh:
+        ardaas_unicode.extend(_sehaj_paath_madh(ctx.multiple))
+    if ctx.sehaj_paath_bhog:
+        ardaas_unicode.extend(_sehaj_paath_bhog(ctx.multiple))
+
     if ctx.hukamnama:
         ardaas_unicode.extend(_hukamnama(ctx.multiple))
 
@@ -137,6 +148,26 @@ def _generate(ctx: argparse.Namespace) -> None:
         ardaas = _cmn.gurbani_unicode_to_romanised(ardaas)
 
     print(ardaas)
+
+
+def _akhand_paath_arambh() -> list[str]:
+    """Add lines to the ardaas to state that an akhand paath is about to start.
+
+    :return: list of lines to add to the ardaas.
+    """
+    return [
+        "Awp jI dy dwsW nUM AwigAw bKSo AKMf pwT dw AwrMBqw krn leI[ ",
+    ]
+
+
+def _akhand_paath_bhog() -> list[str]:
+    """Add lines to the ardaas to state that an akhand paath has been done.
+
+    :return: list of lines to add to the ardaas.
+    """
+    return [
+        "Awp jI dy dwsW ny AKMf pwT riKAw[ ",
+    ]
 
 
 def _hukamnama(multiple: bool) -> list[str]:
@@ -232,6 +263,37 @@ def _read_specific_banis() -> list[str]:
     :return: list of lines to add to the ardaas.
     """
     return ["Awp jI ... dw jwp krvwieAw[ "]
+
+
+def _sehaj_paath_arambh(multiple: bool) -> list[str]:
+    """Add lines to the ardaas to state that a sehaj paath raul is about to start.
+
+    :return: list of lines to add to the ardaas.
+    """
+    return [
+        f"Awp jI dy {_pluralise('dws', multiple)} nUM AwigAw bKSo shj pwT dw rOl dw AwrMBqw krn leI[ ",
+    ]
+
+
+def _sehaj_paath_madh(multiple: bool) -> list[str]:
+    """Add lines to the ardaas to state that an sehaj paath raul has been done.
+
+    :param multiple: set to True if multiple people are in the sangat.
+    :return: list of lines to add to the ardaas.
+    """
+    return [
+        f"Awp jI dy {_pluralise('dws', multiple)} ny shj pwT ivc mD ivc AweI hY[ ",
+    ]
+
+
+def _sehaj_paath_bhog(multiple: bool) -> list[str]:
+    """Add lines to the ardaas to state that an sehaj paath raul has been done.
+
+    :return: list of lines to add to the ardaas.
+    """
+    return [
+        f"Awp jI dy {_pluralise('dws', multiple)} ny shj pwT dw rOl riKAw[ ",
+    ]
 
 
 def _sukhaasan_pre() -> list[str]:
