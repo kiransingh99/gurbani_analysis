@@ -107,6 +107,9 @@ def _generate(ctx: argparse.Namespace) -> None:
     ):
         ardaas_unicode.extend(_read_banis(ctx.multiple))
 
+    if ctx.katha:
+        ardaas_unicode.extend(_katha())
+
     if ctx.hukamnama:
         ardaas_unicode.extend(_hukamnama(ctx.multiple))
 
@@ -150,6 +153,16 @@ nwnk Avru n suJeI hir ibnu bKsxhwru] "
     hukamanama_benti = f"{_pluralise('dws', multiple)} nUM awp jI dw pwvn pivqr hukmnwmw bKSo jI qy hukmnwmy dy c~lx dI smr~Qw bKSo[ "
 
     return [jagat_jalandhaa, hukamanama_benti]
+
+
+def _katha() -> list[str]:
+    """Add lines to the ardaas to state that katha was done.
+
+    :return: list of lines to add to the ardaas.
+    """
+    return [
+        "Awp jI dw Ak~Q k~Qw kr idAw[ ",
+    ]
 
 
 def _kirtan() -> list[str]:

@@ -115,7 +115,7 @@ def main() -> None:
     )
     ardaas.add_argument("--sukhmani", "--sukhmani-sahib", action="store_true")
     ardaas.add_argument("--kirtan", action="store_true", help="Kirtan was sung")
-    # @@@ Katha
+    ardaas.add_argument("--katha", action="store_true", help="Katha was done")
     ardaas.add_argument(
         "--anand-sahib", action="store_true", help="6 pauri Anand Sahib"
     )
