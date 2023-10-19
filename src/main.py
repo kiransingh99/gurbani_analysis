@@ -108,8 +108,25 @@ def main() -> None:
         action="store_true",
         help="Ardaas for multiple people",
     )
-    # @@@ Akhand paath (arambh, bhog)
-    # @@@ Sehaj paath (arambh, madh, bhog, raul)
+    akhand_paath = ardaas.add_mutually_exclusive_group()
+    akhand_paath.add_argument(
+        "--akhand-paath-arambh", action="store_true", help="Starting an akhand paath"
+    )
+    akhand_paath.add_argument(
+        "--akhand-paath-bhog", action="store_true", help="Finishing an akhand paath"
+    )
+    sehaj_paath = ardaas.add_mutually_exclusive_group()
+    sehaj_paath.add_argument(
+        "--sehaj-paath-arambh", action="store_true", help="Starting a sehaj paath"
+    )
+    sehaj_paath.add_argument(
+        "--sehaj-paath-madh",
+        action="store_true",
+        help="Reached the halfway point of a sehaj paath",
+    )
+    sehaj_paath.add_argument(
+        "--sehaj-paath-bhog", action="store_true", help="Finishing a sehaj paath"
+    )
     ardaas.add_argument(
         "--read-bani", action="store_true", help="Specific banis were read"
     )
