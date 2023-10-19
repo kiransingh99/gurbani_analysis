@@ -95,8 +95,16 @@ def _generate(ctx: argparse.Namespace) -> None:
         ardaas_unicode.extend(_kirtan())
     if ctx.anand_sahib:
         ardaas_unicode.extend(_anand_sahib())
+    if ctx.sukhaasan_post:
+        ardaas_unicode.extend(_sukhaasan_post())
     # For any banis that were read:
-    if ctx.read_bani or ctx.sukhmani or ctx.kirtan or ctx.anand_sahib:
+    if (
+        ctx.read_bani
+        or ctx.sukhmani
+        or ctx.kirtan
+        or ctx.anand_sahib
+        or ctx.sukhaasan_post
+    ):
         ardaas_unicode.extend(_read_banis(ctx.multiple))
 
     if ctx.hukamnama:
@@ -104,6 +112,9 @@ def _generate(ctx: argparse.Namespace) -> None:
 
     if ctx.parshaad or ctx.langar:
         ardaas_unicode.extend(_degh(ctx.parshaad, ctx.langar))
+
+    if ctx.sukhaasan_pre:
+        ardaas_unicode.extend(_sukhaasan_pre())
 
     ardaas_unicode.extend(
         [
@@ -115,7 +126,7 @@ def _generate(ctx: argparse.Namespace) -> None:
     if ctx.amrit_vela:
         ardaas_unicode.extend(_amrit_vela(ctx.multiple))
 
-    ardaas_unicode = start_unicode + ardaas_unicode + end_unicode + ["["]
+    ardaas_unicode = start_unicode + ardaas_unicode + end_unicode
     ardaas = "".join(ardaas_unicode)
 
     # Now that the ardaas is fully generated, translate it
@@ -208,6 +219,24 @@ def _read_specific_banis() -> list[str]:
     :return: list of lines to add to the ardaas.
     """
     return ["Awp jI ... dw jwp krvwieAw[ "]
+
+
+def _sukhaasan_pre() -> list[str]:
+    """Add lines to the ardaas to request permission to do sukhaasan.
+
+    :return: list of lines to add to the ardaas.
+    """
+    return ["Awp jI dI suKwsn syvw krn dw AwigAw bKSnw[ "]
+
+
+def _sukhaasan_post() -> list[str]:
+    """Add lines to the ardaas to state that sukhaasan was done.
+
+    :return: list of lines to add to the ardaas.
+    """
+    return [
+        "AwigAw iml ky kIrqn soihlw dw pwT pVI geI Aqy Awp jI dI suKwsn syvw hoeI[ "
+    ]
 
 
 def _sukhmani() -> list[str]:

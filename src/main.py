@@ -119,7 +119,13 @@ def main() -> None:
     ardaas.add_argument(
         "--anand-sahib", action="store_true", help="6 pauri Anand Sahib"
     )
-    # @@@ Sukhaasan
+    sukhaasan = ardaas.add_mutually_exclusive_group()
+    sukhaasan.add_argument(
+        "--sukhaasan-pre", action="store_true", help="Aagya to do sukhaasan"
+    )
+    sukhaasan.add_argument(
+        "--sukhaasan-post", action="store_true", help="Sukhaasan was done"
+    )
 
     ardaas.add_argument(
         "--hukamnama", action="store_true", help="Hukamnama is to be taken"
