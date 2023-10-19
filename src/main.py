@@ -131,7 +131,7 @@ def main() -> None:
         "--hukamnama", action="store_true", help="Hukamnama is to be taken"
     )
     ardaas.add_argument(
-        "--parshaad", action="store_true", help="Doing bhog of Parshaad"
+        "--parshaad", action="store_true", help="Doing bhog of Karah Parshaad"
     )
     ardaas.add_argument("--langar", action="store_true", help="Doing bhog of Langar")
     ardaas.add_argument(
