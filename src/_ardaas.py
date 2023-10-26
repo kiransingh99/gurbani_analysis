@@ -121,6 +121,9 @@ def _generate(ctx: argparse.Namespace) -> None:
     if ctx.sehaj_paath_bhog:
         ardaas_unicode.extend(_sehaj_paath_bhog(ctx.multiple))
 
+    if ctx.birthday:
+        ardaas_unicode.extend(_birthday())
+
     if ctx.hukamnama:
         ardaas_unicode.extend(_hukamnama(ctx.multiple))
 
@@ -168,6 +171,14 @@ def _akhand_paath_bhog() -> list[str]:
     return [
         "Awp jI dy dwsW ny AKMf pwT riKAw[ ",
     ]
+
+
+def _birthday() -> list[str]:
+    """Add lines to the ardaas to state that today is someone's birthday.
+
+    :return: list of lines to add to the ardaas.
+    """
+    return ["A~j ... dw jnmidn hY[ ", "ienUM gurisKI jIvn bKSo jI[ "]
 
 
 def _hukamnama(multiple: bool) -> list[str]:

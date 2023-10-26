@@ -155,6 +155,8 @@ def main() -> None:
         "--amrit-vela", action="store_true", help="Wake up at Amrit vela"
     )
 
+    ardaas.add_argument("--birthday", action="store_true", help="Birthday of a person")
+
     # Hukamnama
     hukamnama = composition.add_parser(
         "hukamnama", description="Data regarding hukamnama archives."
