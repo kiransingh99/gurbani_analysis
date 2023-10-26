@@ -24,7 +24,8 @@ import sys
 import traceback
 
 import _cmn
-import _ardaas, _hukamnama
+import _ardaas
+import _hukamnama
 
 
 _log = _cmn.Logger("main")
@@ -120,16 +121,12 @@ def _add_ardaas_parser(subparser: argparse._SubParsersAction) -> None:
     ardaas.add_argument(
         "--parshaad", action="store_true", help="Doing bhog of Karah Parshaad"
     )
-    ardaas.add_argument(
-        "--langar", action="store_true", help="Doing bhog of Langar"
-    )
+    ardaas.add_argument("--langar", action="store_true", help="Doing bhog of Langar")
     ardaas.add_argument(
         "--amrit-vela", action="store_true", help="Wake up at Amrit vela"
     )
 
-    ardaas.add_argument(
-        "--birthday", action="store_true", help="Birthday of a person"
-    )
+    ardaas.add_argument("--birthday", action="store_true", help="Birthday of a person")
 
 
 def _add_hukamnama_parser(

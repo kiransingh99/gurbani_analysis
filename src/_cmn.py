@@ -163,9 +163,9 @@ class _LetterType(enum.Enum):
     ADHAK = "adhak"
 
 
-def gurbani_unicode_to_romanised(
+def gurbani_unicode_to_romanised(  # pylint: disable=too-many-branches
     unicode: str,
-) -> str:  # pylint: disable=too-many-branches
+) -> str:
     """Converts unicode Gurmukhi to romanised Gurmukhi.
 
     :param unicode: unicode Gurmukhi string.
@@ -222,9 +222,9 @@ def gurbani_unicode_to_romanised(
         "V": "ṙ",  # rrarra
         "S": "sh",  # shasha
         "Z": "ghh",  # ghhaghha
-        "@@@": "",  # khhakhha @@@
+        "@@@1": "",  # khhakhha @@@
         "z": "z",  # zazza
-        "@@@": "",  # faffa @@@
+        "@@@2": "",  # faffa @@@
         "L": "ḷ",  # lalla pair bindi
     }
     pairee_mapping = {
@@ -270,8 +270,7 @@ def gurbani_unicode_to_romanised(
     for i, char in enumerate(unicode):
         mapped_char = mapping[char]
         if (
-            char in special_mapping
-            and special_mapping[char] is _LetterType.ADHAK
+            char in special_mapping and special_mapping[char] is _LetterType.ADHAK
         ):  # adhak
             adhak = True
             continue
@@ -294,11 +293,7 @@ def gurbani_unicode_to_romanised(
             else:
                 romanised.append(mapped_char)
         else:
-            if (
-                romanised
-                and romanised[-1].lower() == "a"
-                and "aa" in mapped_char
-            ):
+            if romanised and romanised[-1].lower() == "a" and "aa" in mapped_char:
                 romanised[-1] = ""
             # For consecutive consonants, and for vowels after oora aera eeri,
             # add mukta sound between them
