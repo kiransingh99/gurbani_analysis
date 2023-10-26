@@ -13,15 +13,15 @@ from __future__ import annotations
 
 __all__ = [
     "Error",
+    "gurbani_unicode_to_romanised",
     "Logger",
     "NotImplementedException",
     "RC",
     "UnhandledExceptionError",
     "Verbosity",
-    "gurbani_ascii_to_unicode",
 ]
 
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import enum
 import logging
@@ -40,6 +40,7 @@ class Error(Exception):
         self.rc = rc
         self.msg = msg
         self.suggested_steps = suggested_steps
+        Exception.__init__(self, msg)
 
     def __str__(self) -> str:
         output = "\nError: "
@@ -156,7 +157,20 @@ class Verbosity(enum.Enum):
     VERY_VERBOSE = 10
 
 
-def gurbani_unicode_to_romanised(unicode):
+class _LetterType(enum.Enum):
+    """Special cases of letters"""
+
+    ADHAK = "adhak"
+
+
+def gurbani_unicode_to_romanised(
+    unicode: str,
+) -> str:  # pylint: disable=too-many-branches
+    """Converts unicode Gurmukhi to romanised Gurmukhi.
+
+    :param unicode: unicode Gurmukhi string.
+    :return: romanised Gurmukhi string.
+    """
     grammar_mapping = {
         " ": " ",  # space
         "[": ".",  # full stop
@@ -236,11 +250,11 @@ def gurbani_unicode_to_romanised(unicode):
         "µ": "ṅ",  # tippee
     }
     special_mapping = {
-        "~": None,  # adhak
-        "`": None,  # adhak
+        "~": _LetterType.ADHAK,  # adhak
+        "`": _LetterType.ADHAK,  # adhak
     }
 
-    mapping = {}
+    mapping: dict[str, Union[str, _LetterType]] = {}
     mapping.update(grammar_mapping)
     mapping.update(oora_aera_eeri_mapping)
     mapping.update(consonant_mapping)
@@ -249,12 +263,19 @@ def gurbani_unicode_to_romanised(unicode):
     mapping.update(semi_vowel_mapping)
     mapping.update(special_mapping)
 
-    romanised = []
+    romanised: list[str] = []
     buf = ""
     adhak = False
 
     for i, char in enumerate(unicode):
         mapped_char = mapping[char]
+        if (
+            char in special_mapping and special_mapping[char] is _LetterType.ADHAK
+        ):  # adhak
+            adhak = True
+            continue
+
+        assert isinstance(mapped_char, str)
 
         if romanised and char == " ":
             # If the last character is a sihaari without an eeri, or an aunkar
@@ -266,28 +287,27 @@ def gurbani_unicode_to_romanised(unicode):
                 romanised = romanised[:-1] + ["(" + romanised[-1] + ")"]
         if char == "i":  # sihaari
             buf = mapped_char
-        elif char in pairee_mapping.keys():
+        elif char in pairee_mapping:
             if romanised[-1] == "i":
                 romanised = romanised[:-2] + [mapped_char, romanised[-1]]
             else:
                 romanised.append(mapped_char)
-        elif char == "~":  # adhak
-            adhak = True
         else:
             if romanised and romanised[-1].lower() == "a" and "aa" in mapped_char:
                 romanised[-1] = ""
-            # For consecutive consonants, and for vowels after oora aera eeri, add mukta sound between them
+            # For consecutive consonants, and for vowels after oora aera eeri,
+            # add mukta sound between them
             elif romanised and (
                 (
                     romanised[-1].lower() in consonant_mapping.values()
                     and char
-                    in list(oora_aera_eeri_mapping.keys())
-                    + list(consonant_mapping.keys())
-                    + list(pairee_mapping.keys())
+                    in list(oora_aera_eeri_mapping)
+                    + list(consonant_mapping)
+                    + list(pairee_mapping)
                 )
                 or (
                     romanised[-1].lower() in oora_aera_eeri_mapping.values()
-                    and char in vowel_mapping.keys()
+                    and char in vowel_mapping
                 )
             ):
                 romanised[-1] += "a"
