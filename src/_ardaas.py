@@ -120,7 +120,9 @@ def _generate(ctx: argparse.Namespace) -> None:
 
     ardaas_unicode.extend(_akhand_paath_arambh(ctx.akhand_paath_arambh))
     ardaas_unicode.extend(_akhand_paath_bhog(ctx.akhand_paath_bhog))
-    ardaas_unicode.extend(_sehaj_paath_arambh(ctx.sehaj_paath_arambh, ctx.multiple))
+    ardaas_unicode.extend(
+        _sehaj_paath_arambh(ctx.sehaj_paath_arambh, ctx.multiple)
+    )
     ardaas_unicode.extend(_sehaj_paath_madh(ctx.sehaj_paath_madh, ctx.multiple))
     ardaas_unicode.extend(_sehaj_paath_bhog(ctx.sehaj_paath_bhog, ctx.multiple))
 

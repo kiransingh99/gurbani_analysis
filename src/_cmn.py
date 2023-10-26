@@ -270,7 +270,8 @@ def gurbani_unicode_to_romanised(
     for i, char in enumerate(unicode):
         mapped_char = mapping[char]
         if (
-            char in special_mapping and special_mapping[char] is _LetterType.ADHAK
+            char in special_mapping
+            and special_mapping[char] is _LetterType.ADHAK
         ):  # adhak
             adhak = True
             continue
@@ -293,7 +294,11 @@ def gurbani_unicode_to_romanised(
             else:
                 romanised.append(mapped_char)
         else:
-            if romanised and romanised[-1].lower() == "a" and "aa" in mapped_char:
+            if (
+                romanised
+                and romanised[-1].lower() == "a"
+                and "aa" in mapped_char
+            ):
                 romanised[-1] = ""
             # For consecutive consonants, and for vowels after oora aera eeri,
             # add mukta sound between them
